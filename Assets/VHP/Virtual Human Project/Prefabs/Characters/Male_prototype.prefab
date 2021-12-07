@@ -861,8 +861,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2662620812885180937}
-  m_LocalRotation: {x: -0.000000067224406, y: -0.0000006021001, z: 0.00000013997587,
-    w: 1}
+  m_LocalRotation: {x: -0.000000067224406, y: -0.0000006021001, z: 0.00000013997587, w: 1}
   m_LocalPosition: {x: -0.13432734, y: 0.00000010490418, z: -0.0000003999472}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -1591,8 +1590,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4932142256721301634}
-  m_LocalRotation: {x: -0.00000025059686, y: 0.00000067940005, z: -0.00000019748803,
-    w: 1}
+  m_LocalRotation: {x: -0.00000025059686, y: 0.00000067940005, z: -0.00000019748803, w: 1}
   m_LocalPosition: {x: 0.1343699, y: 0.00000013351439, z: 0.0000006902217}
   m_LocalScale: {x: 1, y: 1, z: 0.999999}
   m_Children: []
@@ -2104,7 +2102,6 @@ GameObject:
   - component: {fileID: 7202835787990370055}
   - component: {fileID: 972671129023392381}
   - component: {fileID: 2677059944533429293}
-  - component: {fileID: 868102029555977594}
   - component: {fileID: 8296172669421818831}
   - component: {fileID: 8296172669421818830}
   - component: {fileID: 8296172669421818829}
@@ -2166,35 +2163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01f98c3a1147956498314e017b40577e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blendShapesMapperPreset: {fileID: 11400000, guid: dfdc06ba83b7df64f911fa4bca9ce963,
-    type: 2}
---- !u!114 &868102029555977594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6174088898809296148}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3de76293093d85241a6954db3b0c22c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  drawGazeDirection: 1
-  headBone: {fileID: 942781408850953902}
-  leftEyeBone: {fileID: 3125825569717396379}
-  rightEyeBone: {fileID: 3640754892446972776}
-  eyesForwardAxis: 1
-  invertEyesAxisSense: 1
-  gazeBehavior: 0
-  interestFieldPrefab: {fileID: 2096622972208523352, guid: 94a0755c84474da40a7b02a3d4c0b2c8,
-    type: 3}
-  agentMode: 1
-  enableGazeMicroVariations: 1
-  enableBlinking: 1
-  blink: 0
-  gazeUp: 0
-  gazeDown: 0
+  blendShapesMapperPreset: {fileID: 11400000, guid: dfdc06ba83b7df64f911fa4bca9ce963, type: 2}
 --- !u!114 &8296172669421818831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2696,8 +2665,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7395598977215769926}
-  m_LocalRotation: {x: -0.0000016325108, y: -0.000009483428, z: -0.0000019282313,
-    w: 1}
+  m_LocalRotation: {x: -0.0000016325108, y: -0.000009483428, z: -0.0000019282313, w: 1}
   m_LocalPosition: {x: 0.1275978, y: -0.00000028610228, z: 0.0000017671285}
   m_LocalScale: {x: 1, y: 1, z: 0.999999}
   m_Children: []
@@ -3039,8 +3007,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8995117283515797756}
-  m_LocalRotation: {x: -0.0000009354116, y: -0.00000016670676, z: 0.0000024572948,
-    w: 1}
+  m_LocalRotation: {x: -0.0000009354116, y: -0.00000016670676, z: 0.0000024572948, w: 1}
   m_LocalPosition: {x: 0.23366444, y: -0.000000925064, z: -0.00000008583068}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
