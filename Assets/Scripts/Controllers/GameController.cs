@@ -42,22 +42,27 @@ public class GameController : MonoBehaviour
         for (int i = 1; i <= lessonsCount; i++)
         {
             int countOfParts = DirInfo.getCountOfFolders($"/Resources/Materials/Lessons/Lesson_{i}");
+            Debug.LogError($"countOfParts = {countOfParts}");
             Dictionary<int, List<int>> partsToSlidesPoints = new Dictionary<int, List<int>>();
             for (int j = 1; j <= countOfParts; j++)
             {
                 try
                 {
-                    List<string> points = new List<string>(System.IO.File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/Lesson_{currentLesson}/Part_{currentPart}/slides_points.csv").Split(','));
+                    Debug.LogError($"j = {j}");
+                    List<string> points = new List<string>(System.IO.File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
+                        $"Lesson_{currentLesson}/Part_{j}/" +
+                        $"slides_points.csv").Split(','));
                     List<int> intPoints = new List<int>();
                     foreach (var point in points)
                     {
                         int temp;
+                        Debug.LogError($"Point = {point}");
                         int.TryParse(point, out temp);
                         intPoints.Add(temp);
                     }
                     partsToSlidesPoints.Add(j, intPoints);
                 }
-                catch (Exception ex) { }
+                catch (Exception ex) { Debug.LogError($"j = {j}"); }
             }
             lessonsToPartsToSlidesPoints.Add(i, partsToSlidesPoints);
         }
@@ -81,7 +86,7 @@ public class GameController : MonoBehaviour
         
         for (int i = 1; i <= slidesCount; i++)
         {
-            setMaterial($"Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}/lesson_{currentLesson}_part_{currentPart}_slide_{i}");
+            setMaterial($"Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}/slide_{i}");
             if(i != slidesCount)
                 yield return new WaitForSeconds(lessonsToPartsToSlidesPoints[currentLesson][currentPart][i - 1]);
         }
