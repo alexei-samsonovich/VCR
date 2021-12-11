@@ -98,4 +98,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75030f380062f9f4bbd0bc176bd101c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GazeTargets: []
+  GazeTargets:
+  - {fileID: 8891119240092622772, guid: 3bbe9e0f31ba4ac4eb23fefa42306153, type: 3}
