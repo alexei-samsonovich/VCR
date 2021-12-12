@@ -78,4 +78,10 @@ public class AudioController : MonoBehaviour
         Messenger.Broadcast(GameEvent.LECTURE_PART_FINISHED);
     }
 
+    public static float getClipLength(string path)
+    {
+        AudioClip clip = Resources.Load(path) as AudioClip;
+        return clip.length;
+    }
+
 }

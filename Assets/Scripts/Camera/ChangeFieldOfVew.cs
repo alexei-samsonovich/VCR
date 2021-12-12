@@ -15,7 +15,7 @@ public class ChangeFieldOfVew : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(2))
         {
             cam.fieldOfView = (defaultFov / 3);
         }
