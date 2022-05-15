@@ -686,6 +686,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3713331006470875400, guid: d4d886c79e9ff4844a30b9369a5a9c6f, type: 3}
   m_PrefabInstance: {fileID: 1929692648}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &111520617 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5878600228907070894, guid: d4d886c79e9ff4844a30b9369a5a9c6f, type: 3}
+  m_PrefabInstance: {fileID: 1929692648}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &112040343
 GameObject:
   m_ObjectHideFlags: 0
@@ -6715,11 +6720,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6b0697e2e5914a84d934b802039901b6, type: 3}
   m_PrefabInstance: {fileID: 1014807273}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &1044027569 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 9094545797096256250, guid: d4d886c79e9ff4844a30b9369a5a9c6f, type: 3}
-  m_PrefabInstance: {fileID: 1929692648}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1091132327
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7211,7 +7211,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawGazeDirection: 1
-  headBone: {fileID: 1044027569}
+  headBone: {fileID: 111520617}
   leftEyeBone: {fileID: 1916920971}
   rightEyeBone: {fileID: 106833139}
   eyesForwardAxis: 1
@@ -11184,7 +11184,7 @@ PrefabInstance:
     - target: {fileID: 256485324484133002, guid: d4d886c79e9ff4844a30b9369a5a9c6f, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 91c7701e8d6657e49b35f6a8e184428c, type: 2}
+      objectReference: {fileID: 9100000, guid: 1862c47326b55db4789659c690df0a6f, type: 2}
     - target: {fileID: 1943992430815862694, guid: d4d886c79e9ff4844a30b9369a5a9c6f, type: 3}
       propertyPath: m_BlendShapeWeights.Array.size
       value: 121
