@@ -96,7 +96,9 @@ public class ScrollViewAdapter : MonoBehaviour
         ButtonView view = new ButtonView(viewGameObject.transform);
         view.ButtonText.text = model.ButtonText;
         view.ClickButton = viewGameObject.GetComponent<Button>();
-        view.ClickButton.onClick.AddListener(delegate { Messenger<int>.Broadcast(GameEvent.STUDENT_ASK_QUESTION, model.ButtonId); });
+        view.ClickButton.onClick.AddListener(delegate {
+            Messenger<int>.Broadcast(GameEvent.STUDENT_ASK_QUESTION, model.ButtonId);
+        });
         view.ClickButton.onClick.AddListener(uiController.HideQuestions);
     }
 }

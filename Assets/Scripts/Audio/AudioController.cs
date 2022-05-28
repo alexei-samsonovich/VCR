@@ -66,15 +66,34 @@ public class AudioController : MonoBehaviour
 
     private IEnumerator PlayLectureCoroutine(int lessonNumber, int partNumber)
     {
-        Debug.LogError("Coroutine processing");
+
+        //Было написано для лекции, которая представлялась одним аудиофайлом.
+        /*Debug.LogError("Coroutine processing");
+        //string lesson = lessonNumber.ToString();
+        //string part = partNumber.ToString();
+        //AudioClip clip = Resources.Load($"Music/Lessons/Lesson_{lesson}/Part_{part}/Lecture/Lesson_{lesson}_Part_{part}_lecture_1") as AudioClip;
+        //_audioSource.clip = clip;
+        //_audioSource.loop = false;
+        //_audioSource.Play();
+        //yield return new WaitForSeconds(_audioSource.clip.length);
+        //_audioSource.Stop();
+        //Messenger.Broadcast(GameEvent.LECTURE_PART_FINISHED);*/
+
         string lesson = lessonNumber.ToString();
         string part = partNumber.ToString();
-        AudioClip clip = Resources.Load($"Music/Lessons/Lesson_{lesson}/Part_{part}/Lecture/Lesson_{lesson}_Part_{part}_lecture_1") as AudioClip;
-        _audioSource.clip = clip;
-        _audioSource.loop = false;
-        _audioSource.Play();
-        yield return new WaitForSeconds(_audioSource.clip.length);
-        _audioSource.Stop();
+        // Сколько слайдов - столько и аудизаписей в конкретной лекции.
+        var slidesCount = DirInfo.getCountOfFilesWithExtension($"/Resources/Materials/Lessons/Lesson_{lesson}/Part_{part}", ".mat");
+        Debug.LogError($"SLIDEScoUNT = {slidesCount}");
+        for (int i = 1; i <= slidesCount; i++)
+        {
+            AudioClip clip = Resources.Load($"Music/Lessons/Lesson_{lesson}/Part_{part}/Lecture/Lesson_{lesson}_Part_{part}_slide_{i}") as AudioClip;
+            _audioSource.clip = clip;
+            _audioSource.loop = false;
+            _audioSource.Play();
+            yield return new WaitForSeconds(_audioSource.clip.length);
+            _audioSource.Stop();
+            yield return new WaitForSeconds(0.5f);
+        }
         Messenger.Broadcast(GameEvent.LECTURE_PART_FINISHED);
     }
 

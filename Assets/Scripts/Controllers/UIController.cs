@@ -25,10 +25,10 @@ public class UIController : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Tab))
-        {
-            mouseLook.enabled = !mouseLook.enabled;
-        }
+        //if(Input.GetKeyDown(KeyCode.Tab))
+        //{
+        //    mouseLook.enabled = !mouseLook.enabled;
+        //}
     }
 
     private void OnLecturePartFinished()

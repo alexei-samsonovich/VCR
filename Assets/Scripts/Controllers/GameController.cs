@@ -87,9 +87,12 @@ public class GameController : MonoBehaviour
         Debug.LogError($"SLIDEScoUNT = {slidesCount}");
         for (int i = 1; i <= slidesCount; i++)
         {
+            Debug.LogError($"i = {i}");
+            var clipLength = AudioController.getClipLength($"Music/Lessons/Lesson_{currentLesson}/Part_{currentPart}/Lecture/Lesson_{currentLesson}_Part_{currentPart}_slide_{i}");
             setMaterial($"Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}/slide_{i}");
             if(i != slidesCount)
-                yield return new WaitForSeconds(lessonsToPartsToSlidesPoints[currentLesson][currentPart][i - 1]);
+                //yield return new WaitForSeconds(lessonsToPartsToSlidesPoints[currentLesson][currentPart][i - 1]);
+                yield return new WaitForSeconds(clipLength + 0.5f);
         }
     }
 

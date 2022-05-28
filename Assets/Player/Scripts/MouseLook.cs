@@ -31,6 +31,7 @@ public class MouseLook : MonoBehaviour
         Rigidbody body = GetComponent<Rigidbody>();
         if (body != null)
             body.freezeRotation = true;
+        Cursor.visible = false;
     }
 
     // Update is called once per frame
