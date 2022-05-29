@@ -54,6 +54,7 @@ public class ScrollViewAdapter : MonoBehaviour
         currentLesson = GameController.getCurrentLesson();
         currentPart = GameController.getCurrentPart();
         currentSlide = GameController.getCurrentSlide();
+
         GetItems(currentLesson, currentPart, currentSlide, results => OnReceivedModels(results));
     }
 

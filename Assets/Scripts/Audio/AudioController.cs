@@ -5,6 +5,7 @@ using UnityEngine;
 public class AudioController : MonoBehaviour
 {
     [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private GameController gameController;
 
     public int samplerate = 44100;
     public float frequency = 440;
@@ -58,10 +59,10 @@ public class AudioController : MonoBehaviour
         _audioSource.Stop();
     }
 
-    public void PlayLecture(int lessonNumber, int partNumber)
-    {
-        StartCoroutine(PlayLectureCoroutine(lessonNumber, partNumber));
-    }
+    //public void PlayLecture(int lessonNumber, int partNumber)
+    //{
+    //    StartCoroutine(PlayLectureCoroutine(lessonNumber, partNumber));
+    //}
 
 
     public void stopCoroutines()
@@ -69,45 +70,66 @@ public class AudioController : MonoBehaviour
         this.StopAllCoroutines();
     }
 
+    //public IEnumerator PlayLectureCoroutine(int lessonNumber, int partNumber)
+    //{
 
-    public IEnumerator PlayLectureCoroutine(int lessonNumber, int partNumber)
-    {
+    //    //Было написано для лекции, которая представлялась одним аудиофайлом.
 
-        //Было написано для лекции, которая представлялась одним аудиофайлом.
+    //    /*Debug.LogError("Coroutine processing");
+    //    //string lesson = lessonNumber.ToString();
+    //    //string part = partNumber.ToString();
+    //    //AudioClip clip = Resources.Load($"Music/Lessons/Lesson_{lesson}/Part_{part}/Lecture/Lesson_{lesson}_Part_{part}_lecture_1") as AudioClip;
+    //    //_audioSource.clip = clip;
+    //    //_audioSource.loop = false;
+    //    //_audioSource.Play();
+    //    //yield return new WaitForSeconds(_audioSource.clip.length);
+    //    //_audioSource.Stop();
+    //    //Messenger.Broadcast(GameEvent.LECTURE_PART_FINISHED);*/
 
-        /*Debug.LogError("Coroutine processing");
-        //string lesson = lessonNumber.ToString();
-        //string part = partNumber.ToString();
-        //AudioClip clip = Resources.Load($"Music/Lessons/Lesson_{lesson}/Part_{part}/Lecture/Lesson_{lesson}_Part_{part}_lecture_1") as AudioClip;
-        //_audioSource.clip = clip;
-        //_audioSource.loop = false;
-        //_audioSource.Play();
-        //yield return new WaitForSeconds(_audioSource.clip.length);
-        //_audioSource.Stop();
-        //Messenger.Broadcast(GameEvent.LECTURE_PART_FINISHED);*/
+    //    string lesson = lessonNumber.ToString();
+    //    string part = partNumber.ToString();
+    //    // Сколько слайдов - столько и аудизаписей в конкретной лекции.
+    //    var slidesCount = DirInfo.getCountOfFilesWithExtension($"/Resources/Materials/Lessons/Lesson_{lesson}/Part_{part}", ".mat");
 
-        string lesson = lessonNumber.ToString();
-        string part = partNumber.ToString();
-        // Сколько слайдов - столько и аудизаписей в конкретной лекции.
-        var slidesCount = DirInfo.getCountOfFilesWithExtension($"/Resources/Materials/Lessons/Lesson_{lesson}/Part_{part}", ".mat");
-
-        for (int i = 1; i <= slidesCount; i++)
-        {
-            AudioClip clip = Resources.Load($"Music/Lessons/Lesson_{lesson}/Part_{part}/Lecture/Lesson_{lesson}_Part_{part}_slide_{i}") as AudioClip;
-            _audioSource.clip = clip;
-            _audioSource.loop = false;
-            _audioSource.Play();
-            yield return new WaitForSeconds(_audioSource.clip.length);
-            _audioSource.Stop();
-            yield return new WaitForSeconds(0.5f);
-        }
-        Messenger.Broadcast(GameEvent.LECTURE_PART_FINISHED);
-    }
+    //    for (int i = 1; i <= slidesCount; i++)
+    //    {
+    //        AudioClip clip = Resources.Load($"Music/Lessons/Lesson_{lesson}/Part_{part}/Lecture/Lesson_{lesson}_Part_{part}_slide_{i}") as AudioClip;
+    //        _audioSource.clip = clip;
+    //        _audioSource.loop = false;
+    //        _audioSource.Play();
+    //        yield return new WaitForSeconds(_audioSource.clip.length);
+    //        _audioSource.Stop();
+    //        yield return new WaitForSeconds(0.5f);
+    //    }
+    //    Messenger.Broadcast(GameEvent.LECTURE_PART_FINISHED);
+    //}
 
     public static float getClipLength(string path)
     {
         AudioClip clip = Resources.Load(path) as AudioClip;
         return clip.length;
+    }
+
+    public void setClip(string pathToClip)
+    {
+        AudioClip clip = Resources.Load(pathToClip) as AudioClip;
+        _audioSource.clip = clip;
+        _audioSource.loop = false;
+    }
+
+    public void PlayCurrentClip()
+    {
+        _audioSource.Play();
+    }
+
+    public float getCurrentClipLength()
+    {
+        return _audioSource.clip.length;
+    }
+
+    public void StopCurrentClip()
+    {
+        _audioSource.Stop();
     }
 
 }

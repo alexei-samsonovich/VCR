@@ -942,6 +942,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _audioSource: {fileID: 1046275558}
+  gameController: {fileID: 884452121}
   samplerate: 44100
   frequency: 440
 --- !u!4 &117648697

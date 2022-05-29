@@ -77,34 +77,62 @@ public class GameController : MonoBehaviour
 
     private void StartGameProcess()
     {
-        audioController.PlayLecture(currentLesson, currentPart);
-        Debug.LogError("hello");
-        StartCoroutine(changingSlides());
+        //audioController.PlayLecture(currentLesson, currentPart);
+        StartCoroutine(PlayLectureCoroutine());
+        //StartCoroutine(changingSlides());
     }
 
 
-
-    private IEnumerator changingSlides()
+    public IEnumerator PlayLectureCoroutine()
     {
-        isLectureInProgress = true;
+
+        string lesson = currentLesson.ToString();
+        string part = currentPart.ToString();
+        // Сколько слайдов - столько и аудизаписей в конкретной лекции.
+        var slidesCount = DirInfo.getCountOfFilesWithExtension($"/Resources/Materials/Lessons/Lesson_{lesson}/Part_{part}", ".mat");
+
         uiController.OnQuestionButton();
-        Debug.LogError($"part 1 - {lessonsToPartsToSlidesPoints[1][1]} /t part 2 - ${lessonsToPartsToSlidesPoints[1][2]}");
-        // Делим на 2, потому что кроме самих материалов, там еще лежат файлы с расширением .mat.meta
-        slidesCount = DirInfo.getCountOfFilesWithExtension($"/Resources/Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}", ".mat");
-        Debug.LogError($"SLIDEScoUNT = {slidesCount}");
+
         for (int i = 1; i <= slidesCount; i++)
         {
             currentSlide = i;
+            setSlideToBoard(currentSlide);
             OnSlideChanged();
-            Debug.LogError($"i = {i} from ChangingSlides");
-            var clipLength = AudioController.getClipLength($"Music/Lessons/Lesson_{currentLesson}/Part_{currentPart}/Lecture/Lesson_{currentLesson}_Part_{currentPart}_slide_{i}");
-            setMaterial($"Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}/slide_{i}");
-            if (i != slidesCount)
-                //yield return new WaitForSeconds(lessonsToPartsToSlidesPoints[currentLesson][currentPart][i - 1]);
-                yield return new WaitForSeconds(clipLength + 0.5f);
+            audioController.setClip($"Music/Lessons/Lesson_{lesson}/Part_{part}/Lecture/Lesson_{lesson}_Part_{part}_slide_{i}");
+            audioController.PlayCurrentClip();
+            yield return new WaitForSeconds(audioController.getCurrentClipLength());
+            audioController.StopCurrentClip();
+            yield return new WaitForSeconds(0.5f);
         }
-        isLectureInProgress = false;
+        Messenger.Broadcast(GameEvent.LECTURE_PART_FINISHED);
     }
+
+    public void setSlideToBoard(int slideNumber)
+    {
+        setMaterial($"Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}/slide_{slideNumber}");
+    }
+
+    //private IEnumerator changingSlides()
+    //{
+    //    isLectureInProgress = true;
+    //    uiController.OnQuestionButton();
+    //    Debug.LogError($"part 1 - {lessonsToPartsToSlidesPoints[1][1]} /t part 2 - ${lessonsToPartsToSlidesPoints[1][2]}");
+    //    // Делим на 2, потому что кроме самих материалов, там еще лежат файлы с расширением .mat.meta
+    //    slidesCount = DirInfo.getCountOfFilesWithExtension($"/Resources/Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}", ".mat");
+    //    Debug.LogError($"SLIDEScoUNT = {slidesCount}");
+    //    for (int i = 1; i <= slidesCount; i++)
+    //    {
+    //        currentSlide = i;
+    //        OnSlideChanged();
+    //        Debug.LogError($"i = {i} from ChangingSlides");
+    //        var clipLength = AudioController.getClipLength($"Music/Lessons/Lesson_{currentLesson}/Part_{currentPart}/Lecture/Lesson_{currentLesson}_Part_{currentPart}_slide_{i}");
+    //        setMaterial($"Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}/slide_{i}");
+    //        if (i != slidesCount)
+    //            //yield return new WaitForSeconds(lessonsToPartsToSlidesPoints[currentLesson][currentPart][i - 1]);
+    //            yield return new WaitForSeconds(clipLength + 0.5f);
+    //    }
+    //    isLectureInProgress = false;
+    //}
 
 
     private void setMaterial(string pathToMaterial)
@@ -148,7 +176,8 @@ public class GameController : MonoBehaviour
         {
             currentPart += 1;
             updateSlidesCount();
-            audioController.PlayLecture(currentLesson, currentPart);
+            StartCoroutine(PlayLectureCoroutine());
+            //audioController.PlayLecture(currentLesson, currentPart);
             //StartCoroutine(changingSlides());
         }
         else
