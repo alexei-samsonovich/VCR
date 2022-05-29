@@ -10,6 +10,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject proyectorScreen;
     [SerializeField] private ScrollViewAdapter scrollViewAdapter;
     [SerializeField] private Animator animator;
+    [SerializeField] private MouseLook mouseLook;
     
 
     private int lessonsCount;
@@ -43,6 +44,11 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            Debug.LogError($"isAsking = {isAsking}");
+            Debug.LogError($"isTalking = {isTalking}");
+        }
         if (Input.GetKeyDown(KeyCode.LeftControl) && isAsking == false && isTalking == true)
         {
             isAsking = true;
@@ -184,6 +190,7 @@ public class GameController : MonoBehaviour
     public IEnumerator PlayLectureFromCurrentSlideCoroutine()
     {
         isLectureInProgress = true;
+        isTalking = true;
         string lesson = currentLesson.ToString();
         string part = currentPart.ToString();
         // Сколько слайдов - столько и аудизаписей в конкретной лекции.
@@ -286,6 +293,7 @@ public class GameController : MonoBehaviour
     }
     private void OnStudentAskQuestion(int questionNumber)
     {
+        mouseLook.enabled = false;
         Debug.LogError($"isLectureInProgress = {isLectureInProgress}");
         if (isLectureInProgress == false)
         {

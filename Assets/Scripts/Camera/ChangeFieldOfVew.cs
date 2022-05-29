@@ -20,15 +20,6 @@ public class ChangeFieldOfVew : MonoBehaviour
 
     void Update()
     {
-        //if (Input.GetMouseButton(2))
-        //{
-        //    cam.fieldOfView = (defaultFov / 3);
-        //}
-        //else
-        //{
-        //    cam.fieldOfView = (defaultFov);
-        //}
-
         float fov = cam.fieldOfView;
         fov -= Input.GetAxis("Mouse ScrollWheel") * sensitivity;
         fov = Mathf.Clamp(fov, minFov, maxFov);

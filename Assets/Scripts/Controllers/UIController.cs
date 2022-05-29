@@ -62,11 +62,11 @@ public class UIController : MonoBehaviour
     public void ShowQuestions()
     {
         QuestionsScrollView.SetActive(true);
-        mouseLook.enabled = false;
+        //mouseLook.enabled = false;
     }
     public void HideQuestions()
     {
         QuestionsScrollView.SetActive(false);
-        mouseLook.enabled = true;
+        //mouseLook.enabled = true;
     }
 }

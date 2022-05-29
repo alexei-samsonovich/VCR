@@ -1447,7 +1447,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 162208785}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ccb6520b3c6d854c96dda14d52e468b, type: 3}
   m_Name: 
@@ -5845,6 +5845,7 @@ MonoBehaviour:
   proyectorScreen: {fileID: 42055075}
   scrollViewAdapter: {fileID: 1337291115}
   animator: {fileID: 1046275553}
+  mouseLook: {fileID: 162208786}
 --- !u!4 &884452122
 Transform:
   m_ObjectHideFlags: 0
