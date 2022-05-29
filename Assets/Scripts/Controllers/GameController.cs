@@ -37,6 +37,35 @@ public class GameController : MonoBehaviour
     }
 
 
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            StartCoroutine("askStudentForQuestionDuringLecture");
+        }
+        //Cursor.lockState = CursorLockMode.None;
+        //Cursor.visible = true;
+    }
+
+    private IEnumerator askStudentForQuestionDuringLecture()
+    {
+        StopCoroutine(playLectureCoroutine);
+        audioController.StopCurrentClip();
+        audioController.setClip($"Music/GeneralSounds/AskQuestion/ask_question");
+        audioController.PlayCurrentClip();
+        yield return new WaitForSeconds(audioController.getCurrentClipLength());
+        uiController.OnQuestionButton();
+        yield return new WaitForSeconds(15f);
+        uiController.OffQuestionButton();
+        audioController.StopCurrentClip();
+        audioController.setClip($"Music/GeneralSounds/LetsContinue/lets_continue");
+        audioController.PlayCurrentClip();
+        yield return new WaitForSeconds(audioController.getCurrentClipLength());
+        yield return new WaitForSeconds(0.5f);
+        playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
+    }
+
     void Start()
     {
         lessonsCount = DirInfo.getCountOfFolders("/Resources/Music/Lessons");
@@ -126,8 +155,6 @@ public class GameController : MonoBehaviour
         string part = currentPart.ToString();
         // Сколько слайдов - столько и аудизаписей в конкретной лекции.
         var slidesCount = DirInfo.getCountOfFilesWithExtension($"/Resources/Materials/Lessons/Lesson_{lesson}/Part_{part}", ".mat");
-
-        uiController.OnQuestionButton();
 
         for (int i = currentSlide; i <= slidesCount; i++)
         {
@@ -233,23 +260,31 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            StopCoroutine(playLectureCoroutine);
+            StopCoroutine("askStudentForQuestionDuringLecture");
             StartCoroutine(OnStudentAskQuestionDuringLectureCoroutine(questionNumber));
         }
     }
 
     private IEnumerator OnStudentAskQuestionDuringLectureCoroutine(int questionNumber)
     {
+        //uiController.OffQuestionButton();
         yield return new WaitForSeconds(0.5f);
         string pathToAnswer = $"Music/Lessons/Lesson_{currentLesson}/Part_{currentPart}/Answers/answer_{questionNumber}";
-        audioController.StopCurrentClip();
-        audioController.setClip(pathToAnswer);
-        audioController.PlayCurrentClip();
+        setClipToAudioControllerAndPlay(pathToAnswer);
         //audioController.playShortSound(pathToAnswer);
         uiController.OffQuestionButton();
         yield return new WaitForSeconds(AudioController.getClipLength(pathToAnswer) + 0.5f);
+        setClipToAudioControllerAndPlay($"Music/GeneralSounds/LetsContinue/lets_continue");
+        yield return new WaitForSeconds(audioController.getCurrentClipLength() + 1.5f);
         playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
-        uiController.OnQuestionButton();
+        //uiController.OnQuestionButton();
+    }
+
+    private void setClipToAudioControllerAndPlay(string pathToClip)
+    {
+        audioController.StopCurrentClip();
+        audioController.setClip(pathToClip);
+        audioController.PlayCurrentClip();
     }
 
     private IEnumerator OnStudentAskQuestionCoroutine(int questionNumber)
@@ -267,11 +302,7 @@ public class GameController : MonoBehaviour
     {
         slidesCount = DirInfo.getCountOfFiles($"/Resources/Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}");
     }
-    private void Update()
-    {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-    }
+
 
     public static int getCurrentLesson()
     {

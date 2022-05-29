@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +21,7 @@ public class ScrollViewAdapter : MonoBehaviour
         {
             UpdateQuestions();
         }
+
     }
 
     private void Start()
@@ -83,9 +86,22 @@ public class ScrollViewAdapter : MonoBehaviour
         List<string> points = new List<string>();
         for (int i = 1; i <= currentSlide; i++)
         {
-            List<string> tmp = new List<string>(System.IO.File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
-                                    $"Lesson_{currentLesson}/Part_{currentPart}/" +
-                                    $"questions_slide{i}.csv").Split(','));
+            List<string> tmp = new List<string>();
+            try
+            {
+                tmp = new List<string>(System.IO.File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
+                        $"Lesson_{currentLesson}/Part_{currentPart}/" +
+                        $"questions_slide{i}.csv").Split(','));
+            }
+            catch(FileNotFoundException ex)
+            {
+                Debug.Log("GetItems :" + ex.Message);
+            }
+            catch(Exception ex)
+            {
+                Debug.Log("GetItems :" + ex.Message);
+            }
+
             points.AddRange(tmp);
         }
 
