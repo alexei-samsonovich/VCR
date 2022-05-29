@@ -53,7 +53,7 @@ public class AudioController : MonoBehaviour
     //    _audioSource.Play();
     //}
 
-    private void stopSound()
+    public void stopSound()
     {
         _audioSource.Stop();
     }
@@ -64,10 +64,17 @@ public class AudioController : MonoBehaviour
     }
 
 
-    private IEnumerator PlayLectureCoroutine(int lessonNumber, int partNumber)
+    public void stopCoroutines()
+    {
+        this.StopAllCoroutines();
+    }
+
+
+    public IEnumerator PlayLectureCoroutine(int lessonNumber, int partNumber)
     {
 
         //Было написано для лекции, которая представлялась одним аудиофайлом.
+
         /*Debug.LogError("Coroutine processing");
         //string lesson = lessonNumber.ToString();
         //string part = partNumber.ToString();
@@ -83,7 +90,7 @@ public class AudioController : MonoBehaviour
         string part = partNumber.ToString();
         // Сколько слайдов - столько и аудизаписей в конкретной лекции.
         var slidesCount = DirInfo.getCountOfFilesWithExtension($"/Resources/Materials/Lessons/Lesson_{lesson}/Part_{part}", ".mat");
-        Debug.LogError($"SLIDEScoUNT = {slidesCount}");
+
         for (int i = 1; i <= slidesCount; i++)
         {
             AudioClip clip = Resources.Load($"Music/Lessons/Lesson_{lesson}/Part_{part}/Lecture/Lesson_{lesson}_Part_{part}_slide_{i}") as AudioClip;

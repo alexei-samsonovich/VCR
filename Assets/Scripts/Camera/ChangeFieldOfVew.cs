@@ -30,7 +30,7 @@ public class ChangeFieldOfVew : MonoBehaviour
         //}
 
         float fov = cam.fieldOfView;
-        fov += Input.GetAxis("Mouse ScrollWheel") * sensitivity;
+        fov -= Input.GetAxis("Mouse ScrollWheel") * sensitivity;
         fov = Mathf.Clamp(fov, minFov, maxFov);
         cam.fieldOfView = fov;
     }

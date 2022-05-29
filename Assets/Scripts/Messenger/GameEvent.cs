@@ -5,4 +5,5 @@ public static class GameEvent
     public const string LECTION_IS_FINISHED = "LECTION_IS_FINISHED";
     public const string NEED_TO_CHANGE_SLIDE = "NEED_TO_CHANGE_SLIDE";
     public const string ASKS_FINISHED = "ASKS_FINISHED";
+    public const string SLIDE_CHANGED = "SLIDE_CHANGED";
 }

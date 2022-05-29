@@ -11,6 +11,7 @@ public class ScrollViewAdapter : MonoBehaviour
 
     private int currentLesson;
     private int currentPart;
+    private int currentSlide;
 
     private void Update()
     {
@@ -52,20 +53,47 @@ public class ScrollViewAdapter : MonoBehaviour
     {
         currentLesson = GameController.getCurrentLesson();
         currentPart = GameController.getCurrentPart();
-        GetItems(currentLesson, currentPart, results => OnReceivedModels(results));
+        currentSlide = GameController.getCurrentSlide();
+        GetItems(currentLesson, currentPart, currentSlide, results => OnReceivedModels(results));
     }
 
-    private void GetItems(int curentLesson, int currentPart, System.Action<ButtonModel[]> callback)
+    //private void GetItems(int curentLesson, int currentPart, System.Action<ButtonModel[]> callback)
+    //{
+    //    List<string> points = new List<string>(System.IO.File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
+    //        $"Lesson_{currentLesson}/Part_{currentPart}/" +
+    //        $"questions.csv").Split(','));
+    //    var results = new ButtonModel[points.Count];
+    //    for (int i = 0; i < points.Count; i++)
+    //    {
+    //        results[i] = new ButtonModel();
+    //        int id;
+    //        if(int.TryParse(points[i].Split(';')[0], out id))
+    //        {
+    //            results[i].ButtonId = id;
+    //            results[i].ButtonText = points[i].Split(';')[1];
+    //        }
+    //    }
+
+    //    callback(results);
+    //}
+
+    private void GetItems(int curentLesson, int currentPart, int currentSlide, System.Action<ButtonModel[]> callback)
     {
-        List<string> points = new List<string>(System.IO.File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
-            $"Lesson_{currentLesson}/Part_{currentPart}/" +
-            $"questions.csv").Split(','));
+        List<string> points = new List<string>();
+        for (int i = 1; i <= currentSlide; i++)
+        {
+            List<string> tmp = new List<string>(System.IO.File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
+                                    $"Lesson_{currentLesson}/Part_{currentPart}/" +
+                                    $"questions_slide{i}.csv").Split(','));
+            points.AddRange(tmp);
+        }
+
         var results = new ButtonModel[points.Count];
         for (int i = 0; i < points.Count; i++)
         {
             results[i] = new ButtonModel();
             int id;
-            if(int.TryParse(points[i].Split(';')[0], out id))
+            if (int.TryParse(points[i].Split(';')[0], out id))
             {
                 results[i].ButtonId = id;
                 results[i].ButtonText = points[i].Split(';')[1];
@@ -75,15 +103,14 @@ public class ScrollViewAdapter : MonoBehaviour
         callback(results);
     }
 
-
     void OnReceivedModels(ButtonModel[] models)
     {
-        foreach(Transform child in content)
+        foreach (Transform child in content)
         {
             Destroy(child.gameObject);
         }
 
-        foreach(var model in models)
+        foreach (var model in models)
         {
             var instance = GameObject.Instantiate(buttonPrefab.gameObject) as GameObject;
             instance.transform.SetParent(content, false);

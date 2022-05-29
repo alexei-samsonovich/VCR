@@ -19,7 +19,10 @@ public class GameController : MonoBehaviour
 
     private static int currentLesson = 1;
     private static int currentPart = 1;
+    private static int currentSlide = 1;
     private int slidesCount;
+
+    bool isLectureInProgress = false;
 
     Dictionary<int, int> lessonsToParts;
     Dictionary<int, Dictionary<int, List<int>>> lessonsToPartsToSlidesPoints;
@@ -30,11 +33,10 @@ public class GameController : MonoBehaviour
         Messenger.AddListener(GameEvent.LECTURE_PART_FINISHED, OnLecturePartFinished);
         Messenger<int>.AddListener(GameEvent.STUDENT_ASK_QUESTION, OnStudentAskQuestion);
     }
-    // Start is called before the first frame update
+
+
     void Start()
     {
-
-
         lessonsCount = DirInfo.getCountOfFolders("/Resources/Music/Lessons");
         askingForQuestionCount = DirInfo.getCountOfFilesWithExtension(pathToAsksForQuestions);
 
@@ -60,7 +62,7 @@ public class GameController : MonoBehaviour
                     }
                     partsToSlidesPoints.Add(j, intPoints);
                 }
-                catch (Exception ex) { Debug.LogError($"Error in GameController 64, j = {j}"); }
+                catch (Exception ex) { Debug.LogError($"Error in GameController, j = {j}"); }
             }
             lessonsToPartsToSlidesPoints.Add(i, partsToSlidesPoints);
         }
@@ -76,25 +78,34 @@ public class GameController : MonoBehaviour
     private void StartGameProcess()
     {
         audioController.PlayLecture(currentLesson, currentPart);
+        Debug.LogError("hello");
         StartCoroutine(changingSlides());
     }
 
+
+
     private IEnumerator changingSlides()
     {
+        isLectureInProgress = true;
+        uiController.OnQuestionButton();
         Debug.LogError($"part 1 - {lessonsToPartsToSlidesPoints[1][1]} /t part 2 - ${lessonsToPartsToSlidesPoints[1][2]}");
         // Делим на 2, потому что кроме самих материалов, там еще лежат файлы с расширением .mat.meta
         slidesCount = DirInfo.getCountOfFilesWithExtension($"/Resources/Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}", ".mat");
         Debug.LogError($"SLIDEScoUNT = {slidesCount}");
         for (int i = 1; i <= slidesCount; i++)
         {
-            Debug.LogError($"i = {i}");
+            currentSlide = i;
+            OnSlideChanged();
+            Debug.LogError($"i = {i} from ChangingSlides");
             var clipLength = AudioController.getClipLength($"Music/Lessons/Lesson_{currentLesson}/Part_{currentPart}/Lecture/Lesson_{currentLesson}_Part_{currentPart}_slide_{i}");
             setMaterial($"Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}/slide_{i}");
-            if(i != slidesCount)
+            if (i != slidesCount)
                 //yield return new WaitForSeconds(lessonsToPartsToSlidesPoints[currentLesson][currentPart][i - 1]);
                 yield return new WaitForSeconds(clipLength + 0.5f);
         }
+        isLectureInProgress = false;
     }
+
 
     private void setMaterial(string pathToMaterial)
     {
@@ -118,6 +129,11 @@ public class GameController : MonoBehaviour
         StartCoroutine("WaitingForQuestionsCoroutine");
     }
 
+    private void OnSlideChanged()
+    {
+        scrollViewAdapter.UpdateQuestions();
+    }
+
     private IEnumerator WaitingForQuestionsCoroutine()
     {
         yield return new WaitForSeconds(20.0f);
@@ -133,7 +149,7 @@ public class GameController : MonoBehaviour
             currentPart += 1;
             updateSlidesCount();
             audioController.PlayLecture(currentLesson, currentPart);
-            StartCoroutine(changingSlides());
+            //StartCoroutine(changingSlides());
         }
         else
         {
@@ -145,6 +161,7 @@ public class GameController : MonoBehaviour
         StopCoroutine("WaitingForQuestionsCoroutine");
         StartCoroutine(OnStudentAskQuestionCoroutine(questionNumber));
     }
+
 
     private IEnumerator OnStudentAskQuestionCoroutine(int questionNumber)
     {
@@ -175,5 +192,10 @@ public class GameController : MonoBehaviour
     public static int getCurrentPart()
     {
         return currentPart;
+    }
+
+    public static int getCurrentSlide()
+    {
+        return currentSlide;
     }
 }
