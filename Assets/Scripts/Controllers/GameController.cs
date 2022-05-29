@@ -25,6 +25,7 @@ public class GameController : MonoBehaviour
     private Coroutine playLectureCoroutine;
 
     bool isLectureInProgress = false;
+    bool isAsking = false;
 
     Dictionary<int, int> lessonsToParts;
     Dictionary<int, Dictionary<int, List<int>>> lessonsToPartsToSlidesPoints;
@@ -40,8 +41,9 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftControl))
+        if (Input.GetKeyDown(KeyCode.LeftControl) && isAsking == false)
         {
+            isAsking = true;
             StartCoroutine("askStudentForQuestionDuringLecture");
         }
         //Cursor.lockState = CursorLockMode.None;
@@ -64,6 +66,7 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(audioController.getCurrentClipLength());
         yield return new WaitForSeconds(0.5f);
         playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
+        isAsking = false;
     }
 
     void Start()
@@ -277,6 +280,7 @@ public class GameController : MonoBehaviour
         setClipToAudioControllerAndPlay($"Music/GeneralSounds/LetsContinue/lets_continue");
         yield return new WaitForSeconds(audioController.getCurrentClipLength() + 1.5f);
         playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
+        isAsking = false;
         //uiController.OnQuestionButton();
     }
 
