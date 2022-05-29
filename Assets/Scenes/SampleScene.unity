@@ -5844,6 +5844,7 @@ MonoBehaviour:
   audioController: {fileID: 117648696}
   proyectorScreen: {fileID: 42055075}
   scrollViewAdapter: {fileID: 1337291115}
+  animator: {fileID: 1046275553}
 --- !u!4 &884452122
 Transform:
   m_ObjectHideFlags: 0
@@ -7057,6 +7058,11 @@ Transform:
 --- !u!1 &1046275552 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 469c80739507b6e4992be803153c8ded, type: 3}
+  m_PrefabInstance: {fileID: 1499030244}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1046275553 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 469c80739507b6e4992be803153c8ded, type: 3}
   m_PrefabInstance: {fileID: 1499030244}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1046275555
@@ -9591,7 +9597,7 @@ PrefabInstance:
     - target: {fileID: 5866666021909216657, guid: 469c80739507b6e4992be803153c8ded, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 497c7fe1390184748b8532947d7542e6, type: 2}
+      objectReference: {fileID: 9100000, guid: 94c5307ec89d0514795365a5aed4b256, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 469c80739507b6e4992be803153c8ded, type: 3}
 --- !u!1001 &1561131183

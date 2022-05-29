@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private AudioController audioController;
     [SerializeField] private GameObject proyectorScreen;
     [SerializeField] private ScrollViewAdapter scrollViewAdapter;
+    [SerializeField] private Animator animator;
     
 
     private int lessonsCount;
@@ -26,6 +27,9 @@ public class GameController : MonoBehaviour
 
     bool isLectureInProgress = false;
     bool isAsking = false;
+    bool isTalking = false;
+
+    float timeWhileTalking = 0.0f;
 
     Dictionary<int, int> lessonsToParts;
     Dictionary<int, Dictionary<int, List<int>>> lessonsToPartsToSlidesPoints;
@@ -37,22 +41,45 @@ public class GameController : MonoBehaviour
         Messenger<int>.AddListener(GameEvent.STUDENT_ASK_QUESTION, OnStudentAskQuestion);
     }
 
-
-
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftControl) && isAsking == false)
+        if (Input.GetKeyDown(KeyCode.LeftControl) && isAsking == false && isTalking == true)
         {
             isAsking = true;
             StartCoroutine("askStudentForQuestionDuringLecture");
+        }
+        
+        if(isTalking == true)
+        {
+            timeWhileTalking += Time.deltaTime;
+            if (timeWhileTalking > 5.0f)
+            {
+                if (UnityEngine.Random.Range(0, 10) > 7)
+                {
+                    var randInt = UnityEngine.Random.Range(0, 2);
+                    Debug.LogError($"randint = {randInt}");
+                    animator.SetInteger("TalkIndex", randInt);
+                    animator.SetTrigger("Talk");
+                }
+            }
         }
         //Cursor.lockState = CursorLockMode.None;
         //Cursor.visible = true;
     }
 
+
     private IEnumerator askStudentForQuestionDuringLecture()
     {
-        StopCoroutine(playLectureCoroutine);
+        isTalking = false;
+        try
+        {
+            StopCoroutine(playLectureCoroutine);
+
+        }
+        catch(Exception ex)
+        {
+            Debug.LogError(ex.Message);
+        }
         audioController.StopCurrentClip();
         audioController.setClip($"Music/GeneralSounds/AskQuestion/ask_question");
         audioController.PlayCurrentClip();
@@ -66,11 +93,13 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(audioController.getCurrentClipLength());
         yield return new WaitForSeconds(0.5f);
         playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
+        isTalking = true;
         isAsking = false;
     }
 
     void Start()
     {
+        //StartCoroutine(animTest());
         lessonsCount = DirInfo.getCountOfFolders("/Resources/Music/Lessons");
         askingForQuestionCount = DirInfo.getCountOfFilesWithExtension(pathToAsksForQuestions);
 
@@ -121,6 +150,7 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(audioController.getCurrentClipLength());
         //audioController.PlayLecture(currentLesson, currentPart);
         yield return new WaitForSeconds(0.5f);
+        isTalking = true;
         playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
         //StartCoroutine(changingSlides());
     }
@@ -172,6 +202,7 @@ public class GameController : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
         }
         isLectureInProgress = false;
+        isTalking = false;
         Messenger.Broadcast(GameEvent.LECTURE_PART_FINISHED);
     }
 
