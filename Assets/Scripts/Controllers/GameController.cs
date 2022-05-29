@@ -22,6 +22,8 @@ public class GameController : MonoBehaviour
     private static int currentSlide = 1;
     private int slidesCount;
 
+    private Coroutine playLectureCoroutine;
+
     bool isLectureInProgress = false;
 
     Dictionary<int, int> lessonsToParts;
@@ -77,15 +79,49 @@ public class GameController : MonoBehaviour
 
     private void StartGameProcess()
     {
+        StartCoroutine("startLecture");
+    }
+
+    private IEnumerator startLecture()
+    {
+        audioController.setClip($"Music/Lessons/Lesson_{currentLesson}/Part_{currentPart}/Lecture/Lesson_{currentLesson}_Part_{currentPart}_introtolecture");
+        audioController.PlayCurrentClip();
+        yield return new WaitForSeconds(audioController.getCurrentClipLength());
         //audioController.PlayLecture(currentLesson, currentPart);
-        StartCoroutine(PlayLectureCoroutine());
+        yield return new WaitForSeconds(0.5f);
+        playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
         //StartCoroutine(changingSlides());
     }
 
 
-    public IEnumerator PlayLectureCoroutine()
-    {
+    //public IEnumerator PlayLectureCoroutine()
+    //{
+    //    isLectureInProgress = true;
+    //    string lesson = currentLesson.ToString();
+    //    string part = currentPart.ToString();
+    //    // Сколько слайдов - столько и аудизаписей в конкретной лекции.
+    //    var slidesCount = DirInfo.getCountOfFilesWithExtension($"/Resources/Materials/Lessons/Lesson_{lesson}/Part_{part}", ".mat");
 
+    //    uiController.OnQuestionButton();
+
+    //    for (int i = 1; i <= slidesCount; i++)
+    //    {
+    //        currentSlide = i;
+    //        setSlideToBoard(currentSlide);
+    //        OnSlideChanged();
+    //        audioController.setClip($"Music/Lessons/Lesson_{lesson}/Part_{part}/Lecture/Lesson_{lesson}_Part_{part}_slide_{i}");
+    //        audioController.PlayCurrentClip();
+    //        yield return new WaitForSeconds(audioController.getCurrentClipLength());
+    //        audioController.StopCurrentClip();
+    //        yield return new WaitForSeconds(0.5f);
+    //    }
+    //    isLectureInProgress = false;
+    //    Messenger.Broadcast(GameEvent.LECTURE_PART_FINISHED);
+    //}
+
+    public IEnumerator PlayLectureFromCurrentSlideCoroutine()
+    {
+        isLectureInProgress = true;
         string lesson = currentLesson.ToString();
         string part = currentPart.ToString();
         // Сколько слайдов - столько и аудизаписей в конкретной лекции.
@@ -93,9 +129,10 @@ public class GameController : MonoBehaviour
 
         uiController.OnQuestionButton();
 
-        for (int i = 1; i <= slidesCount; i++)
+        for (int i = currentSlide; i <= slidesCount; i++)
         {
             currentSlide = i;
+            Debug.LogError($"currentSlide = {currentSlide}");
             setSlideToBoard(currentSlide);
             OnSlideChanged();
             audioController.setClip($"Music/Lessons/Lesson_{lesson}/Part_{part}/Lecture/Lesson_{lesson}_Part_{part}_slide_{i}");
@@ -104,6 +141,7 @@ public class GameController : MonoBehaviour
             audioController.StopCurrentClip();
             yield return new WaitForSeconds(0.5f);
         }
+        isLectureInProgress = false;
         Messenger.Broadcast(GameEvent.LECTURE_PART_FINISHED);
     }
 
@@ -176,7 +214,7 @@ public class GameController : MonoBehaviour
         {
             currentPart += 1;
             updateSlidesCount();
-            StartCoroutine(PlayLectureCoroutine());
+            //playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
             //audioController.PlayLecture(currentLesson, currentPart);
             //StartCoroutine(changingSlides());
         }
@@ -187,10 +225,32 @@ public class GameController : MonoBehaviour
     }
     private void OnStudentAskQuestion(int questionNumber)
     {
-        StopCoroutine("WaitingForQuestionsCoroutine");
-        StartCoroutine(OnStudentAskQuestionCoroutine(questionNumber));
+        Debug.LogError($"isLectureInProgress = {isLectureInProgress}");
+        if (isLectureInProgress == false)
+        {
+            StopCoroutine("WaitingForQuestionsCoroutine");
+            StartCoroutine(OnStudentAskQuestionCoroutine(questionNumber));
+        }
+        else
+        {
+            StopCoroutine(playLectureCoroutine);
+            StartCoroutine(OnStudentAskQuestionDuringLectureCoroutine(questionNumber));
+        }
     }
 
+    private IEnumerator OnStudentAskQuestionDuringLectureCoroutine(int questionNumber)
+    {
+        yield return new WaitForSeconds(0.5f);
+        string pathToAnswer = $"Music/Lessons/Lesson_{currentLesson}/Part_{currentPart}/Answers/answer_{questionNumber}";
+        audioController.StopCurrentClip();
+        audioController.setClip(pathToAnswer);
+        audioController.PlayCurrentClip();
+        //audioController.playShortSound(pathToAnswer);
+        uiController.OffQuestionButton();
+        yield return new WaitForSeconds(AudioController.getClipLength(pathToAnswer) + 0.5f);
+        playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
+        uiController.OnQuestionButton();
+    }
 
     private IEnumerator OnStudentAskQuestionCoroutine(int questionNumber)
     {
