@@ -6345,6 +6345,7 @@ GameObject:
   - component: {fileID: 963194231}
   - component: {fileID: 963194232}
   - component: {fileID: 963194233}
+  - component: {fileID: 963194234}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -6457,7 +6458,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c7637c62f4e736244a25c1b9c8da8d16, type: 3}
   m_Name: 
@@ -6595,10 +6596,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0af71f1b70e797a42b2f790e9058c254, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
-  minFov: 50
-  maxFov: 90
+  cam: {fileID: 963194227}
+  minFov: 15
+  maxFov: 70
   sensitivity: 20
+--- !u!114 &963194234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc14fdfbad808f84c82bd78d5c77a790, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mouseLook: {fileID: 963194231}
 --- !u!1001 &970174873
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9323,6 +9337,7 @@ GameObject:
   - component: {fileID: 1495685609}
   - component: {fileID: 1495685616}
   - component: {fileID: 1495685617}
+  - component: {fileID: 1495685618}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -9337,7 +9352,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1495685608}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c7637c62f4e736244a25c1b9c8da8d16, type: 3}
   m_Name: 
@@ -9488,6 +9503,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4a3f30447e6af54bac837d18c931044, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1495685618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495685608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc14fdfbad808f84c82bd78d5c77a790, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mouseLook: {fileID: 1495685609}
 --- !u!1001 &1499030244
 PrefabInstance:
   m_ObjectHideFlags: 0
