@@ -8,11 +8,12 @@ public class RayCastInfo : MonoBehaviour
 
     private bool isSitting = false;
     private float timer = 0.0f;
-    private float timerBound = 0.2f;
+    private float timerBound = 0.3f;
 
     [SerializeField] Camera mainCamera;
     [SerializeField] Camera sittingCamera;
     [SerializeField] UnityEngine.UI.Text textLabel;
+    [SerializeField] MoralSchema moralSchema;
 
     private Camera currentCamera;
 
@@ -54,10 +55,12 @@ public class RayCastInfo : MonoBehaviour
                     if (hit.transform.tag == "Teacher" || hit.transform.tag == "Board")
                     {
                         textLabel.text = $"Учащийся смотрит на {hit.transform.tag}";
+                        moralSchema.makeIndependentAction("lookAtTeacher");
                     }
                     else
                     {
                         textLabel.text = $"Учащийся не смотрит на учителя или доску";
+                        moralSchema.makeIndependentAction("doesntLookAtTeacher");
                     }
                 }
                 else
@@ -75,10 +78,12 @@ public class RayCastInfo : MonoBehaviour
                     if(hit.transform.tag == "Teacher" || hit.transform.tag == "Board")
                     {
                         textLabel.text = $"Учащийся смотрит на {hit.transform.tag}";
+                        moralSchema.makeIndependentAction("lookAtTeacher");
                     }
                     else
                     {
                         textLabel.text = $"Учащийся не смотрит на учителя или доску";
+                        moralSchema.makeIndependentAction("doesntLookAtTeacher");
                     }
                 }
                 else
@@ -90,74 +95,3 @@ public class RayCastInfo : MonoBehaviour
         }
     }
 }
-
-//    void Update()
-//    {
-//        timer += Time.deltaTime;
-//        if (timer > timerBound)
-//        {
-//            timer = 0.0f;
-//            if(isSitting == false)
-//            {
-//                if (Input.GetMouseButtonDown(1))
-//                {
-//                    RaycastHit hit;
-//                    if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out hit))
-//                    {
-//                        Debug.Log(hit.transform.name);
-//                    }
-//                    else
-//                    {
-//                        Debug.Log("not hitting from mouseButtonDown");
-//                    }
-//                    Debug.DrawRay(mainCamera.transform.position, mainCamera.transform.forward * 100f, Color.red, duration: 2f, depthTest: false);
-//                }
-//                else
-//                {
-//                    RaycastHit hit;
-//                    Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-//                    if (Physics.Raycast(ray, out hit))
-//                    {
-//                        Debug.Log(hit.transform.name);
-//                    }
-//                    else
-//                    {
-//                        Debug.Log("not hitting");
-//                    }
-//                    Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red, duration: 2f, depthTest: false);
-//                }
-//            }
-//            else
-//            {
-//                if (Input.GetMouseButtonDown(1))
-//                {
-//                    RaycastHit hit;
-//                    if (Physics.Raycast(sittingCamera.transform.position, sittingCamera.transform.forward, out hit))
-//                    {
-//                        Debug.Log(hit.transform.name);
-//                    }
-//                    else
-//                    {
-//                        Debug.Log("not hitting from mouseButtonDown");
-//                    }
-//                    Debug.DrawRay(sittingCamera.transform.position, sittingCamera.transform.forward * 100f, Color.red, duration: 2f, depthTest: false);
-//                }
-//                else
-//                {
-//                    RaycastHit hit;
-//                    Ray ray = sittingCamera.ScreenPointToRay(Input.mousePosition);
-//                    if (Physics.Raycast(ray, out hit))
-//                    {
-//                        Debug.Log(hit.transform.name);
-//                    }
-//                    else
-//                    {
-//                        Debug.Log("not hitting");
-//                    }
-//                    Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red, duration: 2f, depthTest: false);
-//                }
-//            }
-
-//        }
-//    }
-//}

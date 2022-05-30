@@ -1,0 +1,19 @@
+{
+  "Teacher answer students question": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "0.05", "0", "0" ],
+    "moralFactorForAuthor": [ "0.05", "0", "0" ],
+    "name": "Teacher answer students question",
+    "responseActionOn": "Student Ask Question During Lecture",
+    "actionAuthor": "Teacher"
+  },
+
+  "Teacher ignore students question": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "0.05", "0", "0" ],
+    "moralFactorForAuthor": [ "-0.05", "0", "0" ],
+    "name": "Teacher ignore students question",
+    "responseActionOn": "Student Ask Question During Lecture",
+    "actionAuthor": "Teacher"
+  }
+}

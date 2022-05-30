@@ -2467,6 +2467,51 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &317506478
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 317506480}
+  - component: {fileID: 317506479}
+  m_Layer: 0
+  m_Name: EmotionsController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &317506479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317506478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed42d8a4a8e0c9f42abce2aeb08092df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  emotionsManager: {fileID: 1046275560}
+  moralSchema: {fileID: 2097138464}
+--- !u!4 &317506480
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317506478}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 15.132309, y: 0.9018767, z: 14.158879}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 16
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &326978237
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5696,6 +5741,7 @@ MonoBehaviour:
   mainCamera: {fileID: 963194227}
   sittingCamera: {fileID: 162208788}
   textLabel: {fileID: 1402005429}
+  moralSchema: {fileID: 2097138464}
 --- !u!4 &793068691
 Transform:
   m_ObjectHideFlags: 0
@@ -5892,6 +5938,8 @@ MonoBehaviour:
   scrollViewAdapter: {fileID: 1337291115}
   animator: {fileID: 1046275553}
   mouseLook: {fileID: 162208786}
+  moralSchema: {fileID: 2097138464}
+  emotionsController: {fileID: 317506479}
 --- !u!4 &884452122
 Transform:
   m_ObjectHideFlags: 0
@@ -13425,6 +13473,49 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &2097138463
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2097138465}
+  - component: {fileID: 2097138464}
+  m_Layer: 0
+  m_Name: MoralSchema
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2097138464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2097138463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 721ff2df2c15d1c4a869329c8a8e7524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &2097138465
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2097138463}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 15.097077, y: 1.029014, z: 14.158937}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 15
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2144993355
 GameObject:
   m_ObjectHideFlags: 0

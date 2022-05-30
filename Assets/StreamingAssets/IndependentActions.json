@@ -1,0 +1,18 @@
+{
+  "lookAtTeacher": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "0.0", "0.001", "0.0" ],
+    "moralFactorForAuthor": [ "0.001", "0.0001", "0.00001" ],
+    "name": "lookAtTeacher",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
+  "doesntLookAtTeacher": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "0.0", "0.001", "-0.0001" ],
+    "moralFactorForAuthor": [ "-0.001", "0.0005", "0.0001" ],
+    "name": "DoesntLookAtTeacher",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  }
+}

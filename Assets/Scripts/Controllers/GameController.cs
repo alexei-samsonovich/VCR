@@ -11,7 +11,8 @@ public class GameController : MonoBehaviour
     [SerializeField] private ScrollViewAdapter scrollViewAdapter;
     [SerializeField] private Animator animator;
     [SerializeField] private MouseLook mouseLook;
-    
+    [SerializeField] private MoralSchema moralSchema;
+    [SerializeField] private EmotionsController emotionsController;
 
     private int lessonsCount;
 
@@ -46,9 +47,19 @@ public class GameController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.LeftControl) && isAsking == false && isTalking == true)
         {
-            isAsking = true;
-            StartCoroutine("askStudentForQuestionDuringLecture");
+            string responseAction = moralSchema.getResponseActionNew("Student Ask Question During Lecture");
+            emotionsController.setEmotion(emotionsController.getEmotion());
+            if (responseAction == "Teacher answer students question")
+            {
+                isAsking = true;
+                StartCoroutine("askStudentForQuestionDuringLecture");
+            }
+            else if (responseAction == "Teacher ignore students question")
+            {
+                StartCoroutine("resetEmotionsCoroutine");
+            }
         }
+
         
         if(isTalking == true)
         {
@@ -65,6 +76,12 @@ public class GameController : MonoBehaviour
         }
         //Cursor.lockState = CursorLockMode.None;
         //Cursor.visible = true;
+    }
+
+    private IEnumerator resetEmotionsCoroutine()
+    {
+        yield return new WaitForSeconds(2.0f);
+        emotionsController.resetEmotions();
     }
 
 
@@ -93,6 +110,7 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(audioController.getCurrentClipLength());
         yield return new WaitForSeconds(0.5f);
         playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
+        emotionsController.resetEmotions();
         isTalking = true;
         isAsking = false;
     }
