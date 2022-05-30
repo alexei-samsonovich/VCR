@@ -457,8 +457,8 @@ public class MoralSchema : MonoBehaviour
     {
         biasLikelihood = new List<Tuple<string, double>>();
         biasCriterion(studentAppraisals, studentFeelings, studentAction);
-        //string answer = getResponseAction();
-        string answer = getResponseActionByLikelihood();
+        string answer = getResponseAction();
+        //string answer = getResponseActionByLikelihood();
         rebuildAppraisalsAndFeelingsAfterTeacherAction(answer);
         return answer;
     }
