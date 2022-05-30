@@ -45,6 +45,11 @@ public class MoralSchema : MonoBehaviour
             Debug.Log($"Student Appraisals = [{studentAppraisals[0]}     {studentAppraisals[1]}        {studentAppraisals[2]}]");
             Debug.Log($"Student Feelings = [{studentFeelings[0]}       {studentFeelings[1]}          {studentFeelings[2]}]");
         }
+
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            test();
+        }
     }
 
     public class FeelingState
@@ -283,6 +288,7 @@ public class MoralSchema : MonoBehaviour
 
     public void biasCriterion(double[] appraisalsFactor, double[] feelingsFactor, string action)
     {
+
         double maxValue = 0;
         double mainNorm = 0;
         double recNorm = 0;
@@ -290,13 +296,16 @@ public class MoralSchema : MonoBehaviour
         {
             double difference = 0;
             var responseAction = el.Value;
+            Debug.Log($"appraisalsFactor = {appraisalsFactor}");
             if (responseAction.getResponseActionOn() == action)
             {
                 var appraisalsAfterAction = recalculateAppraisals(appraisalsFactor, responseAction.getMoralFactorForTarget());
+                Debug.Log($"{responseAction.getName()} - {appraisalsAfterAction}");
                 for (int i = 0; i < feelingsFactor.Length; ++i)
                 {
                     difference += Math.Pow(feelingsFactor[i] - appraisalsAfterAction[i], 2);
                 }
+                Debug.Log($"{responseAction.getName()} - {difference}");
                 biasLikelihood.Add(new Tuple<string, double>(responseAction.getName(), difference));
                 mainNorm += difference;
                 maxValue = Math.Max(maxValue, difference);
@@ -452,6 +461,12 @@ public class MoralSchema : MonoBehaviour
         string answer = getResponseActionByLikelihood();
         rebuildAppraisalsAndFeelingsAfterTeacherAction(answer);
         return answer;
+    }
+
+    private void test()
+    {
+        biasLikelihood = new List<Tuple<string, double>>();
+        biasCriterion(studentAppraisals, studentFeelings, "Student Ask Question During Lecture");
     }
 
 }
