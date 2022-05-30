@@ -18,7 +18,6 @@ public class MouseLock : MonoBehaviour
         if(Input.GetMouseButtonDown(1))
         {
             Cursor.lockState = CursorLockMode.Locked;
-            Debug.LogError("Cursor lockstate = " + Cursor.lockState);
             Cursor.visible = false;
             mouseLook.enabled = true;
         }

@@ -18,18 +18,15 @@ public class TriigerToSit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(goSit);
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            Debug.Log("L pressed");
-            Messenger.Broadcast(PlayerEvent.SIT);
-        }
+        //if (Input.GetKeyDown(KeyCode.L))
+        //{
+        //    Messenger.Broadcast(PlayerEvent.SIT);
+        //}
 
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            Debug.Log("K pressed");
-            Messenger.Broadcast(PlayerEvent.WALK);
-        }
+        //if (Input.GetKeyDown(KeyCode.K))
+        //{
+        //    Messenger.Broadcast(PlayerEvent.WALK);
+        //}
 
         if(goSit)
         {

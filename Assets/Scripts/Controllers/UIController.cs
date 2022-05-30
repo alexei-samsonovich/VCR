@@ -20,7 +20,6 @@ public class UIController : MonoBehaviour
     private void Start()
     {
         questionButton.interactable = false;
-        Debug.LogError(questionButton.IsInteractable());
     }
 
     private void Update()

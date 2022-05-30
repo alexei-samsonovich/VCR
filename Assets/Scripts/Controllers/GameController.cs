@@ -44,11 +44,6 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftControl))
-        {
-            Debug.LogError($"isAsking = {isAsking}");
-            Debug.LogError($"isTalking = {isTalking}");
-        }
         if (Input.GetKeyDown(KeyCode.LeftControl) && isAsking == false && isTalking == true)
         {
             isAsking = true;
@@ -63,7 +58,6 @@ public class GameController : MonoBehaviour
                 if (UnityEngine.Random.Range(0, 10) > 7)
                 {
                     var randInt = UnityEngine.Random.Range(0, 2);
-                    Debug.LogError($"randint = {randInt}");
                     animator.SetInteger("TalkIndex", randInt);
                     animator.SetTrigger("Talk");
                 }
@@ -113,7 +107,7 @@ public class GameController : MonoBehaviour
         for (int i = 1; i <= lessonsCount; i++)
         {
             int countOfParts = DirInfo.getCountOfFolders($"/Resources/Materials/Lessons/Lesson_{i}");
-            Debug.LogError($"Count  of part s = {countOfParts}");
+       
             Dictionary<int, List<int>> partsToSlidesPoints = new Dictionary<int, List<int>>();
             for (int j = 1; j <= countOfParts; j++)
             {
@@ -199,7 +193,6 @@ public class GameController : MonoBehaviour
         for (int i = currentSlide; i <= slidesCount; i++)
         {
             currentSlide = i;
-            Debug.LogError($"currentSlide = {currentSlide}");
             setSlideToBoard(currentSlide);
             OnSlideChanged();
             audioController.setClip($"Music/Lessons/Lesson_{lesson}/Part_{part}/Lecture/Lesson_{lesson}_Part_{part}_slide_{i}");
@@ -271,7 +264,6 @@ public class GameController : MonoBehaviour
     private IEnumerator WaitingForQuestionsCoroutine()
     {
         yield return new WaitForSeconds(20.0f);
-        Debug.LogError("20 second left");
         uiController.OffQuestionButton();
         ContinueLecture();
     }
@@ -294,7 +286,6 @@ public class GameController : MonoBehaviour
     private void OnStudentAskQuestion(int questionNumber)
     {
         mouseLook.enabled = false;
-        Debug.LogError($"isLectureInProgress = {isLectureInProgress}");
         if (isLectureInProgress == false)
         {
             StopCoroutine("WaitingForQuestionsCoroutine");

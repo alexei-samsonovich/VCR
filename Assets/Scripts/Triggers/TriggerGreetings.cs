@@ -29,7 +29,6 @@ public class TriggerGreetings : MonoBehaviour
     {
         if(other.GetComponent<Player>())
         {
-            Debug.LogError("trigger enter!");
             if(triggerCount == 0)
             {
                 int number = Random.Range(1, countOfGreetings + 1);
