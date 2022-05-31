@@ -54,18 +54,18 @@ public class RayCastInfo : MonoBehaviour
                 {
                     if (hit.transform.tag == "Teacher" || hit.transform.tag == "Board")
                     {
-                        textLabel.text = $"Учащийся смотрит на {hit.transform.tag}";
+                        textLabel.text = $"Student look at {hit.transform.tag}";
                         moralSchema.makeIndependentAction("lookAtTeacher");
                     }
                     else
                     {
-                        textLabel.text = $"Учащийся не смотрит на учителя или доску";
+                        textLabel.text = $"Student doesnt look at teacher or board";
                         moralSchema.makeIndependentAction("doesntLookAtTeacher");
                     }
                 }
                 else
                 {
-                    textLabel.text = $"Учащийся не смотрит на учителя или доску";
+                    textLabel.text = $"Student doesnt look at teacher or board";
                 }
                 Debug.DrawRay(currentCamera.transform.position, currentCamera.transform.forward * 100f, Color.red, duration: 2f, depthTest: false);
             }
@@ -77,18 +77,18 @@ public class RayCastInfo : MonoBehaviour
                 {
                     if(hit.transform.tag == "Teacher" || hit.transform.tag == "Board")
                     {
-                        textLabel.text = $"Учащийся смотрит на {hit.transform.tag}";
+                        textLabel.text = $"Student look at {hit.transform.tag}";
                         moralSchema.makeIndependentAction("lookAtTeacher");
                     }
                     else
                     {
-                        textLabel.text = $"Учащийся не смотрит на учителя или доску";
+                        textLabel.text = $"Student doesnt look at teacher or board";
                         moralSchema.makeIndependentAction("doesntLookAtTeacher");
                     }
                 }
                 else
                 {
-                    textLabel.text = $"Учащийся не смотрит на учителя или доску";
+                    textLabel.text = $"Student doesnt look at teacher or board";
                 }
                 Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red, duration: 2f, depthTest: false);
             }
