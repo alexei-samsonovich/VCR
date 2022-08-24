@@ -13,6 +13,7 @@ public class TriigerToSit : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
     }
 
     // Update is called once per frame
@@ -30,19 +31,20 @@ public class TriigerToSit : MonoBehaviour
 
         if(goSit)
         {
-            if (Input.GetKeyDown(KeyCode.E))
-            {
+            // Закомментировано для работы в VR
+            //if (Input.GetKeyDown(KeyCode.E))
+            //{
                 Messenger.Broadcast(PlayerEvent.SIT);
                 PlayerState.setPlayerState(PlayerStateEnum.SIT);
                 goSit = false;
-            }
+            //}
             
         }
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.GetComponent<Player>())
+        if (other.GetComponent<Player>() || other.GetComponent<PlayerVR>())
         {
             //Debug.Log("OnTriggerStay!");
             //Ray ray = _mainCamera.ScreenPointToRay(new Vector3(_mainCamera.pixelWidth / 2, _mainCamera.pixelHeight / 2, 0));
