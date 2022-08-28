@@ -9,11 +9,11 @@ public class TriigerToSit : MonoBehaviour
     [SerializeField] private GameObject _player;
     private bool goSit = false;
     // Start is called before the first frame update
-    void Start()
+    IEnumerator Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
+        yield return new WaitForSeconds(10.0f);
     }
 
     // Update is called once per frame
@@ -34,6 +34,7 @@ public class TriigerToSit : MonoBehaviour
             // Закомментировано для работы в VR
             //if (Input.GetKeyDown(KeyCode.E))
             //{
+            //Заккоментировано для теста VR
                 Messenger.Broadcast(PlayerEvent.SIT);
                 PlayerState.setPlayerState(PlayerStateEnum.SIT);
                 goSit = false;
