@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private MouseLook mouseLook;
     [SerializeField] private MoralSchema moralSchema;
     [SerializeField] private EmotionsController emotionsController;
+    [SerializeField] private SpeechRecognizerController speechRecognizerController;
 
     private int lessonsCount;
 
@@ -102,6 +103,7 @@ public class GameController : MonoBehaviour
         audioController.PlayCurrentClip();
         yield return new WaitForSeconds(audioController.getCurrentClipLength());
         uiController.OnQuestionButton();
+        speechRecognizerController.canAsk = true;
         yield return new WaitForSeconds(15f);
         uiController.OffQuestionButton();
         audioController.StopCurrentClip();
@@ -113,6 +115,7 @@ public class GameController : MonoBehaviour
         emotionsController.resetEmotions();
         isTalking = true;
         isAsking = false;
+        speechRecognizerController.canAsk = false;
     }
 
     void Start()
