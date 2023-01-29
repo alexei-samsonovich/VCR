@@ -306,6 +306,8 @@ public class GameController : MonoBehaviour
     }
     private void OnStudentAskQuestion(int questionNumber)
     {
+        Debug.LogError($"Student ask {questionNumber} question.");
+
         mouseLook.enabled = false;
         if (isLectureInProgress == false)
         {

@@ -13,8 +13,8 @@ public class testSQLiteEx : MonoBehaviour
     void Start()
     {
         CreateDB();
-        Debug.LogError("Table successfully created!");
-        ReadCustomers();
+        Debug.LogError("Successfully connected to DB!");
+        //ReadCustomers();
     }
 
     private void CreateDB()

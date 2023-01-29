@@ -101,6 +101,7 @@ public class ScrollViewAdapter : MonoBehaviour
             {
                 Debug.Log("GetItems :" + ex.Message);
             }
+            
 
             points.AddRange(tmp);
         }
@@ -143,6 +144,7 @@ public class ScrollViewAdapter : MonoBehaviour
         view.ClickButton.onClick.AddListener(delegate {
             Messenger<int>.Broadcast(GameEvent.STUDENT_ASK_QUESTION, model.ButtonId);
         });
+        view.ClickButton.onClick.AddListener( delegate { Debug.LogError("Button clicked {model.buttonId}"); });
         view.ClickButton.onClick.AddListener(uiController.HideQuestions);
     }
 }
