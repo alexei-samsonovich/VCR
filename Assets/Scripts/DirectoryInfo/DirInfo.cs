@@ -6,7 +6,7 @@ using UnityEngine;
 
 public static class DirInfo
 {
-    static public int getCountOfFilesWithExtension(string path, string extension = ".mp3")
+    static public int getCountOfFilesInFolder(string path, string extension = ".mp3")
     {
         DirectoryInfo dirInfo = new DirectoryInfo(Application.dataPath + path);
         int count = 0;

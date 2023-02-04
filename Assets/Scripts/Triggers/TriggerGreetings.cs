@@ -21,8 +21,8 @@ public class TriggerGreetings : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        countOfGreetings = DirInfo.getCountOfFilesWithExtension("/Resources/" + pathToGreetings);
-        countOfRequestsToSit = DirInfo.getCountOfFilesWithExtension("/Resources/" + pathToRequestsToSit);
+        countOfGreetings = DirInfo.getCountOfFilesInFolder("/Resources/" + pathToGreetings);
+        countOfRequestsToSit = DirInfo.getCountOfFilesInFolder("/Resources/" + pathToRequestsToSit);
     }
 
     private void OnTriggerEnter(Collider other)

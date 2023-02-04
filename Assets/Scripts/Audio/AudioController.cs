@@ -5,31 +5,31 @@ using UnityEngine;
 public class AudioController : MonoBehaviour
 {
     [SerializeField] private AudioSource _audioSource;
-    [SerializeField] private GameController gameController;
+    //[SerializeField] private GameController gameController;
 
     public int samplerate = 44100;
     public float frequency = 440;
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.O))
-        {
-            playShortSound("Music/Lessons/Lesson_1/Part_1/Questions/Lesson_1_Part_1_question_1");
-        }
+        //if(Input.GetKeyDown(KeyCode.O))
+        //{
+        //    playShortSound("Music/Lessons/Lesson_1/Part_1/Questions/Lesson_1_Part_1_question_1");
+        //}
     }
 
-    private void playSound()
-    {
-        //AudioClip _clip = Resources.Load("Music/" + _currentLesson) as AudioClip;
-        //_audioSource.clip = _clip;
-        //_audioSource.Play();
-    }
+    //private void playSound()
+    //{
+    //    AudioClip _clip = Resources.Load("Music/" + _currentLesson) as AudioClip;
+    //    _audioSource.clip = _clip;
+    //    _audioSource.Play();
+    //}
 
-    private void playShortSound()
-    {
-        //AudioClip _clip = Resources.Load("Music/" + _currentLesson) as AudioClip;
-        //_audioSource.PlayOneShot(_clip);
-    }
+    //private void playShortSound()
+    //{
+    //    AudioClip _clip = Resources.Load("Music/" + _currentLesson) as AudioClip;
+    //    _audioSource.PlayOneShot(_clip);
+    //}
 
     public void playShortSound(string path)
     {
@@ -131,5 +131,4 @@ public class AudioController : MonoBehaviour
     {
         _audioSource.Stop();
     }
-
 }
