@@ -58,7 +58,7 @@ public class GameController : MonoBehaviour {
             Debug.LogError($"Username - {MainMenuController.Username}");
         }
 
-        //Debug.LogError(getNeighbourBreakpointOnSlide());
+        Debug.LogError(getNeighbourBreakpointOnSlide());
 
 
         /*lessonsToPartsToSlidesPoints = new Dictionary<int, Dictionary<int, List<int>>>();
@@ -176,18 +176,12 @@ public class GameController : MonoBehaviour {
                                                                                      .Select(n => n.Value)
                                                                                      .ToList();
 
-            foreach (var breakpoint in breakpoints) {
-                Debug.LogError($"breakpoint = {breakpoint}");
-            }
 
-            float neighbourBreakpoint = breakpoints
-                                            .Where(x => x <= lectureInterruptTime)
-                                            .Max();
+            var neighbourBreakpoint = breakpoints
+                                            .Where(x => x < lectureInterruptTime)
+                                            .Max(o => (float?) o);
 
-            Debug.LogError($"neighbourBreakpoint = {neighbourBreakpoint}");
-
-            return neighbourBreakpoint;
-
+            return neighbourBreakpoint.GetValueOrDefault(0.0f);
         }
         catch (Exception ex) {
             Debug.LogError(ex);
