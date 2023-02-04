@@ -5,31 +5,25 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ScrollViewAdapter : MonoBehaviour
-{
+public class ScrollViewAdapter : MonoBehaviour {
     [SerializeField] private Button buttonPrefab;
     [SerializeField] private RectTransform content;
     [SerializeField] private UIController uiController;
 
-    private int currentLesson;
-    private int currentSlide;
 
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.T))
-        {
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.T)) {
             UpdateQuestions();
         }
 
     }
 
-    private void Start()
-    {
+    private void Start() {
         uiController = this.gameObject.GetComponent<UIController>();
     }
 
-    private class ButtonModel
-    {
+
+    private class ButtonModel {
         private string buttonText;
         private int buttonId;
 
@@ -37,26 +31,20 @@ public class ScrollViewAdapter : MonoBehaviour
         public int ButtonId { get => buttonId; set => buttonId = value; }
     }
 
-    private class ButtonView
-    {
+    private class ButtonView {
         private Text buttonText;
         private Button clickButton;
 
         public Text ButtonText { get => buttonText; set => buttonText = value; }
         public Button ClickButton { get => clickButton; set => clickButton = value; }
 
-        public ButtonView(Transform rootView)
-        {
+        public ButtonView(Transform rootView) {
             buttonText = rootView.GetChild(0).GetComponent<Text>();
         }
     }
 
-    public void UpdateQuestions()
-    {
-        currentLesson = GameController.getCurrentLesson();
-        currentSlide = GameController.getCurrentSlide();
-
-        GetItems(currentLesson, currentSlide, results => OnReceivedModels(results));
+    public void UpdateQuestions() {
+        GetItems(GameController.getCurrentLesson(), GameController.getCurrentSlide(), results => OnReceivedModels(results));
     }
 
     //private void GetItems(int curentLesson, int currentPart, System.Action<ButtonModel[]> callback)
@@ -79,37 +67,30 @@ public class ScrollViewAdapter : MonoBehaviour
     //    callback(results);
     //}
 
-    private void GetItems(int curentLesson, int currentSlide, System.Action<ButtonModel[]> callback)
-    {
+    private void GetItems(int curentLesson, int currentSlide, System.Action<ButtonModel[]> callback) {
         List<string> points = new List<string>();
-        for (int i = 1; i <= currentSlide; i++)
-        {
+        for (int i = 1; i <= currentSlide; i++) {
             List<string> tmp = new List<string>();
-            try
-            {
+            try {
                 tmp = new List<string>(System.IO.File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
-                        $"{currentLesson}/Slides/{i}.csv").Split(','));
+                        $"{GameController.getCurrentLesson()}/Slides/{i}/questions.csv").Split(','));
             }
-            catch(FileNotFoundException ex)
-            {
+            catch (FileNotFoundException ex) {
                 Debug.Log("GetItems :" + ex.Message);
             }
-            catch(Exception ex)
-            {
+            catch (Exception ex) {
                 Debug.Log("GetItems :" + ex.Message);
             }
-            
+
 
             points.AddRange(tmp);
         }
 
         var results = new ButtonModel[points.Count];
-        for (int i = 0; i < points.Count; i++)
-        {
+        for (int i = 0; i < points.Count; i++) {
             results[i] = new ButtonModel();
             int id;
-            if (int.TryParse(points[i].Split(';')[0], out id))
-            {
+            if (int.TryParse(points[i].Split(';')[0], out id)) {
                 results[i].ButtonId = id;
                 results[i].ButtonText = points[i].Split(';')[1];
             }
@@ -118,30 +99,26 @@ public class ScrollViewAdapter : MonoBehaviour
         callback(results);
     }
 
-    void OnReceivedModels(ButtonModel[] models)
-    {
-        foreach (Transform child in content)
-        {
+    void OnReceivedModels(ButtonModel[] models) {
+        foreach (Transform child in content) {
             Destroy(child.gameObject);
         }
 
-        foreach (var model in models)
-        {
+        foreach (var model in models) {
             var instance = GameObject.Instantiate(buttonPrefab.gameObject) as GameObject;
             instance.transform.SetParent(content, false);
             InitializeButtonView(instance, model);
         }
     }
 
-    void InitializeButtonView(GameObject viewGameObject, ButtonModel model)
-    {
+    void InitializeButtonView(GameObject viewGameObject, ButtonModel model) {
         ButtonView view = new ButtonView(viewGameObject.transform);
         view.ButtonText.text = model.ButtonText;
         view.ClickButton = viewGameObject.GetComponent<Button>();
         view.ClickButton.onClick.AddListener(delegate {
             Messenger<int>.Broadcast(GameEvent.STUDENT_ASK_QUESTION, model.ButtonId);
         });
-        view.ClickButton.onClick.AddListener( delegate { Debug.LogError("Button clicked {model.buttonId}"); });
+        //view.ClickButton.onClick.AddListener( delegate { Debug.LogError("Button clicked {model.buttonId}"); });
         view.ClickButton.onClick.AddListener(uiController.HideQuestions);
     }
 }

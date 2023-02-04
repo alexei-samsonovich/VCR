@@ -16,6 +16,8 @@ public class AudioController : MonoBehaviour
         //{
         //    playShortSound("Music/Lessons/Lesson_1/Part_1/Questions/Lesson_1_Part_1_question_1");
         //}
+
+        Debug.Log(_audioSource.time);
     }
 
     //private void playSound()
@@ -35,6 +37,10 @@ public class AudioController : MonoBehaviour
     {
         AudioClip _clip = Resources.Load(path) as AudioClip;
         _audioSource.PlayOneShot(_clip);
+    }
+
+    public void test() {
+        _audioSource.time = 5.0f;
     }
 
     //public void playShortSound(string path)
@@ -130,5 +136,17 @@ public class AudioController : MonoBehaviour
     public void StopCurrentClip()
     {
         _audioSource.Stop();
+    }
+
+    public void setAudioSourceStartTime(float startTime) {
+        _audioSource.time = startTime;
+    }
+
+    public void resetAudioSourceStartTime() {
+        _audioSource.time = 0.0f;
+    }
+
+    public float getClipTime() {
+        return _audioSource.time;
     }
 }

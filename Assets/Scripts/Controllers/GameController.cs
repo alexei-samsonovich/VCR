@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 
 public class GameController : MonoBehaviour {
@@ -20,10 +22,12 @@ public class GameController : MonoBehaviour {
 
     public static int askingForQuestionCount;
     string pathToAsksForQuestions = "/Resources/Music/GeneralSounds/AskForQuestions";
-    string pathToSlides = "/Resources/Materials/Lessons/AskForQuestions";
+    //string pathToSlides = "/Resources/Materials/Lessons/AskForQuestions";
 
     private static int currentLesson = 1;
     private static int currentSlide = 1;
+
+    private float lectureInterruptTime = 0.0f;
 
     //private int slidesCount;
 
@@ -53,6 +57,9 @@ public class GameController : MonoBehaviour {
         if (MainMenuController.IsUserAuthorized) {
             Debug.LogError($"Username - {MainMenuController.Username}");
         }
+
+        //Debug.LogError(getNeighbourBreakpointOnSlide());
+
 
         /*lessonsToPartsToSlidesPoints = new Dictionary<int, Dictionary<int, List<int>>>();
         for (int i = 1; i <= lessonsCount; i++)
@@ -126,6 +133,10 @@ public class GameController : MonoBehaviour {
 
 
     private IEnumerator askStudentForQuestionDuringLecture() {
+        Debug.LogError("question");
+
+        lectureInterruptTime = audioController.getClipTime();
+
         isTeacherGivingLectureRightNow = false;
         try {
             StopCoroutine(playLectureCoroutine);
@@ -147,11 +158,41 @@ public class GameController : MonoBehaviour {
         audioController.PlayCurrentClip();
         yield return new WaitForSeconds(audioController.getCurrentClipLength());
         yield return new WaitForSeconds(0.5f);
+
         playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
+
         emotionsController.resetEmotions();
         //isTalking = true;
         isStudentAskQuestion = false;
         speechRecognizerController.canAsk = false;
+    }
+
+    private float getNeighbourBreakpointOnSlide() {
+        try {
+            var breakpoints = File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
+                            $"{currentLesson}/Slides/{currentSlide}/breakpoints.csv").Split(',')
+                                                                                     .Select(s => float.TryParse(s, out float n) ? n : (float?)null)
+                                                                                     .Where(n => n.HasValue)
+                                                                                     .Select(n => n.Value)
+                                                                                     .ToList();
+
+            foreach (var breakpoint in breakpoints) {
+                Debug.LogError($"breakpoint = {breakpoint}");
+            }
+
+            float neighbourBreakpoint = breakpoints
+                                            .Where(x => x <= lectureInterruptTime)
+                                            .Max();
+
+            Debug.LogError($"neighbourBreakpoint = {neighbourBreakpoint}");
+
+            return neighbourBreakpoint;
+
+        }
+        catch (Exception ex) {
+            Debug.LogError(ex);
+            return 0.0f;
+        }
     }
 
 
@@ -198,6 +239,10 @@ public class GameController : MonoBehaviour {
     //}
 
     public IEnumerator PlayLectureFromCurrentSlideCoroutine() {
+
+        float shift = getNeighbourBreakpointOnSlide();
+        Debug.LogError($"shift = {shift}");
+
         isLectureInProgress = true;
         isTeacherGivingLectureRightNow = true;
         string lesson = currentLesson.ToString();
@@ -205,7 +250,17 @@ public class GameController : MonoBehaviour {
         // Сколько слайдов - столько и аудизаписей в конкретной лекции.
         var slidesCount = DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/{lesson}/Slides", ".mat");
 
-        for (int i = currentSlide; i <= slidesCount; i++) {
+        setSlideToBoard(GameController.currentSlide);
+        OnSlideChanged();
+        audioController.setClip($"Music/Lessons/{lesson}/Lecture/Slides/{currentSlide}");
+        audioController.setAudioSourceStartTime(shift);
+        audioController.PlayCurrentClip();
+        yield return new WaitForSeconds(audioController.getCurrentClipLength() - shift);
+        audioController.StopCurrentClip();
+        yield return new WaitForSeconds(0.5f);
+        audioController.resetAudioSourceStartTime();
+
+        for (int i = currentSlide + 1; i <= slidesCount; i++) {
             currentSlide = i;
             setSlideToBoard(currentSlide);
             OnSlideChanged();
