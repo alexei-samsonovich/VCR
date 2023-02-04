@@ -12,7 +12,6 @@ public class ScrollViewAdapter : MonoBehaviour
     [SerializeField] private UIController uiController;
 
     private int currentLesson;
-    private int currentPart;
     private int currentSlide;
 
     private void Update()
@@ -55,10 +54,9 @@ public class ScrollViewAdapter : MonoBehaviour
     public void UpdateQuestions()
     {
         currentLesson = GameController.getCurrentLesson();
-        currentPart = GameController.getCurrentPart();
         currentSlide = GameController.getCurrentSlide();
 
-        GetItems(currentLesson, currentPart, currentSlide, results => OnReceivedModels(results));
+        GetItems(currentLesson, currentSlide, results => OnReceivedModels(results));
     }
 
     //private void GetItems(int curentLesson, int currentPart, System.Action<ButtonModel[]> callback)
@@ -81,7 +79,7 @@ public class ScrollViewAdapter : MonoBehaviour
     //    callback(results);
     //}
 
-    private void GetItems(int curentLesson, int currentPart, int currentSlide, System.Action<ButtonModel[]> callback)
+    private void GetItems(int curentLesson, int currentSlide, System.Action<ButtonModel[]> callback)
     {
         List<string> points = new List<string>();
         for (int i = 1; i <= currentSlide; i++)
@@ -90,8 +88,7 @@ public class ScrollViewAdapter : MonoBehaviour
             try
             {
                 tmp = new List<string>(System.IO.File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
-                        $"Lesson_{currentLesson}/Part_{currentPart}/" +
-                        $"questions_slide{i}.csv").Split(','));
+                        $"{currentLesson}/Slides/{i}.csv").Split(','));
             }
             catch(FileNotFoundException ex)
             {

@@ -22,15 +22,15 @@ public class GameController : MonoBehaviour
     string pathToSlides = "/Resources/Materials/Lessons/AskForQuestions";
 
     private static int currentLesson = 1;
-    private static int currentPart = 1;
     private static int currentSlide = 1;
-    private int slidesCount;
+
+    //private int slidesCount;
 
     private Coroutine playLectureCoroutine;
 
     bool isLectureInProgress = false;
-    bool isAsking = false;
-    bool isTalking = false;
+    bool isStudentAskQuestion = false;
+    bool isTeacherGivingLectureRightNow = false;
 
     float timeWhileTalking = 0.0f;
 
@@ -46,13 +46,13 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftControl) && isAsking == false && isTalking == true)
+        if (Input.GetKeyDown(KeyCode.LeftControl) && isStudentAskQuestion == false && isTeacherGivingLectureRightNow == true)
         {
             string responseAction = moralSchema.getResponseActionNew("Student Ask Question During Lecture");
             emotionsController.setEmotion(emotionsController.getEmotion());
             if (responseAction == "Teacher answer students question")
             {
-                isAsking = true;
+                isStudentAskQuestion = true;
                 StartCoroutine("askStudentForQuestionDuringLecture");
             }
             else if (responseAction == "Teacher ignore students question")
@@ -62,7 +62,7 @@ public class GameController : MonoBehaviour
         }
 
         
-        if(isTalking == true)
+        if(isTeacherGivingLectureRightNow == true)
         {
             timeWhileTalking += Time.deltaTime;
             if (timeWhileTalking > 5.0f)
@@ -88,7 +88,7 @@ public class GameController : MonoBehaviour
 
     private IEnumerator askStudentForQuestionDuringLecture()
     {
-        isTalking = false;
+        isTeacherGivingLectureRightNow = false;
         try
         {
             StopCoroutine(playLectureCoroutine);
@@ -113,8 +113,8 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
         emotionsController.resetEmotions();
-        isTalking = true;
-        isAsking = false;
+        //isTalking = true;
+        isStudentAskQuestion = false;
         speechRecognizerController.canAsk = false;
     }
 
@@ -168,12 +168,12 @@ public class GameController : MonoBehaviour
 
     private IEnumerator startLecture()
     {
-        audioController.setClip($"Music/Lessons/Lesson_{currentLesson}/Part_{currentPart}/Lecture/Lesson_{currentLesson}_Part_{currentPart}_introtolecture");
+        audioController.setClip($"Music/Lessons/{currentLesson}/Lecture/Intro");
         audioController.PlayCurrentClip();
         yield return new WaitForSeconds(audioController.getCurrentClipLength());
         //audioController.PlayLecture(currentLesson, currentPart);
         yield return new WaitForSeconds(0.5f);
-        isTalking = true;
+        //isTalking = true;
         playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
         //StartCoroutine(changingSlides());
     }
@@ -207,31 +207,31 @@ public class GameController : MonoBehaviour
     public IEnumerator PlayLectureFromCurrentSlideCoroutine()
     {
         isLectureInProgress = true;
-        isTalking = true;
+        isTeacherGivingLectureRightNow = true;
         string lesson = currentLesson.ToString();
-        string part = currentPart.ToString();
+
         // Сколько слайдов - столько и аудизаписей в конкретной лекции.
-        var slidesCount = DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/Lesson_{lesson}/Part_{part}", ".mat");
+        var slidesCount = DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/{lesson}/Slides", ".mat");
 
         for (int i = currentSlide; i <= slidesCount; i++)
         {
             currentSlide = i;
             setSlideToBoard(currentSlide);
             OnSlideChanged();
-            audioController.setClip($"Music/Lessons/Lesson_{lesson}/Part_{part}/Lecture/Lesson_{lesson}_Part_{part}_slide_{i}");
+            audioController.setClip($"Music/Lessons/{lesson}/Lecture/Slides/{currentSlide}");
             audioController.PlayCurrentClip();
             yield return new WaitForSeconds(audioController.getCurrentClipLength());
             audioController.StopCurrentClip();
             yield return new WaitForSeconds(0.5f);
         }
         isLectureInProgress = false;
-        isTalking = false;
+        isTeacherGivingLectureRightNow = false;
         Messenger.Broadcast(GameEvent.LECTURE_PART_FINISHED);
     }
 
     public void setSlideToBoard(int slideNumber)
     {
-        setMaterial($"Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}/slide_{slideNumber}");
+        setMaterial($"Materials/Lessons/{currentLesson}/Slides/{slideNumber}");
     }
 
     private void setMaterial(string pathToMaterial)
@@ -326,7 +326,7 @@ public class GameController : MonoBehaviour
     {
         //uiController.OffQuestionButton();
         yield return new WaitForSeconds(0.5f);
-        string pathToAnswer = $"Music/Lessons/Lesson_{currentLesson}/Part_{currentPart}/Answers/answer_{questionNumber}";
+        string pathToAnswer = $"Music/Lessons/{currentLesson}/Answers/{questionNumber}";
         setClipToAudioControllerAndPlay(pathToAnswer);
         //audioController.playShortSound(pathToAnswer);
         uiController.OffQuestionButton();
@@ -334,7 +334,7 @@ public class GameController : MonoBehaviour
         setClipToAudioControllerAndPlay($"Music/GeneralSounds/LetsContinue/lets_continue");
         yield return new WaitForSeconds(audioController.getCurrentClipLength() + 1.5f);
         playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
-        isAsking = false;
+        isStudentAskQuestion = false;
         //uiController.OnQuestionButton();
     }
 
@@ -348,7 +348,7 @@ public class GameController : MonoBehaviour
     private IEnumerator OnStudentAskQuestionAfterLectureCoroutine(int questionNumber)
     {
         yield return new WaitForSeconds(0.5f);
-        string pathToAnswer = $"Music/Lessons/Lesson_{currentLesson}/Part_{currentPart}/Answers/answer_{questionNumber}";
+        string pathToAnswer = $"Music/Lessons/{currentLesson}/Answers/{questionNumber}";
         audioController.playShortSound(pathToAnswer);
         uiController.OffQuestionButton();
         yield return new WaitForSeconds(AudioController.getClipLength(pathToAnswer));
@@ -356,20 +356,14 @@ public class GameController : MonoBehaviour
         uiController.OnQuestionButton();
     }
 
-    private void updateSlidesCount()
-    {
-        slidesCount = DirInfo.getCountOfFiles($"/Resources/Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}");
-    }
-
+    //private void updateSlidesCount()
+    //{
+    //    slidesCount = DirInfo.getCountOfFiles($"/Resources/Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}");
+    //}
 
     public static int getCurrentLesson()
     {
         return currentLesson;
-    }
-
-    public static int getCurrentPart()
-    {
-        return currentPart;
     }
 
     public static int getCurrentSlide()
