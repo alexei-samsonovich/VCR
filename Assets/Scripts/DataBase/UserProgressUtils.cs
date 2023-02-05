@@ -7,12 +7,18 @@ using System.Linq;
 
 public static class UserProgressUtils {
 
+    // Для корректной работы класса необходимо добавить в БД дополнительное состояние и дополнительную лекцию
+    // Состояние - фиктивное состояние, в котором студент еще не знает "ничего"
+    // Лекция - фиктивная лекция, ее необходимо заполнять, при переходе из вообще "Ничего" в состояние выше, в котором студент ничего не знает (см. метод setUserState.)
+    // Т.к. в таблице user_progress есть столбец newLessonId, который необходимо заполнить при переходе из "Никакого" состояние в фиктивное.
+    // Также необходимо проставить связь между этим фиктивным состоянием и фиктивной лекцией в таблице state_lesson.
+
     // Состояние, в которое переход только что зарегистрированный пользователь
     public static int StartStateId { get; } = 1;
 
-    // ID "урока", который изучил только что зарегистрированный пользователь 
-    // Небольшой костыль, но он необходим, чтобы унифицировать процесс в том числе и только для зарегистрированного пользователя
-    public static int EmptyLessonId { get; private set; }
+    ////// ID "урока", который изучил только что зарегистрированный пользователь 
+    ////// Небольшой костыль, но он необходим, чтобы унифицировать процесс в том числе и только для зарегистрированного пользователя
+    //////public static int EmptyLessonId { get; private set; }
 
     public static Dictionary<int, int> LessonIdToNumber { get; } = new Dictionary<int, int>();
     public static Dictionary<int, int> LessonNumberToId { get; } = new Dictionary<int, int>();
@@ -52,39 +58,39 @@ public static class UserProgressUtils {
 
         LessonNumberToId = LessonIdToNumber.ToDictionary(x => x.Value, x => x.Key);
 
-        // Заполнение EmptyLessonId
-        using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
-            try {
-                connection.Open();
+        //// Заполнение EmptyLessonId
+        //using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
+        //    try {
+        //        connection.Open();
 
-                using (var command = connection.CreateCommand()) {
+        //        using (var command = connection.CreateCommand()) {
 
-                    var query = $@"
-                        SELECT 
-	                        ls.id
-                        FROM
-	                        lessons as ls
-                        WHERE ls.number < 0
-                    ";
-                    command.CommandText = query;
-                    using (var reader = command.ExecuteReader()) {
-                        if (reader.HasRows) {
-                            reader.Read();
-                            EmptyLessonId = Convert.ToInt32(reader["id"]);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex) {
-                Debug.LogError(ex);
-            }
-            finally {
-                connection.Close();
-            }
-        }
+        //            var query = $@"
+        //                SELECT 
+        //                 ls.id
+        //                FROM
+        //                 lessons as ls
+        //                WHERE ls.number < 0
+        //            ";
+        //            command.CommandText = query;
+        //            using (var reader = command.ExecuteReader()) {
+        //                if (reader.HasRows) {
+        //                    reader.Read();
+        //                    EmptyLessonId = Convert.ToInt32(reader["id"]);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex) {
+        //        Debug.LogError(ex);
+        //    }
+        //    finally {
+        //        connection.Close();
+        //    }
+        //}
     }
 
-    public static void setUserState(string username, int stateId) {
+    public static void setUserState(string username, int newStateId) {
         using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
             try {
                 connection.Open();
@@ -92,24 +98,32 @@ public static class UserProgressUtils {
                     int? userId = UserUtils.getUserIdByUsername(username);
                     if (userId.HasValue) {
 
-                        int? currentStateId = UserProgressUtils.getUserStateId(username);
+                        int? oldStateId = UserProgressUtils.getUserStateId(username);
                         int newLessonId;
+                        string query;
 
-                        if (currentStateId.HasValue) {
-                            List<int> oldLessons = UserProgressUtils.getLearnedLessonsNumbers(currentStateId.Value);
-                            List<int> newLessons = UserProgressUtils.getLearnedLessonsNumbers(stateId);
-                            var newLessonNumber = newLessons.Find(x => !oldLessons.Contains(x));
-                            newLessonId = LessonNumberToId[newLessonNumber];
+                        if (oldStateId.HasValue) {
+                            List<int> oldLessons = UserProgressUtils.getLearnedLessonsNumbers(oldStateId.Value);
+                            List<int> newLessons = UserProgressUtils.getLearnedLessonsNumbers(newStateId);
+                            var newLessonNumber = (int?)newLessons.Find(x => !oldLessons.Contains(x));
+                            if (newLessonNumber.Value != 0)
+                                newLessonId = LessonNumberToId[newLessonNumber.Value];
+                            else
+                                throw new Exception("New lesson number doesnt found");
+
+                            query = $@"
+                                INSERT INTO user_progress (user_id, state_id, timestamp, new_lesson_id, previous_state_id) 
+                                VALUES({userId}, {newStateId}, datetime('now', 'localtime'), {newLessonId}, {oldStateId.Value});
+                            ";
                         }
-                        // Пользователь только зарегистрировался и у него еще нет никакого состояния
+                        // Этот кейс для случая, когда пользователь нажал кнопку регистрации
+                        // и у него еще нет никакого состояния. Поэтому выставляем ему в качестве "изученной лекции" - специальную фиктивную
                         else {
-                            newLessonId = EmptyLessonId;
+                            query = $@"
+                                INSERT INTO user_progress (user_id, state_id, timestamp, new_lesson_id, previous_state_id) 
+                                VALUES({userId}, {newStateId}, datetime('now', 'localtime'), NULL, NULL);
+                            ";
                         }
-
-                        var query = $@"
-                            INSERT INTO userprogress (userid, stateid, timestamp, newlessonid) 
-                            VALUES({userId}, {stateId}, datetime('now', 'localtime'), {newLessonId});
-                        ";
                         command.CommandText = query;
                         command.ExecuteNonQuery();
                     }
@@ -128,6 +142,7 @@ public static class UserProgressUtils {
     }
 
     public static int? getUserStateId(string username) {
+        // Отсекаем вариант, когда необходимо пользователю проставить "фиктивное" состояние, и у него еще нет вообще никакого!
         using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
             try {
                 connection.Open();
@@ -135,24 +150,64 @@ public static class UserProgressUtils {
 
                     var query = $@"
                         SELECT
-	                        up.stateid
-                        FROM
-	                        userprogress as up
+	                        *
+                        FROM 
+	                        user_progress as up
                         INNER JOIN
-	                        users as us
-		                        ON us.id = up.userid
-			                        AND us.username = '{username}'
-                        ORDER BY datetime(up.timestamp) DESC
-                        LIMIT 1
+                            users as us
+                                ON us.id = up.user_id
+                                    AND username = '{username}'
                     ";
                     command.CommandText = query;
+
+                    using (var reader = command.ExecuteReader()) {
+                        if (!reader.HasRows) {
+                            return null;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) {
+                Debug.LogError(ex);
+                return null;
+            }
+            finally {
+                connection.Close();
+            }
+        }
+
+        using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
+            try {
+                connection.Open();
+                using (var command = connection.CreateCommand()) {
+
+                    var query = $@"
+                        SELECT
+	                        *
+                        FROM 
+	                        user_progress as up
+                        INNER JOIN 
+	                        state_lesson as sl
+		                        ON up.state_id =  sl.state_id
+                        INNER JOIN
+	                        users as us
+		                        ON us.id = up.user_id
+                        WHERE us.username = '{username}'
+                        GROUP BY sl.state_id, up.timestamp
+                        ORDER BY COUNT(*) DESC, datetime(up.timestamp) DESC
+                    ";
+                    command.CommandText = query;
+
                     using (var reader = command.ExecuteReader()) {
                         if (reader.HasRows) {
                             reader.Read();
-                            return Convert.ToInt32(reader["stateid"]);
+                            return Convert.ToInt32(reader["state_id"]);
                         }
+                        // ATTENTION!!! костыль
+                        // Этот кейс для случая, когда пользователь находится в фиктивном состоянии, когда он "ничего не знает"
+                        // Для фиктивного состояния нет строчек, потому что в запросе выше используется таблица state_lesson, в которой нет фиктивного состояния!
                         else {
-                            return null;
+                            return StartStateId;
                         }
                     }
                 }
@@ -179,9 +234,9 @@ public static class UserProgressUtils {
                         FROM
 	                        lessons as ls
                         INNER JOIN
-	                        statelesson as sl
-		                        ON sl.lessonid = ls.id
-			                        AND sl.stateid = {currentStateId}
+	                        state_lesson as sl
+		                        ON sl.lesson_id = ls.id
+			                        AND sl.state_id = {currentStateId}
                     ";
                     command.CommandText = query;
                     using (var reader = command.ExecuteReader()) {
@@ -220,11 +275,11 @@ public static class UserProgressUtils {
                     if (learnedLessonsNumbers == null || learnedLessonsNumbers.Count == 0) {
                         query = $@"
                             SELECT
-	                            sl.stateid
+	                            sl.state_id
                             FROM 
-	                            statelesson as sl
+	                            state_lesson as sl
                             GROUP BY
-                                sl.stateid 
+                                sl.state_id 
                             HAVING
                                 COUNT(*) = 1
                         ";
@@ -232,26 +287,26 @@ public static class UserProgressUtils {
                     else {
                         var largerStatesIds = $@"
                             SELECT
-	                            sl.stateid
+	                            sl.state_id
                             FROM
-	                            statelesson as sl
-                            GROUP BY sl.stateid
+	                            state_lesson as sl
+                            GROUP BY sl.state_id
                             HAVING COUNT(*) = {learnedLessonsNumbers.Count + 1}
                         ";
 
                         query = $@"
                             SELECT
-	                            sl.stateid
+	                            sl.state_id
                             FROM 
-	                            statelesson as sl
+	                            state_lesson as sl
                             INNER JOIN
                                 lessons as ls
-                                    ON ls.id = sl.lessonid
-                                    AND sl.stateid in ({largerStatesIds})
+                                    ON ls.id = sl.lesson_id
+                                    AND sl.state_id in ({largerStatesIds})
                             WHERE 
 	                            ls.number NOT IN ({ String.Join(", ", learnedLessonsNumbers) })
                             GROUP BY
-                                sl.stateid 
+                                sl.state_id 
                             HAVING  
                                 COUNT(*) = 1
                         ";
@@ -261,7 +316,7 @@ public static class UserProgressUtils {
                         if (reader.HasRows) {
                             List<int> availableLessons = new List<int>();
                             while (reader.Read()) {
-                                availableLessons.Add(Convert.ToInt32(reader["stateid"]));
+                                availableLessons.Add(Convert.ToInt32(reader["state_id"]));
                             }
                             return availableLessons;
                         }
@@ -294,22 +349,22 @@ public static class UserProgressUtils {
 
                     var largerStatesIds = $@"
                         SELECT
-	                        sl.stateid
+	                        sl.state_id
                         FROM
-	                        statelesson as sl
-                        GROUP BY sl.stateid
+	                        state_lesson as sl
+                        GROUP BY sl.state_id
                         HAVING COUNT(*) = {learnedLessonsNumbers.Count + 1}
                     ";
 
                     query = $@"
                         SELECT
-	                        sl.stateid
+	                        sl.state_id
                         FROM 
-	                        statelesson as sl
+	                        state_lesson as sl
                         INNER JOIN
                             lessons as ls
-                                ON ls.id = sl.lessonid
-                                AND sl.stateid in ({largerStatesIds})
+                                ON ls.id = sl.lesson_id
+                                AND sl.state_id in ({largerStatesIds})
                         WHERE 
 	                        ls.number IN ({
                                 String.Join(
@@ -318,7 +373,7 @@ public static class UserProgressUtils {
                                 )
                             })
                         GROUP BY
-                            sl.stateid 
+                            sl.state_id 
                         HAVING  
                             COUNT(*) = {learnedLessonsNumbers.Count + 1}
                     ";
@@ -326,7 +381,7 @@ public static class UserProgressUtils {
                     using (var reader = command.ExecuteReader()) {
                         if (reader.HasRows) {
                             reader.Read();
-                            return Convert.ToInt32(reader["stateid"]);
+                            return Convert.ToInt32(reader["state_id"]);
                         }
                         else {
                             return null;
@@ -353,10 +408,10 @@ public static class UserProgressUtils {
                 connection.Open();
                 foreach (var lessonNumber in lessonsNumbers) {
                     using (var command = connection.CreateCommand()) {
-                    
+
                         int lessonId = LessonNumberToId[lessonNumber];
                         var query = $@"
-                            INSERT INTO statelesson (stateid, lessonid) 
+                            INSERT INTO statelesson (state_id, lesson_id) 
                             VALUES({stateId}, {lessonId});
                         ";
                         command.CommandText = query;

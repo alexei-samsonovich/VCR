@@ -142,25 +142,25 @@ public class GameController : MonoBehaviour {
                     try {
                         var query = $@"
                             SELECT 
-	                            sb.timepoint
+	                            bp.time_point
                             FROM
-	                            slidebreakpoints as sb
+	                            breakpoints as bp
                             INNER JOIN
 	                            slides as sl
-		                            ON sl.id = sb.slideid
+		                            ON sl.id = bp.slide_id
                             INNER JOIN
 	                            lessons as ls
-		                            ON sl.lessonid = ls.id
+		                            ON sl.lesson_id = ls.id
                             WHERE 
 	                            (ls.number = {CurrentLessonNumber} AND sl.number = {CurrentSlideNumber})
-                            ORDER by sb.timepoint ASC
+                            ORDER by bp.time_point ASC
                         ";
                         command.CommandText = query;
                         using (var reader = command.ExecuteReader()) {
                             if (reader.HasRows) {
                                 List<float> breakpoints = new List<float>();
                                 while (reader.Read()) {
-                                    breakpoints.Add((float)reader["timepoint"]);
+                                    breakpoints.Add((float)reader["time_point"]);
                                 }
                                 var neighbourBreakpoint = breakpoints
                                                                     .Where(x => x < lectureInterruptTime)

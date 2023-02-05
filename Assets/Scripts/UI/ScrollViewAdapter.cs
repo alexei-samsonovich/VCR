@@ -58,20 +58,20 @@ public class ScrollViewAdapter : MonoBehaviour {
                 try {
                     var query = $@"
                         SELECT
-	                        q.uniquenumberthroughlecture,
+	                        q.unique_number_through_lecture,
 	                        q.text
                         FROM
 	                        questions as q
                         INNER JOIN
 	                        slides as sl
-		                        ON q.slideid = sl.id
+		                        ON q.slide_id = sl.id
                         INNER JOIN
 	                        lessons as ls
-		                        ON ls.id = sl.lessonid
+		                        ON ls.id = sl.lesson_id
                         WHERE
 	                        ls.number = {curentLesson}
 	                        AND sl.number <= {currentSlide}
-                        ORDER BY q.uniquenumberthroughlecture
+                        ORDER BY q.unique_number_through_lecture
                     ";
 
                     command.CommandText = query;
@@ -79,7 +79,7 @@ public class ScrollViewAdapter : MonoBehaviour {
                         if (reader.HasRows) {
                             Dictionary<int, string> questions = new Dictionary<int, string>();
                             while (reader.Read()) {
-                                questions.Add(Convert.ToInt32(reader["uniquenumberthroughlecture"]), (string)reader["text"]);
+                                questions.Add(Convert.ToInt32(reader["unique_number_through_lecture"]), (string)reader["text"]);
                             }
                             var results = new ButtonModel[questions.Keys.Count];
                             int i = 0;

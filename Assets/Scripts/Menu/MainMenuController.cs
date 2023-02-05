@@ -24,11 +24,14 @@ public class MainMenuController : MonoBehaviour {
 
     private void Start() {
 
-        ////UserProgressUtils.setUserState("credo098", 5);
+        //Debug.LogError(UserProgressUtils.getUserStateId("enikeevv"));
+        //var username = "enikeevv";
 
-        //var userId = UserUtils.getUserIdByUsername("credo098");
+        //UserProgressUtils.setUserState(username, 5);
+
+        //var userId = UserUtils.getUserIdByUsername(username);
         //Debug.LogError(userId);
-        //var currentStateId = UserProgressUtils.getUserStateId("credo098");
+        //var currentStateId = UserProgressUtils.getUserStateId(username);
         //Debug.LogError(currentStateId);
         //var lessons = UserProgressUtils.getLearnedLessonsNumbers(currentStateId.Value);
         //Debug.LogError("---------------------");
