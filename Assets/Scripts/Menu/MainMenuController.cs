@@ -9,6 +9,7 @@ using Mono.Data.Sqlite;
 
 
 public class MainMenuController : MonoBehaviour {
+
     [SerializeField] private InputField loginInputField;
     [SerializeField] private InputField passwordInputField;
     [SerializeField] private Text messageText;
@@ -22,6 +23,27 @@ public class MainMenuController : MonoBehaviour {
     public static string Username { get; private set; } = "";
 
     private void Start() {
+
+        ////UserProgressUtils.setUserState("credo098", 5);
+
+        //var userId = UserUtils.getUserIdByUsername("credo098");
+        //Debug.LogError(userId);
+        //var currentStateId = UserProgressUtils.getUserStateId("credo098");
+        //Debug.LogError(currentStateId);
+        //var lessons = UserProgressUtils.getLearnedLessonsNumbers(currentStateId.Value);
+        //Debug.LogError("---------------------");
+        //foreach (var lesson in lessons) {
+        //    Debug.LogError($"Lessons Number - {lesson}");
+        //}
+
+        //var availableStates = UserProgressUtils.getAvailableStatesIds(lessons);
+
+        //foreach (var state in availableStates) {
+        //    Debug.LogError($"Available state - {state}");
+        //}
+        //Debug.LogError("---------------------");
+        //Debug.LogError(UserProgressUtils.getNewUserStateId(currentStateId.Value, 2));
+
         // Необходимо "разлочивать" курсор, т.к. в сцене лекций он лочится
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
@@ -51,15 +73,13 @@ public class MainMenuController : MonoBehaviour {
             connection.Open();
 
             using (var command = connection.CreateCommand()) {
-                command.CommandText = "CREATE TABLE IF NOT EXISTS \"users\" ( \"id\" INTEGER NOT NULL UNIQUE, \"username\" TEXT NOT NULL UNIQUE, \"password\" TEXT NOT NULL, PRIMARY KEY(\"id\" AUTOINCREMENT))";
+                command.CommandText = "CREATE TABLE IF NOT EXISTS \"users\" ( \"id\" INTEGER NOT NULL UNIQUE, " +
+                                        "\"username\" TEXT NOT NULL UNIQUE, \"password\" TEXT NOT NULL, " +
+                                        "PRIMARY KEY(\"id\" AUTOINCREMENT))";
                 command.ExecuteNonQuery();
             }
             connection.Close();
         }
-    }
-
-    public void TestButton() {
-        Debug.LogError("Button pressed");
     }
 
     public void Login() {
@@ -68,41 +88,46 @@ public class MainMenuController : MonoBehaviour {
 
         messageText.color = Color.red;
 
+
         if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password)) {
             using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
-                connection.Open();
+                try {
+                    connection.Open();
 
-                using (var command = connection.CreateCommand()) {
-                    Debug.LogError(username);
-                    command.CommandText = $"SELECT * FROM users WHERE username = '{username}'";
-                    using (var reader = command.ExecuteReader()) {
-                        if (reader.HasRows) {
-                            if (reader.Read()) {
-                                var correctPassword = reader["password"];
-                                if (correctPassword.ToString() == password) {
-                                    chooseLessonButton.interactable = true;
-                                    loginButton.interactable = false;
-                                    registerButton.interactable = false;
+                    using (var command = connection.CreateCommand()) {
+                        Debug.LogError(username);
+                        command.CommandText = $"SELECT * FROM users WHERE username = '{username}'";
+                        using (var reader = command.ExecuteReader()) {
+                            if (reader.HasRows) {
+                                if (reader.Read()) {
+                                    var correctPassword = reader["password"];
+                                    if (correctPassword.ToString() == password) {
+                                        chooseLessonButton.interactable = true;
+                                        loginButton.interactable = false;
+                                        registerButton.interactable = false;
 
-                                    loginInputField.interactable = false;
-                                    passwordInputField.interactable = false;
+                                        loginInputField.interactable = false;
+                                        passwordInputField.interactable = false;
 
-                                    messageText.color = Color.green;
-                                    messageText.text = "Вы успешно вошли в систему!";
+                                        messageText.color = Color.green;
+                                        messageText.text = "Вы успешно вошли в систему!";
 
-                                    MainMenuController.Username = username;
-                                    MainMenuController.IsUserAuthorized = true;
-                                }
-                                else {
-                                    messageText.text = "Неверный пароль";
+                                        MainMenuController.Username = username;
+                                        MainMenuController.IsUserAuthorized = true;
+                                    }
+                                    else {
+                                        messageText.text = "Неверный пароль";
+                                    }
                                 }
                             }
+                            else {
+                                messageText.text = "Неверное имя пользователя";
+                            }
                         }
-                        else {
-                            messageText.text = "Неверное имя пользователя";
-                        }
-                        connection.Close();
                     }
+                }
+                finally {
+                    connection.Close();
                 }
             }
         }
@@ -138,6 +163,11 @@ public class MainMenuController : MonoBehaviour {
 
                                 messageText.color = Color.green;
                                 messageText.text = "Вы успешно вошли в систему!";
+
+                                MainMenuController.Username = username;
+                                MainMenuController.IsUserAuthorized = true;
+
+                                UserProgressUtils.setUserState(Username, UserProgressUtils.StartStateId);
                             }
                         }
                         else {

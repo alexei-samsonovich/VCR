@@ -71,6 +71,7 @@ public class ScrollViewAdapter : MonoBehaviour {
                         WHERE
 	                        ls.number = {curentLesson}
 	                        AND sl.number <= {currentSlide}
+                        ORDER BY q.uniquenumberthroughlecture
                     ";
 
                     command.CommandText = query;
