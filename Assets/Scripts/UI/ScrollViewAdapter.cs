@@ -5,6 +5,8 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+
 public class ScrollViewAdapter : MonoBehaviour {
     [SerializeField] private Button buttonPrefab;
     [SerializeField] private RectTransform content;
@@ -15,7 +17,6 @@ public class ScrollViewAdapter : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.T)) {
             UpdateQuestions();
         }
-
     }
 
     private void Start() {
@@ -44,7 +45,7 @@ public class ScrollViewAdapter : MonoBehaviour {
     }
 
     public void UpdateQuestions() {
-        GetItems(GameController.getCurrentLesson(), GameController.getCurrentSlide(), results => OnReceivedModels(results));
+        GetItems(GameController.getCurrentLessonNumber(), GameController.getCurrentSlideNumber(), results => OnReceivedModels(results));
     }
 
     //private void GetItems(int curentLesson, int currentPart, System.Action<ButtonModel[]> callback)
@@ -73,7 +74,7 @@ public class ScrollViewAdapter : MonoBehaviour {
             List<string> tmp = new List<string>();
             try {
                 tmp = new List<string>(System.IO.File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
-                        $"{GameController.getCurrentLesson()}/Slides/{i}/questions.csv").Split(','));
+                        $"{GameController.getCurrentLessonNumber()}/Slides/{i}/questions.csv").Split(','));
             }
             catch (FileNotFoundException ex) {
                 Debug.Log("GetItems :" + ex.Message);

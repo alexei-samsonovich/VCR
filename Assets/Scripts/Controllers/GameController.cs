@@ -5,6 +5,7 @@ using UnityEngine;
 using System.IO;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using Mono.Data.Sqlite;
 
 
 public class GameController : MonoBehaviour {
@@ -24,8 +25,8 @@ public class GameController : MonoBehaviour {
     string pathToAsksForQuestions = "/Resources/Music/GeneralSounds/AskForQuestions";
     //string pathToSlides = "/Resources/Materials/Lessons/AskForQuestions";
 
-    private static int currentLesson = 1;
-    private static int currentSlide = 1;
+    private static int currentLessonNumber = 1;
+    private static int currentSlideNumber = 1;
 
     private float lectureInterruptTime = 0.0f;
 
@@ -133,14 +134,13 @@ public class GameController : MonoBehaviour {
 
 
     private IEnumerator askStudentForQuestionDuringLecture() {
-        Debug.LogError("question");
 
         lectureInterruptTime = audioController.getClipTime();
+        audioController.resetAudioSourceStartTime();
 
         isTeacherGivingLectureRightNow = false;
         try {
             StopCoroutine(playLectureCoroutine);
-
         }
         catch (Exception ex) {
             Debug.LogError(ex.Message);
@@ -169,19 +169,61 @@ public class GameController : MonoBehaviour {
 
     private float getNeighbourBreakpointOnSlide() {
         try {
-            var breakpoints = File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
-                            $"{currentLesson}/Slides/{currentSlide}/breakpoints.csv").Split(',')
+            // Breakpoint'ы перекочевали в БД
+            /*var breakpoints = File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
+                            $"{currentLessonNumber}/Slides/{currentSlideNumber}/breakpoints.csv").Split(',')
                                                                                      .Select(s => float.TryParse(s, out float n) ? n : (float?)null)
                                                                                      .Where(n => n.HasValue)
                                                                                      .Select(n => n.Value)
-                                                                                     .ToList();
+                                                                                     .ToList();*/
 
+            using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
+                connection.Open();
 
-            var neighbourBreakpoint = breakpoints
-                                            .Where(x => x < lectureInterruptTime)
-                                            .Max(o => (float?) o);
+                using (var command = connection.CreateCommand()) {
+                    try {
+                        var query = $@"
+                            SELECT 
+	                            sb.timepoint
+                            FROM
+	                            slidebreakpoints as sb
+                            INNER JOIN
+	                            slides as sl
+		                            ON sl.id = sb.slideid
+                            INNER JOIN
+	                            lessons as ls
+		                            ON sl.lessonid = ls.id
+                            WHERE 
+	                            (ls.number = {currentLessonNumber} AND sl.number = {currentSlideNumber})
+                            ORDER by sb.timepoint ASC
+                        ";
+                        command.CommandText = query;
+                        using (var reader = command.ExecuteReader()) {
+                            if (reader.HasRows) {
+                                List<float> breakpoints = new List<float>();
+                                while (reader.Read()) {
+                                    breakpoints.Add((float)reader["timepoint"]);
+                                }
+                                var neighbourBreakpoint = breakpoints
+                                                                    .Where(x => x < lectureInterruptTime)
+                                                                    .Max(o => (float?)o);
 
-            return neighbourBreakpoint.GetValueOrDefault(0.0f);
+                                return neighbourBreakpoint.GetValueOrDefault(0.0f);
+                            }
+                            else {
+                                return 0.0f;
+                            }
+                        }
+                    }
+                    catch (Exception ex) {
+                        Debug.LogError(ex);
+                        return 0.0f;
+                    }
+                    finally {
+                        connection.Close();
+                    }
+                }
+            }
         }
         catch (Exception ex) {
             Debug.LogError(ex);
@@ -196,7 +238,7 @@ public class GameController : MonoBehaviour {
     }
 
     private IEnumerator startLecture() {
-        audioController.setClip($"Music/Lessons/{currentLesson}/Lecture/Intro");
+        audioController.setClip($"Music/Lessons/{currentLessonNumber}/Lecture/Intro");
         audioController.PlayCurrentClip();
         yield return new WaitForSeconds(audioController.getCurrentClipLength());
         //audioController.PlayLecture(currentLesson, currentPart);
@@ -239,14 +281,14 @@ public class GameController : MonoBehaviour {
 
         isLectureInProgress = true;
         isTeacherGivingLectureRightNow = true;
-        string lesson = currentLesson.ToString();
+        string lesson = currentLessonNumber.ToString();
 
         // Сколько слайдов - столько и аудизаписей в конкретной лекции.
         var slidesCount = DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/{lesson}/Slides", ".mat");
 
-        setSlideToBoard(GameController.currentSlide);
+        setSlideToBoard(GameController.currentSlideNumber);
         OnSlideChanged();
-        audioController.setClip($"Music/Lessons/{lesson}/Lecture/Slides/{currentSlide}");
+        audioController.setClip($"Music/Lessons/{lesson}/Lecture/Slides/{currentSlideNumber}");
         audioController.setAudioSourceStartTime(shift);
         audioController.PlayCurrentClip();
         yield return new WaitForSeconds(audioController.getCurrentClipLength() - shift);
@@ -254,11 +296,11 @@ public class GameController : MonoBehaviour {
         yield return new WaitForSeconds(0.5f);
         audioController.resetAudioSourceStartTime();
 
-        for (int i = currentSlide + 1; i <= slidesCount; i++) {
-            currentSlide = i;
-            setSlideToBoard(currentSlide);
+        for (int i = currentSlideNumber + 1; i <= slidesCount; i++) {
+            currentSlideNumber = i;
+            setSlideToBoard(currentSlideNumber);
             OnSlideChanged();
-            audioController.setClip($"Music/Lessons/{lesson}/Lecture/Slides/{currentSlide}");
+            audioController.setClip($"Music/Lessons/{lesson}/Lecture/Slides/{currentSlideNumber}");
             audioController.PlayCurrentClip();
             yield return new WaitForSeconds(audioController.getCurrentClipLength());
             audioController.StopCurrentClip();
@@ -270,7 +312,7 @@ public class GameController : MonoBehaviour {
     }
 
     public void setSlideToBoard(int slideNumber) {
-        setMaterial($"Materials/Lessons/{currentLesson}/Slides/{slideNumber}");
+        setMaterial($"Materials/Lessons/{currentLessonNumber}/Slides/{slideNumber}");
     }
 
     private void setMaterial(string pathToMaterial) {
@@ -361,7 +403,7 @@ public class GameController : MonoBehaviour {
     private IEnumerator OnStudentAskQuestionDuringLectureCoroutine(int questionNumber) {
         //uiController.OffQuestionButton();
         yield return new WaitForSeconds(0.5f);
-        string pathToAnswer = $"Music/Lessons/{currentLesson}/Answers/{questionNumber}";
+        string pathToAnswer = $"Music/Lessons/{currentLessonNumber}/Answers/{questionNumber}";
         setClipToAudioControllerAndPlay(pathToAnswer);
         //audioController.playShortSound(pathToAnswer);
         uiController.OffQuestionButton();
@@ -381,7 +423,7 @@ public class GameController : MonoBehaviour {
 
     private IEnumerator OnStudentAskQuestionAfterLectureCoroutine(int questionNumber) {
         yield return new WaitForSeconds(0.5f);
-        string pathToAnswer = $"Music/Lessons/{currentLesson}/Answers/{questionNumber}";
+        string pathToAnswer = $"Music/Lessons/{currentLessonNumber}/Answers/{questionNumber}";
         audioController.playShortSound(pathToAnswer);
         uiController.OffQuestionButton();
         yield return new WaitForSeconds(AudioController.getClipLength(pathToAnswer));
@@ -394,11 +436,11 @@ public class GameController : MonoBehaviour {
     //    slidesCount = DirInfo.getCountOfFiles($"/Resources/Materials/Lessons/Lesson_{currentLesson}/Part_{currentPart}");
     //}
 
-    public static int getCurrentLesson() {
-        return currentLesson;
+    public static int getCurrentLessonNumber() {
+        return currentLessonNumber;
     }
 
-    public static int getCurrentSlide() {
-        return currentSlide;
+    public static int getCurrentSlideNumber() {
+        return currentSlideNumber;
     }
 }
