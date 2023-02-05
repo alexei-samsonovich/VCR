@@ -2965,7 +2965,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u041D\u0430\u0436\u043C\u0438\u0442\u0435 L ALT \u0447\u0442\u043E\u0431\u044B
+  m_Text: "\u041D\u0430\u0436\u043C\u0438\u0442\u0435 L CTRL \u0447\u0442\u043E\u0431\u044B
     \u0441\u043F\u0440\u043E\u0441\u0438\u0442\u044C"
 --- !u!222 &388598073
 CanvasRenderer:

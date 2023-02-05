@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
-
+using System.Linq;
+using Mono.Data.Sqlite;
 
 
 public class ScrollViewAdapter : MonoBehaviour {
@@ -45,59 +46,64 @@ public class ScrollViewAdapter : MonoBehaviour {
     }
 
     public void UpdateQuestions() {
-        GetItems(GameController.getCurrentLessonNumber(), GameController.getCurrentSlideNumber(), results => OnReceivedModels(results));
+        GetItems(GameController.CurrentLessonNumber, GameController.CurrentSlideNumber, results => OnReceivedModels(results));
     }
 
-    //private void GetItems(int curentLesson, int currentPart, System.Action<ButtonModel[]> callback)
-    //{
-    //    List<string> points = new List<string>(System.IO.File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
-    //        $"Lesson_{currentLesson}/Part_{currentPart}/" +
-    //        $"questions.csv").Split(','));
-    //    var results = new ButtonModel[points.Count];
-    //    for (int i = 0; i < points.Count; i++)
-    //    {
-    //        results[i] = new ButtonModel();
-    //        int id;
-    //        if(int.TryParse(points[i].Split(';')[0], out id))
-    //        {
-    //            results[i].ButtonId = id;
-    //            results[i].ButtonText = points[i].Split(';')[1];
-    //        }
-    //    }
-
-    //    callback(results);
-    //}
-
     private void GetItems(int curentLesson, int currentSlide, System.Action<ButtonModel[]> callback) {
-        List<string> points = new List<string>();
-        for (int i = 1; i <= currentSlide; i++) {
-            List<string> tmp = new List<string>();
-            try {
-                tmp = new List<string>(System.IO.File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
-                        $"{GameController.getCurrentLessonNumber()}/Slides/{i}/questions.csv").Split(','));
-            }
-            catch (FileNotFoundException ex) {
-                Debug.Log("GetItems :" + ex.Message);
-            }
-            catch (Exception ex) {
-                Debug.Log("GetItems :" + ex.Message);
-            }
 
+        using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
+            connection.Open();
 
-            points.AddRange(tmp);
+            using (var command = connection.CreateCommand()) {
+                try {
+                    var query = $@"
+                        SELECT
+	                        q.uniquenumberthroughlecture,
+	                        q.text
+                        FROM
+	                        questions as q
+                        INNER JOIN
+	                        slides as sl
+		                        ON q.slideid = sl.id
+                        INNER JOIN
+	                        lessons as ls
+		                        ON ls.id = sl.lessonid
+                        WHERE
+	                        ls.number = {curentLesson}
+	                        AND sl.number <= {currentSlide}
+                    ";
+
+                    command.CommandText = query;
+                    using (var reader = command.ExecuteReader()) {
+                        if (reader.HasRows) {
+                            Dictionary<int, string> questions = new Dictionary<int, string>();
+                            while (reader.Read()) {
+                                questions.Add(Convert.ToInt32(reader["uniquenumberthroughlecture"]), (string)reader["text"]);
+                            }
+                            var results = new ButtonModel[questions.Keys.Count];
+                            int i = 0;
+                            foreach (var question in questions) {
+                                results[i] = new ButtonModel();
+                                results[i].ButtonId = question.Key;
+                                results[i].ButtonText = question.Value;
+                                i++;
+                            }
+                            callback(results);
+                        }
+                        else {
+                            var res = new ButtonModel[0];
+                            callback(res);
+                        }
+                    }
+                }
+                catch (Exception ex) {
+                    Debug.LogError(ex);
+                }
+                finally {
+                    connection.Close();
+                }
+            }
         }
-
-        var results = new ButtonModel[points.Count];
-        for (int i = 0; i < points.Count; i++) {
-            results[i] = new ButtonModel();
-            int id;
-            if (int.TryParse(points[i].Split(';')[0], out id)) {
-                results[i].ButtonId = id;
-                results[i].ButtonText = points[i].Split(';')[1];
-            }
-        }
-
-        callback(results);
     }
 
     void OnReceivedModels(ButtonModel[] models) {
