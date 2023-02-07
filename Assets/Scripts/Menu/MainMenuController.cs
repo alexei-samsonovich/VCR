@@ -5,8 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using Mono.Data.Sqlite;
-
-
+using System.Text.RegularExpressions;
+using System.Linq;
 
 public class MainMenuController : MonoBehaviour {
 
@@ -17,6 +17,10 @@ public class MainMenuController : MonoBehaviour {
     [SerializeField] private Button chooseLessonButton;
     [SerializeField] private Button loginButton;
     [SerializeField] private Button registerButton;
+
+    [SerializeField] private GameObject lessonsMenu;
+
+    public static int TestCurrentLesson { get; set; } = 1;
 
 
     public static bool IsUserAuthorized { get; private set; } = false;
@@ -47,6 +51,8 @@ public class MainMenuController : MonoBehaviour {
         //Debug.LogError("---------------------");
         //Debug.LogError(UserProgressUtils.getNewUserStateId(currentStateId.Value, 2));
 
+        setLessonButtonsOnClickListeners();
+
         // Необходимо "разлочивать" курсор, т.к. в сцене лекций он лочится
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
@@ -63,12 +69,74 @@ public class MainMenuController : MonoBehaviour {
             messageText.color = Color.green;
             messageText.text = "Вы уже авторизованы!";
 
+            activateLessonButtons();
+
             // for button in buttons { button.setActive...}
         }
         else {
             ConnectToDataBase();
 
         }
+    }
+
+    private void activateLessonButtons() {
+        var currentStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
+        if (currentStateId.HasValue) {
+            var leanedLessonsNumbers = UserProgressUtils.getLearnedLessonsNumbers(currentStateId.Value);
+            var availableStatesIds = UserProgressUtils.getAvailableStatesIds(leanedLessonsNumbers);
+
+            ISet<int> lessonNumbers = new HashSet<int>();
+            foreach (var availableStateId in availableStatesIds) {
+                var lessonsInState = UserProgressUtils.getLearnedLessonsNumbers(availableStateId);
+                foreach (var lessonNumber in lessonsInState) {
+                    lessonNumbers.Add(lessonNumber);
+                }
+            }
+
+            foreach (var lessonButtonGO in getLessonButtonsGameObjects()) {
+                var regex = new Regex("\\d+");
+                var match = regex.Match(lessonButtonGO.name);
+
+                if (match.Success) {
+                    var isLessonNumberParsed = int.TryParse(match.Value, out int lessonNumber);
+                    if (isLessonNumberParsed) {
+                        var button = lessonButtonGO.GetComponent<Button>();
+                        if (lessonNumbers.Contains(lessonNumber)) {
+                            button.interactable = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void setLessonButtonsOnClickListeners() {
+        foreach (var lessonButtonGO in getLessonButtonsGameObjects()) {
+            var regex = new Regex("\\d+");
+            var match = regex.Match(lessonButtonGO.name);
+
+            if (match.Success && int.TryParse(match.Value, out int lessonNumber)) {
+                var button = lessonButtonGO.GetComponent<Button>();
+                button.onClick.AddListener(delegate {
+                    StartLesson(lessonNumber);
+                });
+            }
+        }
+    }
+
+    private ISet<GameObject> getLessonButtonsGameObjects() {
+        ISet<GameObject> lessonButtonGameObjects = new HashSet<GameObject>();
+        for (int i = 0; i < lessonsMenu.transform.childCount; i++) {
+            GameObject child = lessonsMenu.transform.GetChild(i).gameObject;
+
+            string strRegex = @"[lL]esson_\d{1,3}";
+
+            Regex re = new Regex(strRegex);
+            if (re.IsMatch(child.name)) {
+                lessonButtonGameObjects.Add(child);
+            }
+        }
+        return lessonButtonGameObjects;
     }
 
     private void ConnectToDataBase() {
@@ -117,6 +185,8 @@ public class MainMenuController : MonoBehaviour {
 
                                         MainMenuController.Username = username;
                                         MainMenuController.IsUserAuthorized = true;
+
+                                        activateLessonButtons();
                                     }
                                     else {
                                         messageText.text = "Неверный пароль";
@@ -171,6 +241,7 @@ public class MainMenuController : MonoBehaviour {
                                 MainMenuController.IsUserAuthorized = true;
 
                                 UserProgressUtils.setUserState(Username, UserProgressUtils.StartStateId);
+                                activateLessonButtons();
                             }
                         }
                         else {
@@ -186,7 +257,8 @@ public class MainMenuController : MonoBehaviour {
         }
     }
 
-    public void StartLesson() {
+    public void StartLesson(int currentLessonNumber) {
+        TestCurrentLesson = currentLessonNumber;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 

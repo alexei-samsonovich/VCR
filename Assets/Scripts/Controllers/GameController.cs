@@ -39,15 +39,19 @@ public class GameController : MonoBehaviour {
 
     float timeWhileTalking = 0.0f;
 
-
+   
     private void Awake() {
         Messenger.AddListener(PlayerEvent.SIT, StartGameProcess);
         Messenger.AddListener(GameEvent.LECTURE_PART_FINISHED, OnLectureFinished);
         Messenger<int>.AddListener(GameEvent.STUDENT_ASK_QUESTION, OnStudentAskQuestion);
+
+        DontDestroyOnLoad(transform.gameObject);
     }
 
     void Start() {
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
+
+        Debug.LogError($"Current test lesson number - {MainMenuController.TestCurrentLesson}");
 
         lessonsCount = DirInfo.getCountOfFolders("/Resources/Music/Lessons");
         askingForQuestionCount = DirInfo.getCountOfFilesInFolder(pathToAsksForQuestions, ".mp3");
@@ -192,7 +196,12 @@ public class GameController : MonoBehaviour {
 
 
     private void StartGameProcess() {
-        StartCoroutine("startLecture");
+        try {
+            StartCoroutine("startLecture");
+        }
+        catch (Exception ex) {
+            Debug.LogError($"Exception - {ex}");
+        }
     }
 
     private IEnumerator startLecture() {
@@ -273,7 +282,13 @@ public class GameController : MonoBehaviour {
     private void StartNextLecture() {
         // —брасываем состо€ние студента перед выходом со сцены
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
-
+        var userStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
+        if (userStateId.HasValue) {
+            var newUserStateId = UserProgressUtils.getNewUserStateId(userStateId.Value, MainMenuController.TestCurrentLesson);
+            if (newUserStateId.HasValue) {
+                UserProgressUtils.setUserState(MainMenuController.Username, newUserStateId.Value);
+            }
+        }
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
 
         /*if (currentPart != lessonsToParts[currentLesson])
