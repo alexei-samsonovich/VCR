@@ -102,6 +102,11 @@ public class MainMenuController : MonoBehaviour {
                     if (isLessonNumberParsed) {
                         var button = lessonButtonGO.GetComponent<Button>();
                         if (lessonNumbers.Contains(lessonNumber)) {
+                            if (leanedLessonsNumbers.Contains(lessonNumber)) {
+                                var colors = button.colors;
+                                colors.normalColor = Color.green;
+                                button.colors = colors;
+                            }
                             button.interactable = true;
                         }
                     }
