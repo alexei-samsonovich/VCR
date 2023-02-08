@@ -17,6 +17,11 @@ public class UIController : MonoBehaviour
         Messenger.AddListener(GameEvent.ASKS_FINISHED, OnAsksFinished);
     }
 
+    private void OnDestroy() {
+        Messenger.RemoveListener(GameEvent.LECTURE_PART_FINISHED, OnLecturePartFinished);
+        Messenger.RemoveListener(GameEvent.ASKS_FINISHED, OnAsksFinished);
+    }
+
     private void Start()
     {
         questionButton.interactable = false;

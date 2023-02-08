@@ -20,9 +20,9 @@ public class GameController : MonoBehaviour {
     [SerializeField] private EmotionsController emotionsController;
     [SerializeField] private SpeechRecognizerController speechRecognizerController;
 
-    private int lessonsCount;
+    //private int lessonsCount;
 
-    public static int askingForQuestionCount;
+    //public static int askingForQuestionCount;
     string pathToAsksForQuestions = "/Resources/Music/GeneralSounds/AskForQuestions";
     //string pathToSlides = "/Resources/Materials/Lessons/AskForQuestions";
 
@@ -44,8 +44,12 @@ public class GameController : MonoBehaviour {
         Messenger.AddListener(PlayerEvent.SIT, StartGameProcess);
         Messenger.AddListener(GameEvent.LECTURE_PART_FINISHED, OnLectureFinished);
         Messenger<int>.AddListener(GameEvent.STUDENT_ASK_QUESTION, OnStudentAskQuestion);
+    }
 
-        DontDestroyOnLoad(transform.gameObject);
+    private void OnDestroy() {
+        Messenger.RemoveListener(PlayerEvent.SIT, StartGameProcess);
+        Messenger.RemoveListener(GameEvent.LECTURE_PART_FINISHED, OnLectureFinished);
+        Messenger<int>.RemoveListener(GameEvent.STUDENT_ASK_QUESTION, OnStudentAskQuestion);
     }
 
     void Start() {
@@ -53,8 +57,8 @@ public class GameController : MonoBehaviour {
 
         Debug.LogError($"Current test lesson number - {MainMenuController.TestCurrentLesson}");
 
-        lessonsCount = DirInfo.getCountOfFolders("/Resources/Music/Lessons");
-        askingForQuestionCount = DirInfo.getCountOfFilesInFolder(pathToAsksForQuestions, ".mp3");
+        //lessonsCount = DirInfo.getCountOfFolders("/Resources/Music/Lessons");
+        //askingForQuestionCount = DirInfo.getCountOfFilesInFolder(pathToAsksForQuestions, ".mp3");
 
         if (MainMenuController.IsUserAuthorized) {
             Debug.LogError($"Username - {MainMenuController.Username}");
@@ -262,6 +266,7 @@ public class GameController : MonoBehaviour {
     }
 
     private void OnLectureFinished() {
+        var askingForQuestionCount = DirInfo.getCountOfFilesInFolder(pathToAsksForQuestions, ".mp3");
         int number = UnityEngine.Random.Range(1, askingForQuestionCount + 1);
         string path = $"Music/GeneralSounds/AskForQuestions/ask_for_questions_{number}";
         audioController.playShortSound(path);
@@ -282,6 +287,7 @@ public class GameController : MonoBehaviour {
     private void StartNextLecture() {
         // —брасываем состо€ние студента перед выходом со сцены
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
+
         var userStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
         if (userStateId.HasValue) {
             var newUserStateId = UserProgressUtils.getNewUserStateId(userStateId.Value, MainMenuController.TestCurrentLesson);
@@ -289,6 +295,11 @@ public class GameController : MonoBehaviour {
                 UserProgressUtils.setUserState(MainMenuController.Username, newUserStateId.Value);
             }
         }
+
+        // —брос переменных
+        lectureInterruptTime = 0.0f;
+        CurrentSlideNumber = 1;
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
 
         /*if (currentPart != lessonsToParts[currentLesson])

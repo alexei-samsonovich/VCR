@@ -17,7 +17,7 @@ public class AudioController : MonoBehaviour
         //    playShortSound("Music/Lessons/Lesson_1/Part_1/Questions/Lesson_1_Part_1_question_1");
         //}
 
-        Debug.Log(_audioSource.time);
+        //Debug.Log(_audioSource.time);
     }
 
     //private void playSound()

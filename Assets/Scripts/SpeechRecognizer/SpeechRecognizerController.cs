@@ -12,8 +12,9 @@ public class SpeechRecognizerController : MonoBehaviour
     private KeywordRecognizer keywordRecognizer;
     private Dictionary<string, int> actions = new Dictionary<string, int>();
 
-    private void Start()
-    {
+    private void Awake() {
+        DontDestroyOnLoad(this.transform.gameObject);
+
         actions.Add("first", 1);
         actions.Add("second", 2);
         actions.Add("third", 3);
@@ -29,6 +30,7 @@ public class SpeechRecognizerController : MonoBehaviour
         keywordRecognizer.OnPhraseRecognized += RecognizedSpeech;
 
         keywordRecognizer.Start();
+
     }
 
     private void RecognizedSpeech(PhraseRecognizedEventArgs speech)
