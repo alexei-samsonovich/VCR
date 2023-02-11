@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class PipeServer : MonoBehaviour {
+public class PipeServer {
     public static PipeServer Instance { get; private set; }
 
     public event EventHandler<PipeCommand> onPipeCommandReceived;
@@ -22,6 +22,9 @@ public class PipeServer : MonoBehaviour {
     private Queue<string> writeQueue;
     private object readLock;
     private object writeLock;
+
+    public static NamedPipeServerStream pipeReadServer;
+    public static NamedPipeServerStream pipeWriteServer;
 
     public PipeServer() {
         Instance = this;
@@ -43,11 +46,15 @@ public class PipeServer : MonoBehaviour {
         FunctionUpdater.Create(ReadMessages);
     }
 
-    private void ServerThreadRead() {
-        using (NamedPipeServerStream pipeReadServer = new NamedPipeServerStream(ReadPipeName, PipeDirection.In)) {
+    public void CreateNewGameObjectPipeListener() {
+        FunctionUpdater.Create(ReadMessages);
+    }
 
-            Debug.LogError("Start pipe read server...");
+    private void ServerThreadRead() {
+        using (pipeReadServer = new NamedPipeServerStream(ReadPipeName, PipeDirection.In)) {
             
+            Debug.LogError("Start pipe read server...");
+
             // ќжидаем подключени€ клиента
             pipeReadServer.WaitForConnection();
             Debug.LogError("Client Read connected!");
@@ -57,26 +64,28 @@ public class PipeServer : MonoBehaviour {
 
                 while (true) {
                     string jsonMessage = readStreamString.ReadString();
+                    Debug.LogError("json message " + jsonMessage);
 
-                    // Ќа вс€кий случай добавл€ем лок при добавлении сообщени€ в очередь 
+                    //Ќа вс€кий случай добавл€ем лок при добавлении сообщени€ в очередь
                     // прочитанных, но еще не полученных сообщений
                     lock (readLock) {
                         readQueue.Enqueue(jsonMessage);
                     }
 
-                    Thread.Sleep(10);
+                    if (Thread.CurrentThread.ThreadState != ThreadState.Aborted) {
+                        Thread.Sleep(10);
+                    }
                 }
             }
             catch (Exception ex) {
                 Debug.LogError(ex);
             }
-            Debug.LogError("Pipe closed!");
         }
+        Debug.LogError("Read server finished");
     }
 
     private void ServerThreadWrite() {
-        using (NamedPipeServerStream pipeWriteServer = new NamedPipeServerStream(WritePipeName, PipeDirection.Out)) {
-
+        using (pipeWriteServer = new NamedPipeServerStream(WritePipeName, PipeDirection.Out)) {
             Debug.LogError("Start pipe write server...");
             // ќжидаем подключени€ клиента
             pipeWriteServer.WaitForConnection();
@@ -100,23 +109,25 @@ public class PipeServer : MonoBehaviour {
                         Debug.LogError("Send message: " + messageFromQueue);
                         writeStreamString.WriteString(messageFromQueue);
                     }
-
-                    Thread.Sleep(10);
+                    
+                    if (Thread.CurrentThread.ThreadState != ThreadState.Aborted) {
+                        Thread.Sleep(10);
+                    }
                 }
             }
             catch (Exception ex) {
                 Debug.LogError(ex);
             }
-            Debug.LogError("Pipe closed!");
+            Debug.LogError("Write server finished");
         }
     }
-    
+
 
     public new void SendMessage(string message) {
         SendMessage(new PipeCommand { command = message });
     }
 
-    public void SendMessage (PipeCommand pipeCommand) {
+    public void SendMessage(PipeCommand pipeCommand) {
         lock (writeQueue) {
             writeQueue.Enqueue(JsonUtility.ToJson(pipeCommand));
         }
@@ -134,8 +145,25 @@ public class PipeServer : MonoBehaviour {
 
     public void DestroySelf() {
         // «апускаетс€ в OnDestroy, вырубает потоки-серверы
-        readThread.Abort();
-        writeThread.Abort();
+        Debug.LogError("Pipe server destroy self!");
+        Debug.LogError("is alive write therad - " + readThread.IsAlive);
+        Debug.LogError("is alive write therad - " + writeThread.IsAlive);
+        try {
+            if (readThread != null && readThread.ThreadState != ThreadState.Aborted) {
+                using (NamedPipeClientStream pipeReadClient = new NamedPipeClientStream(".", WritePipeName, PipeDirection.In)) {
+                    pipeReadClient.Connect();
+                }
+            }
+            if (writeThread != null && writeThread.ThreadState != ThreadState.Aborted) {
+                using (NamedPipeClientStream pipeWriteClient = new NamedPipeClientStream(".", ReadPipeName, PipeDirection.Out)) {
+                    pipeWriteClient.Connect();
+                }
+            }
+        } finally {
+            Thread.Sleep(100);
+            readThread?.Abort();
+            writeThread?.Abort();
+        }
     }
 }
 
@@ -148,11 +176,11 @@ public struct PipeCommand {
 
 public class StreamString {
     private Stream ioStream;
-    private UnicodeEncoding streamEncoding;
+    private UTF8Encoding streamEncoding;
 
     public StreamString(Stream ioStream) {
         this.ioStream = ioStream;
-        streamEncoding = new UnicodeEncoding();
+        streamEncoding = new UTF8Encoding();
     }
 
     public string ReadString() {

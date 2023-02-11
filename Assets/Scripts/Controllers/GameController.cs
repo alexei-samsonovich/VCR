@@ -61,19 +61,21 @@ public class GameController : MonoBehaviour {
     void Start() {
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
 
-        pipeServer = new PipeServer();
-        pipeServer.onPipeCommandReceived += (pipeServer_, pipeCommand) => {
-            Debug.LogError(pipeCommand.command);
-        };
-        pipeServer.Start();
+        // Запускаем pipe server только если он еще не был запущен!
+        if (PipeServer.Instance == null) {
+            pipeServer = new PipeServer();
+            pipeServer.onPipeCommandReceived += (pipeServer_, pipeCommand) => {
+                Debug.LogError(pipeCommand.command);
+            };
+            pipeServer.Start();
+        } else {
+            pipeServer = PipeServer.Instance;
+            pipeServer.CreateNewGameObjectPipeListener();
+        }
 
         testButton.GetComponent<Button>().onClick.AddListener(delegate {
-            var text = testInputField.text;
-            Debug.LogError(text);
-            pipeServer.SendMessage(text);
+            pipeServer.SendMessage(testInputField.text);
         });
-
-        Debug.LogError($"Current test lesson number - {MainMenuController.TestCurrentLesson}");
 
         //lessonsCount = DirInfo.getCountOfFolders("/Resources/Music/Lessons");
         //askingForQuestionCount = DirInfo.getCountOfFilesInFolder(pathToAsksForQuestions, ".mp3");
@@ -84,6 +86,7 @@ public class GameController : MonoBehaviour {
     }
 
     private void Update() {
+
         if (Input.GetKeyDown(KeyCode.LeftControl) && isStudentAskQuestion == false && isTeacherGivingLectureRightNow == true) {
             string responseAction = moralSchema.getResponseActionNew("Student Ask Question During Lecture");
             emotionsController.setEmotion(emotionsController.getEmotion());
@@ -245,7 +248,7 @@ public class GameController : MonoBehaviour {
         isTeacherGivingLectureRightNow = true;
 
         // Сколько слайдов - столько и аудизаписей в конкретной лекции.
-        var slidesCount = DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/{CurrentLessonNumber}/Slides", ".mat");
+        var slidesCount = 1; //DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/{CurrentLessonNumber}/Slides", ".mat");
 
         setSlideToBoard(GameController.CurrentSlideNumber);
         OnSlideChanged();

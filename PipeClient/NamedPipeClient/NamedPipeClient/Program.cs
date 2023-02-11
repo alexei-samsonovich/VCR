@@ -184,11 +184,11 @@ namespace NamedPipeClient {
 
 public class StreamString {
     private Stream ioStream;
-    private UnicodeEncoding streamEncoding;
+    private UTF8Encoding streamEncoding;
 
     public StreamString(Stream ioStream) {
         this.ioStream = ioStream;
-        streamEncoding = new UnicodeEncoding();
+        streamEncoding = new UTF8Encoding();
     }
 
     public string ReadString() {

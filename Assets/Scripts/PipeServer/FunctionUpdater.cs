@@ -18,7 +18,6 @@ public class FunctionUpdater {
         private void Update() {
             if (OnUpdate != null) OnUpdate();
         }
-
     }
 
     private static List<FunctionUpdater> updaterList; 
