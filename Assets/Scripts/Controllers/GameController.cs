@@ -6,6 +6,7 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using Mono.Data.Sqlite;
+using UnityEngine.UI;
 
 
 public class GameController : MonoBehaviour {
@@ -19,6 +20,11 @@ public class GameController : MonoBehaviour {
     [SerializeField] private MoralSchema moralSchema;
     [SerializeField] private EmotionsController emotionsController;
     [SerializeField] private SpeechRecognizerController speechRecognizerController;
+
+    [SerializeField] private GameObject testButton;
+    [SerializeField] private InputField testInputField;
+
+    private PipeServer pipeServer;
 
     //private int lessonsCount;
 
@@ -54,6 +60,18 @@ public class GameController : MonoBehaviour {
 
     void Start() {
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
+
+        pipeServer = new PipeServer();
+        pipeServer.onPipeCommandReceived += (pipeServer_, pipeCommand) => {
+            Debug.LogError(pipeCommand.command);
+        };
+        pipeServer.Start();
+
+        testButton.GetComponent<Button>().onClick.AddListener(delegate {
+            var text = testInputField.text;
+            Debug.LogError(text);
+            pipeServer.SendMessage(text);
+        });
 
         Debug.LogError($"Current test lesson number - {MainMenuController.TestCurrentLesson}");
 
