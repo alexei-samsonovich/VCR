@@ -90,6 +90,44 @@ public static class UserProgressUtils {
         //}
     }
 
+    public static string getLessonSummary(int lessonNumber) {
+        using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
+            try {
+                connection.Open();
+
+                using (var command = connection.CreateCommand()) {
+
+                    var query = $@"
+                        SELECT 
+	                        summary
+                        FROM
+	                        lessons as ls
+                        WHERE 
+	                        ls.number = {lessonNumber}
+                    ";
+                    command.CommandText = query;
+                    using (var reader = command.ExecuteReader()) {
+                        if (reader.HasRows) {
+                            reader.Read();
+                            return reader["summary"] as string;
+                        }
+                        else {
+                            return null;
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex) {
+                Debug.LogError(ex);
+                return null;
+            }
+            finally {
+                connection.Close();
+            }
+        }
+    }
+
     public static void setUserState(string username, int newStateId) {
         using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
             try {
@@ -411,7 +449,7 @@ public static class UserProgressUtils {
 
                         int lessonId = LessonNumberToId[lessonNumber];
                         var query = $@"
-                            INSERT INTO statelesson (state_id, lesson_id) 
+                            INSERT INTO state_lesson (state_id, lesson_id) 
                             VALUES({stateId}, {lessonId});
                         ";
                         command.CommandText = query;

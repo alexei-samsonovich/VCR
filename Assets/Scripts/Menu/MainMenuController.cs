@@ -28,6 +28,15 @@ public class MainMenuController : MonoBehaviour {
 
     private void Start() {
 
+        //UserProgressUtils.setUserState("Vladislav", 2);
+        //UserProgressUtils.setUserState("Vladislav", 3);
+        //UserProgressUtils.setUserState("Vladislav", 4);
+        //UserProgressUtils.setUserState("Vladislav", 6);
+        //UserProgressUtils.setUserState("Vladislav", 7);
+        //UserProgressUtils.setUserState("Vladislav", 8);
+        //UserProgressUtils.setUserState("Vladislav", 9);
+
+
         //Debug.LogError(UserProgressUtils.getUserStateId("enikeevv"));
         //var username = "enikeevv";
 
@@ -50,6 +59,24 @@ public class MainMenuController : MonoBehaviour {
         //}
         //Debug.LogError("---------------------");
         //Debug.LogError(UserProgressUtils.getNewUserStateId(currentStateId.Value, 2));
+
+        //UserProgressUtils.addNewStateToDB(2, new List<int> { 1 });
+        //UserProgressUtils.addNewStateToDB(3, new List<int> { 1, 2 });
+        //UserProgressUtils.addNewStateToDB(4, new List<int> { 1, 2, 3 });
+        //UserProgressUtils.addNewStateToDB(5, new List<int> { 1, 2, 4 });
+        //UserProgressUtils.addNewStateToDB(6, new List<int> { 1, 2, 3, 4 });
+        //UserProgressUtils.addNewStateToDB(7, new List<int> { 1, 2, 3, 4, 5 });
+        //UserProgressUtils.addNewStateToDB(8, new List<int> { 1, 2, 3, 4, 5, 6 });
+        //UserProgressUtils.addNewStateToDB(9, new List<int> { 1, 2, 3, 4, 5, 6, 7 });
+        //UserProgressUtils.addNewStateToDB(10, new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 });
+        //UserProgressUtils.addNewStateToDB(11, new List<int> { 1, 2, 3, 4, 5, 6, 7, 9 });
+        //UserProgressUtils.addNewStateToDB(12, new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+        //UserProgressUtils.addNewStateToDB(13, new List<int> { 1, 2, 3, 4, 5, 6, 7, 9, 10 });
+        //UserProgressUtils.addNewStateToDB(14, new List<int> { 1, 2, 3, 4, 5, 6, 7, 9, 11 });
+        //UserProgressUtils.addNewStateToDB(15, new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+        //UserProgressUtils.addNewStateToDB(16, new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 11 });
+        //UserProgressUtils.addNewStateToDB(17, new List<int> { 1, 2, 3, 4, 5, 6, 7, 9, 10, 11 });
+        //UserProgressUtils.addNewStateToDB(18, new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 });
 
         setLessonButtonsOnClickListeners();
 
@@ -75,7 +102,6 @@ public class MainMenuController : MonoBehaviour {
         }
         else {
             ConnectToDataBase();
-
         }
     }
 
@@ -125,6 +151,9 @@ public class MainMenuController : MonoBehaviour {
                 button.onClick.AddListener(delegate {
                     StartLesson(lessonNumber);
                 });
+                string lessonSummary = UserProgressUtils.getLessonSummary(lessonNumber);
+                if (lessonSummary != null)
+                    button.GetComponentInChildren<Text>().text = lessonSummary;
             }
         }
     }

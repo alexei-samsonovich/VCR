@@ -65,7 +65,7 @@ public class GameController : MonoBehaviour {
         if (PipeServer.Instance == null) {
             pipeServer = new PipeServer();
             pipeServer.onPipeCommandReceived += (pipeServer_, pipeCommand) => {
-                Debug.LogError(pipeCommand.command);
+                Debug.LogError("Получение сообщение от клиента.\nСообщение: " + pipeCommand.command);
             };
             pipeServer.Start();
         } else {
@@ -75,6 +75,7 @@ public class GameController : MonoBehaviour {
 
         testButton.GetComponent<Button>().onClick.AddListener(delegate {
             pipeServer.SendMessage(testInputField.text);
+            testInputField.text = "";
         });
 
         //lessonsCount = DirInfo.getCountOfFolders("/Resources/Music/Lessons");

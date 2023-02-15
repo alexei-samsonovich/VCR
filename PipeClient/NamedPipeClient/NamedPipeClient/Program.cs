@@ -12,7 +12,7 @@ namespace NamedPipeClient {
     class Program {
         static void Main(string[] args) {
             PipeClient pipeClient = new PipeClient();
-            pipeClient.OnPipeCommandReceived += (pipeClient_, pipeCommand) => { Console.WriteLine(pipeCommand.Command); };
+            pipeClient.OnPipeCommandReceived += (pipeClient_, pipeCommand) => { Console.WriteLine($"Получено сообщение: " + pipeCommand.Command + "\n"); };
             pipeClient.Start();
 
             while (true) {
