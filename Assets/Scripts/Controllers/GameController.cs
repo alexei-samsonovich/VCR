@@ -26,6 +26,8 @@ public class GameController : MonoBehaviour {
 
     private PipeServer pipeServer;
 
+    private Action<byte[]> YSKspeechSynthesizedHandler;
+
     //private int lessonsCount;
 
     //public static int askingForQuestionCount;
@@ -47,24 +49,29 @@ public class GameController : MonoBehaviour {
 
    
     private void Awake() {
+        // Добавляем обработчики событий
         Messenger.AddListener(PlayerEvent.SIT, StartGameProcess);
         Messenger.AddListener(GameEvent.LECTURE_PART_FINISHED, OnLectureFinished);
         Messenger<int>.AddListener(GameEvent.STUDENT_ASK_QUESTION, OnStudentAskQuestion);
+
+        YSKspeechSynthesizedHandler = (speechBytes) => {
+            var audioClip = AudioConverter.Convert(speechBytes);
+            audioController.playShortSound(audioClip);
+        };
+        YandexSpeechKit.onSpeechSynthesized += YSKspeechSynthesizedHandler;
     }
 
     private void OnDestroy() {
+        // Удаляем обработчики событий
         Messenger.RemoveListener(PlayerEvent.SIT, StartGameProcess);
         Messenger.RemoveListener(GameEvent.LECTURE_PART_FINISHED, OnLectureFinished);
         Messenger<int>.RemoveListener(GameEvent.STUDENT_ASK_QUESTION, OnStudentAskQuestion);
+
+        if (YSKspeechSynthesizedHandler != null) YandexSpeechKit.onSpeechSynthesized -= YSKspeechSynthesizedHandler;
     }
 
     void Start() {
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
-
-        YandexSpeechKit.onSpeechSynthesized += (speechBytes) => {
-            var audioClip = AudioConverter.Convert(speechBytes);
-            audioController.playShortSound(audioClip);
-        };
 
         // Запускаем pipe server только если он еще не был запущен!
         if (PipeServer.Instance == null) {
@@ -74,6 +81,12 @@ public class GameController : MonoBehaviour {
                 YandexSpeechKit.TextToSpeech(pipeCommand.command, YSKVoice.ERMIL, YSKEmotion.GOOD);
             };
             pipeServer.Start();
+
+            // Запускаем pipe-клиент
+            var pipeClientExePath = Application.dataPath.Replace("/Assets", "") + "/PipeClient/NamedPipeClient/NamedPipeClient/bin/Debug/net5.0/NamedPipeClient.exe";
+            var process = new System.Diagnostics.Process();
+            process.StartInfo.FileName = pipeClientExePath;
+            process.Start();
 
         } else {
             pipeServer = PipeServer.Instance;
@@ -253,7 +266,7 @@ public class GameController : MonoBehaviour {
         isTeacherGivingLectureRightNow = true;
 
         // Сколько слайдов - столько и аудизаписей в конкретной лекции.
-        var slidesCount = DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/{CurrentLessonNumber}/Slides", ".mat");
+        var slidesCount = 1;// DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/{CurrentLessonNumber}/Slides", ".mat");
 
         setSlideToBoard(GameController.CurrentSlideNumber);
         OnSlideChanged();
