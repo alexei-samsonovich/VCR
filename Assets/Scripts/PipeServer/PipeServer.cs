@@ -53,18 +53,18 @@ public class PipeServer {
     private void ServerThreadRead() {
         using (pipeReadServer = new NamedPipeServerStream(ReadPipeName, PipeDirection.In)) {
             
-            Debug.LogError("Start pipe read server...");
+            Debug.Log("[PipeServer]: Start pipe read server...");
 
             // Ожидаем подключения клиента
             pipeReadServer.WaitForConnection();
-            Debug.LogError("Client Read connected!");
+            Debug.Log("[PipeServer]: Client Read connected!");
 
             try {
                 StreamString readStreamString = new StreamString(pipeReadServer);
 
                 while (true) {
                     string jsonMessage = readStreamString.ReadString();
-                    Debug.LogError("json message " + jsonMessage);
+                    Debug.Log($"[PipeServer]: get json message - {jsonMessage} ");
 
                     //На всякий случай добавляем лок при добавлении сообщения в очередь
                     // прочитанных, но еще не полученных сообщений
@@ -81,15 +81,15 @@ public class PipeServer {
                 Debug.LogError(ex);
             }
         }
-        Debug.LogError("Read server finished");
+        Debug.LogError("[PipeServer]: Read server finished");
     }
 
     private void ServerThreadWrite() {
         using (pipeWriteServer = new NamedPipeServerStream(WritePipeName, PipeDirection.Out)) {
-            Debug.LogError("Start pipe write server...");
+            Debug.Log("[PipeServer]: Start pipe write server...");
             // Ожидаем подключения клиента
             pipeWriteServer.WaitForConnection();
-            Debug.LogError("Client Write connected!");
+            Debug.Log("[PipeServer]: Client Write connected!");
 
             try {
                 StreamString writeStreamString = new StreamString(pipeWriteServer);
@@ -118,7 +118,7 @@ public class PipeServer {
             catch (Exception ex) {
                 Debug.LogError(ex);
             }
-            Debug.LogError("Write server finished");
+            Debug.Log("[PipeServer]: Write server finished");
         }
     }
 
@@ -145,18 +145,25 @@ public class PipeServer {
 
     public void DestroySelf() {
         // Запускается в OnDestroy, вырубает потоки-серверы
-        Debug.LogError("Pipe server destroy self!");
-        Debug.LogError("is alive write therad - " + readThread.IsAlive);
-        Debug.LogError("is alive write therad - " + writeThread.IsAlive);
+        Debug.Log("[PipeServer]: Pipe server destroy self!");
+        Debug.Log("[PipeServer]: is alive read thread - " + readThread.IsAlive);
+        Debug.Log("[PipeServer]: is alive write thread - " + writeThread.IsAlive);
         try {
             if (readThread != null && readThread.ThreadState != ThreadState.Aborted) {
                 using (NamedPipeClientStream pipeReadClient = new NamedPipeClientStream(".", WritePipeName, PipeDirection.In)) {
-                    pipeReadClient.Connect();
+                    try {
+                        pipeReadClient.Connect();
+                    }
+                    catch (Exception ex) { }
+                    
                 }
             }
             if (writeThread != null && writeThread.ThreadState != ThreadState.Aborted) {
                 using (NamedPipeClientStream pipeWriteClient = new NamedPipeClientStream(".", ReadPipeName, PipeDirection.Out)) {
-                    pipeWriteClient.Connect();
+                    try {
+                        pipeWriteClient.Connect();
+                    }
+                    catch (Exception ex) { }
                 }
             }
         } finally {

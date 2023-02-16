@@ -71,7 +71,7 @@ public class GameController : MonoBehaviour {
             pipeServer = new PipeServer();
             pipeServer.onPipeCommandReceived += (pipeServer_, pipeCommand) => {
                 Debug.LogError("Получение сообщение от клиента.\nСообщение: " + pipeCommand.command);
-                YandexSpeechKit.TextToSpeech(pipeCommand.command, YSKVoice.ALENA);
+                YandexSpeechKit.TextToSpeech(pipeCommand.command, YSKVoice.ERMIL, YSKEmotion.GOOD);
             };
             pipeServer.Start();
 

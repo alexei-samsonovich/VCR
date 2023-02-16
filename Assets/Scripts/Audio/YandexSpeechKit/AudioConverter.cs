@@ -16,9 +16,7 @@ public static class AudioConverter
 
     public static AudioClip Convert(byte[] pcmBinary) {
         if (showDebugMessages) Debug.Log("[AudioConverter] starting: " + pcmBinary.Length);
-
-        Debug.LogError(pcmBinary.Length);
-        Debug.LogError(System.Text.Encoding.UTF8.GetString(pcmBinary));
+        Debug.Log($"[AudioConverter]: get bytes. Length - {pcmBinary.Length}");
 
         return CreateAudioClip(pcmBinary);
     }
