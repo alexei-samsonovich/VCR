@@ -249,7 +249,7 @@ public class GameController : MonoBehaviour {
         isTeacherGivingLectureRightNow = true;
 
         // Сколько слайдов - столько и аудизаписей в конкретной лекции.
-        var slidesCount = 1; //DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/{CurrentLessonNumber}/Slides", ".mat");
+        var slidesCount = DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/{CurrentLessonNumber}/Slides", ".mat");
 
         setSlideToBoard(GameController.CurrentSlideNumber);
         OnSlideChanged();
