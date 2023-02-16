@@ -141,7 +141,7 @@ namespace NamedPipeClient {
                 try {
                     streamWriteString = new StreamString(pipeWriteClient);
 
-                    SendMessage("Hello from the Client!");
+                    //SendMessage("Hello from the Client!");
 
                     while (true) {
                         string messageFromQueue = null;

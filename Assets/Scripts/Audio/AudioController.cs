@@ -33,6 +33,10 @@ public class AudioController : MonoBehaviour
     //    _audioSource.PlayOneShot(_clip);
     //}
 
+    public void playShortSound(AudioClip clip) {
+        _audioSource.PlayOneShot(clip);
+    }
+
     public void playShortSound(string path)
     {
         AudioClip _clip = Resources.Load(path) as AudioClip;

@@ -61,13 +61,20 @@ public class GameController : MonoBehaviour {
     void Start() {
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
 
+        YandexSpeechKit.onSpeechSynthesized += (speechBytes) => {
+            var audioClip = AudioConverter.Convert(speechBytes);
+            audioController.playShortSound(audioClip);
+        };
+
         // Запускаем pipe server только если он еще не был запущен!
         if (PipeServer.Instance == null) {
             pipeServer = new PipeServer();
             pipeServer.onPipeCommandReceived += (pipeServer_, pipeCommand) => {
                 Debug.LogError("Получение сообщение от клиента.\nСообщение: " + pipeCommand.command);
+                YandexSpeechKit.TextToSpeech(pipeCommand.command, YSKVoice.ALENA);
             };
             pipeServer.Start();
+
         } else {
             pipeServer = PipeServer.Instance;
             pipeServer.CreateNewGameObjectPipeListener();
@@ -100,7 +107,6 @@ public class GameController : MonoBehaviour {
             }
         }
 
-
         if (isTeacherGivingLectureRightNow == true) {
             timeWhileTalking += Time.deltaTime;
             if (timeWhileTalking > 5.0f) {
@@ -111,8 +117,6 @@ public class GameController : MonoBehaviour {
                 }
             }
         }
-        //Cursor.lockState = CursorLockMode.None;
-        //Cursor.visible = true;
     }
 
     private IEnumerator resetEmotionsCoroutine() {
