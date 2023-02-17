@@ -29,6 +29,8 @@ public class MainMenuController : MonoBehaviour {
 
     private void Start() {
 
+        //YandexSpeechKit.TextToAudioFile("Привет Влад, как дела?", "/", "hellovlad", YSKVoice.ALENA);
+
         //UserProgressUtils.setUserState("Vladislav", 2);
         //UserProgressUtils.setUserState("Vladislav", 3);
         //UserProgressUtils.setUserState("Vladislav", 4);

@@ -10,15 +10,15 @@ using UnityEngine.Events;
 
 public class YandexSpeechKit {
 
-    private static readonly string IAmToken = "t1.9euelZqbzJqMz5KXj8mRyJ3JlMyexu3rnpWalpGJzJCUmIqUmImSkZiUlY_l9PcoYEZg-e9Jdk393fT3aA5EYPnvSXZN_Q.W6-o6kLYEWQwvgA8fWiPT7Ms04IEHqQP5qupOtdKN0RaRTuiP_sPyniW4so_Panwc57OgKmzsPdlFqpG7IZKBg";
+    private static readonly string IAmToken = "t1.9euelZqbzJqMz5KXj8mRyJ3JlMyexu3rnpWalpGJzJCUmIqUmImSkZiUlY_l8_cBS0Jg-e8Ib2EK_d3z90F5P2D57whvYQr9.h-1qRZzy-pzsFw_7aNAWFo6-i1qhZi5YMczKPWdACXEj7AYEi7A0pHsJ3iF0hqFxVryMGy8BMIOpquTyy9wqBQ";
     private static readonly string FolderId = "b1gs7puvlr7hqmmsjk4d";
 
     public static Action<byte []> onSpeechSynthesized;
 
-    public static void TextToAudioFile(string text, string pathFromAssets, string fileName, YSKVoice voice = YSKVoice.ERMIL, YSKLang lang = YSKLang.RU,
+    public static void TextToAudioFile(string text, string pathFromProjectFolder, string fileName, YSKVoice voice = YSKVoice.ERMIL, YSKLang lang = YSKLang.RU,
                                 YSKEmotion emotion = YSKEmotion.NEUTRAL, YSKSpeed speed = YSKSpeed.x1, YSKAudioFormat audioFormat = YSKAudioFormat.MP3) {
 
-        var newPath = Application.dataPath + pathFromAssets;
+        var newPath = Application.dataPath.Replace("/Assets", "") + pathFromProjectFolder;
         if (!Directory.Exists(newPath)) {
             Debug.LogError($"[YandexSpeechKit]: path [{newPath}] doesnt exist!");
             return;
