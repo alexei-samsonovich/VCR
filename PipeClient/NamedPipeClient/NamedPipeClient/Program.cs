@@ -7,12 +7,26 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 
 namespace NamedPipeClient {
     class Program {
         static void Main(string[] args) {
+
+            var charGPTService = new ChatGPTService("Ты учитель по MS SQL, отвечай коротко. Ты не чат-бот, ты живой человек.");
+
             PipeClient pipeClient = new PipeClient();
-            pipeClient.OnPipeCommandReceived += (pipeClient_, pipeCommand) => { Console.WriteLine($"Получено сообщение: " + pipeCommand.Command + "\n"); };
+            pipeClient.OnPipeCommandReceived += (pipeClient_, pipeCommand) => { 
+                Console.WriteLine($"Получено сообщение: " + pipeCommand.Command + "\n"); 
+            };
+            pipeClient.OnPipeCommandReceived += (pipeClient_, pipeCommand) => {
+                string answer = charGPTService.getChatGPTResponseTextAsync(pipeCommand.Command).Result;
+                if (answer != null) {
+                    pipeClient.SendMessage(answer);
+                }
+            };
             pipeClient.Start();
 
             while (true) {
@@ -181,7 +195,6 @@ namespace NamedPipeClient {
     }
 }
 
-
 public class StreamString {
     private Stream ioStream;
     private UTF8Encoding streamEncoding;
@@ -215,4 +228,135 @@ public class StreamString {
 
         return outBuffer.Length + 2;
     }
+}
+
+
+class ChatGPTService {
+
+    private static string apiKey = "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";
+
+    private static string completionEndPoint = "https://api.openai.com/v1/chat/completions";
+
+    private static string chatGPTModelID = "gpt-3.5-turbo";
+
+    private static List<Message> messages;
+
+    private static HttpClient httpClient;
+
+    public ChatGPTService(string initialSystemContent) {
+
+        messages = new List<Message>();
+        messages.Add(new Message() { 
+            Role = "system",
+            Content = initialSystemContent 
+        });
+
+        httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+    }
+
+
+    public async Task<string> getChatGPTResponseTextAsync(string question) {
+        
+        if (question.Length <= 0) return null;
+
+        var newMessage = new Message() {
+            Role = "user",
+            Content = question + ". коротко"
+        };
+
+        messages.Add(newMessage);
+
+        var requestData = new Request() {
+            ModelId = chatGPTModelID,
+            Messages = messages
+        };
+
+        using var response = await httpClient.PostAsJsonAsync(completionEndPoint, requestData);
+
+        if (!response.IsSuccessStatusCode) {
+            Console.WriteLine($"Response error: {(int) response.StatusCode} {response.StatusCode}");
+            return null;
+        }
+
+        ResponseData? responseData = await response.Content.ReadFromJsonAsync<ResponseData>();
+
+        var choices = responseData?.Choices ?? new List<Choice>();
+
+        if (choices.Count == 0) {
+            Console.WriteLine("No choices were returned by the API");
+            return null;
+        }
+
+        var choice = choices[0];
+        var responseMessage = choice.Message;
+
+        messages.Add(responseMessage);
+
+        return responseMessage.Content.Trim();
+    }
+}
+
+
+class Message {
+
+    [JsonPropertyName("role")]
+    public string Role { get; set; } = "";
+
+    [JsonPropertyName("content")]
+    public string Content { get; set; } = "";
+
+    public override string ToString() {
+        return this.Role + " : " + this.Content;
+    }
+}
+class Request {
+
+    [JsonPropertyName("model")]
+    public string ModelId { get; set; } = "";
+
+    [JsonPropertyName("messages")]
+    public List<Message> Messages { get; set; } = new();
+}
+
+class ResponseData {
+
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = "";
+
+    [JsonPropertyName("object")]
+    public string Object { get; set; } = "";
+
+    [JsonPropertyName("created")]
+    public ulong Created { get; set; }
+
+    [JsonPropertyName("choices")]
+    public List<Choice> Choices { get; set; } = new();
+
+    [JsonPropertyName("usage")]
+    public Usage Usage { get; set; } = new();
+}
+
+class Choice {
+
+    [JsonPropertyName("index")]
+    public int Index { get; set; }
+
+    [JsonPropertyName("message")]
+    public Message Message { get; set; } = new();
+
+    [JsonPropertyName("finish_reason")]
+    public string FinishReason { get; set; } = "";
+}
+
+class Usage {
+
+    [JsonPropertyName("prompt_tokens")]
+    public int PromptTokens { get; set; }
+
+    [JsonPropertyName("completion_tokens")]
+    public int CompletionTokens { get; set; }
+
+    [JsonPropertyName("total_tokens")]
+    public int TotalTokens { get; set; }
 }

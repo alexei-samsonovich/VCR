@@ -78,7 +78,7 @@ public class GameController : MonoBehaviour {
             pipeServer = new PipeServer();
             pipeServer.onPipeCommandReceived += (pipeServer_, pipeCommand) => {
                 Debug.LogError("Получение сообщение от клиента.\nСообщение: " + pipeCommand.command);
-                YandexSpeechKit.TextToSpeech(pipeCommand.command, YSKVoice.ERMIL, YSKEmotion.GOOD);
+                YandexSpeechKit.TextToSpeech(pipeCommand.command, YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
             };
             pipeServer.Start();
 
@@ -266,7 +266,7 @@ public class GameController : MonoBehaviour {
         isTeacherGivingLectureRightNow = true;
 
         // Сколько слайдов - столько и аудизаписей в конкретной лекции.
-        var slidesCount = 1;// DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/{CurrentLessonNumber}/Slides", ".mat");
+        var slidesCount = DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/{CurrentLessonNumber}/Slides", ".mat");
 
         setSlideToBoard(GameController.CurrentSlideNumber);
         OnSlideChanged();
