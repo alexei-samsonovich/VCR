@@ -17,6 +17,8 @@ namespace NamedPipeClient {
 
             var charGPTService = new ChatGPTService("Ты учитель по MS SQL, отвечай коротко. Ты не чат-бот, ты живой человек.");
 
+            Console.WriteLine(ChatGPTService.apiKey);
+
             PipeClient pipeClient = new PipeClient();
             pipeClient.OnPipeCommandReceived += (pipeClient_, pipeCommand) => { 
                 Console.WriteLine($"Получено сообщение: " + pipeCommand.Command + "\n"); 
@@ -233,7 +235,7 @@ public class StreamString {
 
 class ChatGPTService {
 
-    private static string apiKey = "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";
+    private static string apiKey = Base64Encoder.ToBase64Decode("c2stcXd3OFRXM29YdDdvMTRLWWhWNEVUM0JsYmtGSnJobTVZVU1MZ09ocVRUbkFlcm4z");
 
     private static string completionEndPoint = "https://api.openai.com/v1/chat/completions";
 
@@ -359,4 +361,27 @@ class Usage {
 
     [JsonPropertyName("total_tokens")]
     public int TotalTokens { get; set; }
+}
+
+class Base64Encoder {
+
+    static public string ToBase64Encode(string text) {
+
+        if (String.IsNullOrEmpty(text)) {
+            return text;
+        }
+
+        var textBytes = Encoding.UTF8.GetBytes(text);
+        return Convert.ToBase64String(textBytes);
+    }
+
+    static public string ToBase64Decode(string base64EncodedText) {
+
+        if (String.IsNullOrEmpty(base64EncodedText)) {
+            return base64EncodedText;
+        }
+
+        var enTextBytes = Convert.FromBase64String(base64EncodedText);
+        return Encoding.UTF8.GetString(enTextBytes);
+    }
 }
