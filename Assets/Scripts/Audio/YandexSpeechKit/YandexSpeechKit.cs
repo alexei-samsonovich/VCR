@@ -10,7 +10,7 @@ using UnityEngine.Events;
 
 public class YandexSpeechKit {
 
-    private static readonly string IAmToken = "t1.9euelZqLl4mRj4nJyZWdx5mLyc2Xle3rnpWalpGJzJCUmIqUmImSkZiUlY_l9Pd0Xihe-e8OTBDy3fT3NA0mXvnvDkwQ8g.ya1HYCIhDofpjxtkB2-URhO_XrSR2fkgZrF6flqcvjehvsmc5SIJSUm7WRNcONbB4SO7abBj1M61idzACAgLAw";
+    private static readonly string IAmToken = "t1.9euelZqLl4mRj4nJyZWdx5mLyc2Xle3rnpWalpGJzJCUmIqUmImSkZiUlY_l8_cBPCVe-e9UQUNN_N3z90FqIl7571RBQ038.1ZzNUCRPUieoLEFH56qB3c1pPTyVqh7JNz2lmC8fELN_nd5-cuXef7U4lxjjO0ExH9ZNYjZi7iuy1gxM0at0CA";
     private static readonly string FolderId = "b1gs7puvlr7hqmmsjk4d";
 
     public static Action<byte []> onSpeechSynthesized;
