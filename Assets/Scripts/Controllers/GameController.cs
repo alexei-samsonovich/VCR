@@ -101,6 +101,8 @@ public class GameController : MonoBehaviour {
 
         CurrentLessonNumber = MainMenuController.TestCurrentLesson;
 
+        if (CurrentLessonNumber == 2) CurrentLessonNumber = 3;
+
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
 
         // «апускаем pipe server только если он еще не был запущен!

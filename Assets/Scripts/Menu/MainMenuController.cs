@@ -79,6 +79,9 @@ public class MainMenuController : MonoBehaviour {
         //UserProgressUtils.addNewStateToDB(17, new List<int> { 1, 2, 3, 4, 5, 6, 7, 9, 10, 11 });
         //UserProgressUtils.addNewStateToDB(18, new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 });
 
+        //string text = $@"Здравствуйте уважаемые ученики. Тема сегодняшнего занятия — это практическое знакомство с языком T-SQL, а также с интегрированной средой для управления любой инфраструктурой SQL - SQL Server Management Studio.";
+        //YandexSpeechKit.TextToAudioFile(text, "/Assets/Resources/Music/Lessons/4", "Intro");
+
         setLessonButtonsOnClickListeners();
 
         // Необходимо "разлочивать" курсор, т.к. в сцене лекций он лочится
