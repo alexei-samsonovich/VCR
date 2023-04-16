@@ -37,26 +37,26 @@ public class UIController : MonoBehaviour
         questionButton.interactable = false;
         testingModule = this.gameObject.GetComponent<TestingModule>();
         testingModule.UpdateQuestions();
-        OffChatWithChatGPTButton();
+        HideChatWithChatGPTButton();
     }
 
 
     private void OnLecturePartFinished()
     {
-        OnQuestionButton();
+        ShowQuestionButton();
     }
 
     private void OnAsksFinished()
     {
-        OffQuestionButton();
+        HideQuestionButton();
     }
 
-    public void OffQuestionButton()
+    public void HideQuestionButton()
     {
         questionButton.interactable = false;
     }
 
-    public void OnQuestionButton()
+    public void ShowQuestionButton()
     {
         questionButton.interactable = true;
     }
@@ -80,29 +80,29 @@ public class UIController : MonoBehaviour
         //mouseLook.enabled = true;
     }
 
-    public void OffStartTestingModuleButton() {
+    public void HideStartTestingModuleButton() {
         startTestingButton.interactable = false;
     }
 
-    public void OffChatWithChatGPTButton() {
+    public void HideChatWithChatGPTButton() {
         chatWithChatGptButton.interactable = false;
     }
 
-    public void OnChatWithChatGPTButton() {
+    public void ShowChatWithChatGPTButton() {
         chatWithChatGptButton.interactable = true;
     }
 
     public void TestingModuleButtonPressed() {
-        OffStartTestingModuleButton();
-        OffChatWithChatGPTButton();
+        HideStartTestingModuleButton();
+        HideChatWithChatGPTButton();
         Messenger.Broadcast(GameEvent.STUDENT_PRESSED_TESTING_BUTTON);
     }
 
-    public void OnTestingScrollViewAdapter() {
+    public void ShowTestingScrollViewAdapter() {
         testingScrollView.SetActive(true);
     }
 
-    public void OffTestingScrollViewAdapter() {
+    public void HideTestingScrollViewAdapter() {
         testingScrollView.SetActive(false);
     }
 }

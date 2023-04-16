@@ -2,7 +2,7 @@
   "lookAtTeacher": {
     "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
     "moralFactorForTarget": [ "0.0", "0.0", "0.0" ],
-    "moralFactorForAuthor": [ "0.01", "0", "0" ],
+    "moralFactorForAuthor": [ "0.0001", "0", "0" ],
     "name": "lookAtTeacher",
     "responseActionOn": "",
     "actionAuthor": "Student"
@@ -10,9 +10,65 @@
   "doesntLookAtTeacher": {
     "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
     "moralFactorForTarget": [ "0.0", "0.0", "0.0" ],
-    "moralFactorForAuthor": [ "-0.01", "0", "0" ],
+    "moralFactorForAuthor": [ "-0.0001", "0", "0" ],
     "name": "DoesntLookAtTeacher",
     "responseActionOn": "",
     "actionAuthor": "Student"
-  }
+  },
+  "Anger": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "-0.1", "0.02", "0.01" ],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
+    "name": "Anger",
+    "responseActionOn": "",
+    "actionAuthor": "Teacher"
+  },
+  "Disgust": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "-0.1", "-0.01", "0.06" ],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
+    "name": "Disgust",
+    "responseActionOn": "",
+    "actionAuthor": "Teacher"
+  },
+  "Fear": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "-0.02", "0.06", "-0.06" ],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
+    "name": "Fear",
+    "responseActionOn": "",
+    "actionAuthor": "Teacher"
+  },
+  "Happiness": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "0.1", "0.12", "0.05" ],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
+    "name": "Happiness",
+    "responseActionOn": "",
+    "actionAuthor": "Teacher"
+  },
+  "Sadness": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "-0.05", "-0.04", "-0.06" ],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
+    "name": "Sadness",
+    "responseActionOn": "",
+    "actionAuthor": "Teacher"
+  },
+  "Surprise": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "0.06", "0.18", "0.03" ],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
+    "name": "Surprise",
+    "responseActionOn": "",
+    "actionAuthor": "Teacher"
+  },
+  "Neutral": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "0", "0", "0" ],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
+    "name": "Surprise",
+    "responseActionOn": "",
+    "actionAuthor": "Teacher"
+  },
 }

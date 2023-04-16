@@ -29,22 +29,11 @@ public class GameController : MonoBehaviour {
     [SerializeField] private InputField testInputField;
 
 
-    private AudioClip lastChatGPTAudioClip;
-
     private PipeServer pipeServer;
 
     private Action<byte[]> YSKspeechSynthesizedHandler;
 
-    public static System.Diagnostics.Process pipeClientProcess;
-
-    //private int lessonsCount;
-
-    //public static int askingForQuestionCount;
     string pathToAsksForQuestions = "/Resources/Music/GeneralSounds/AskForQuestions";
-    //string pathToSlides = "/Resources/Materials/Lessons/AskForQuestions";
-
-    public static int CurrentLessonNumber { get; private set; } = 1;
-    public static int CurrentSlideNumber { get; private set; } = 1;
 
     private float lectureInterruptTime = 0.0f;
 
@@ -57,7 +46,13 @@ public class GameController : MonoBehaviour {
 
     float timeWhileTalking = 0.0f;
 
-   
+
+    public static System.Diagnostics.Process pipeClientProcess;
+
+    public static int CurrentLessonNumber { get; private set; } = 1;
+    public static int CurrentSlideNumber { get; private set; } = 1;
+
+
     private void Awake() {
         // Добавляем обработчики событий
         Messenger.AddListener(PlayerEvent.SIT, StartGameProcess);
@@ -68,7 +63,6 @@ public class GameController : MonoBehaviour {
 
         YSKspeechSynthesizedHandler = (speechBytes) => {
             var audioClip = AudioConverter.Convert(speechBytes);
-            lastChatGPTAudioClip = audioClip;
             setClipToAudioControllerAndPlay(audioClip);
 
             if (isLectureInProgress == true) {
@@ -82,9 +76,9 @@ public class GameController : MonoBehaviour {
     private IEnumerator waitChatGPTAnswerForQuestion() {
 
         yield return new WaitForSeconds(0.5f);
-        uiController.OffQuestionButton();
-        uiController.OffChatWithChatGPTButton();
-        yield return new WaitForSeconds(lastChatGPTAudioClip.length + 1.5f);
+        uiController.HideQuestionButton();
+        uiController.HideChatWithChatGPTButton();
+        yield return new WaitForSeconds(audioController.getCurrentClipLength() + 1.5f);
         setClipToAudioControllerAndPlay($"Music/GeneralSounds/LetsContinue/lets_continue");
         yield return new WaitForSeconds(audioController.getCurrentClipLength() + 1.5f);
         playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
@@ -102,12 +96,6 @@ public class GameController : MonoBehaviour {
 
 
     }
-
-    //public void killPipeCient() {
-    //    if (pipeClientProcess != null) {
-    //        pipeClientProcess.Kill();
-    //    }
-    //}
 
     void Start() {
 
@@ -149,7 +137,7 @@ public class GameController : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.LeftControl) && isStudentAskQuestion == false && isTeacherGivingLectureRightNow == true) {
 
-            string responseAction = moralSchema.getResponseActionNew("Student Ask Question During Lecture");
+            string responseAction = moralSchema.getResponseActionWithoutRecalculateAfterStudentAction("Student Ask Question During Lecture");
             emotionsController.setEmotion(emotionsController.getEmotion());
             if (responseAction == "Teacher answer students question") {
                 isStudentAskQuestion = true;
@@ -190,23 +178,19 @@ public class GameController : MonoBehaviour {
         catch (Exception ex) {
             Debug.LogError(ex.Message);
         }
-        audioController.StopCurrentClip();
-        audioController.setClip($"Music/GeneralSounds/AskQuestion/ask_question");
-        audioController.PlayCurrentClip();
+        setClipToAudioControllerAndPlay($"Music/GeneralSounds/AskQuestion/ask_question");
         yield return new WaitForSeconds(audioController.getCurrentClipLength());
 
-        uiController.OnQuestionButton();
-        uiController.OnChatWithChatGPTButton();
+        uiController.ShowQuestionButton();
+        uiController.ShowChatWithChatGPTButton();
 
         speechRecognizerController.canAsk = true;
 
         yield return new WaitForSeconds(20f);
 
 
-        uiController.OffQuestionButton();
-        audioController.StopCurrentClip();
-        audioController.setClip($"Music/GeneralSounds/LetsContinue/lets_continue");
-        audioController.PlayCurrentClip();
+        uiController.HideQuestionButton();
+        setClipToAudioControllerAndPlay($"Music/GeneralSounds/LetsContinue/lets_continue");
         yield return new WaitForSeconds(audioController.getCurrentClipLength());
         yield return new WaitForSeconds(0.5f);
 
@@ -286,7 +270,7 @@ public class GameController : MonoBehaviour {
     private void StartGameProcess() {
         try {
             startLectureCoroutine = StartCoroutine(startLecture());
-            uiController.OffChatWithChatGPTButton();
+            uiController.HideChatWithChatGPTButton();
         }
         catch (Exception ex) {
             Debug.LogError($"Exception - {ex}");
@@ -294,7 +278,7 @@ public class GameController : MonoBehaviour {
     }
 
     private IEnumerator startLecture() {
-        audioController.setClip($"Music/Lessons/{CurrentLessonNumber}/Intro");
+        audioController.setClipByPath($"Music/Lessons/{CurrentLessonNumber}/Intro");
         audioController.PlayCurrentClip();
         yield return new WaitForSeconds(audioController.getCurrentClipLength());
         //audioController.PlayLecture(currentLesson, currentPart);
@@ -316,7 +300,7 @@ public class GameController : MonoBehaviour {
 
         setSlideToBoard(GameController.CurrentSlideNumber);
         OnSlideChanged();
-        audioController.setClip($"Music/Lessons/{CurrentLessonNumber}/Slides/{CurrentSlideNumber}/Lecture/lecture");
+        audioController.setClipByPath($"Music/Lessons/{CurrentLessonNumber}/Slides/{CurrentSlideNumber}/Lecture/lecture");
         audioController.setAudioSourceStartTime(shift);
         audioController.PlayCurrentClip();
         yield return new WaitForSeconds(audioController.getCurrentClipLength() - shift);
@@ -328,7 +312,7 @@ public class GameController : MonoBehaviour {
             CurrentSlideNumber = i;
             setSlideToBoard(CurrentSlideNumber);
             OnSlideChanged();
-            audioController.setClip($"Music/Lessons/{CurrentLessonNumber}/Slides/{CurrentSlideNumber}/Lecture/lecture");
+            audioController.setClipByPath($"Music/Lessons/{CurrentLessonNumber}/Slides/{CurrentSlideNumber}/Lecture/lecture");
             audioController.PlayCurrentClip();
             yield return new WaitForSeconds(audioController.getCurrentClipLength());
             audioController.StopCurrentClip();
@@ -367,17 +351,17 @@ public class GameController : MonoBehaviour {
         yield return new WaitForSeconds(14.0f);
         YandexSpeechKit.TextToSpeech("Давайте перейдем к тестированию.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
         yield return new WaitForSeconds(4.0f);
-        uiController.OffQuestionButton();
-        uiController.OnTestingScrollViewAdapter();
+        uiController.HideQuestionButton();
+        uiController.ShowTestingScrollViewAdapter();
     }
 
     private void OnTestingButtonPressed() {
 
         playerFpsInput.speed = 0.0f;
 
-        uiController.OffStartTestingModuleButton();
-        uiController.OnTestingScrollViewAdapter();
-        uiController.OffChatWithChatGPTButton();
+        uiController.HideStartTestingModuleButton();
+        uiController.ShowTestingScrollViewAdapter();
+        uiController.HideChatWithChatGPTButton();
 
         audioController.stopSound();
 
@@ -451,9 +435,9 @@ public class GameController : MonoBehaviour {
         string pathToAnswer = $"Music/Lessons/{CurrentLessonNumber}/Answers/{questionNumber}";
         setClipToAudioControllerAndPlay(pathToAnswer);
         //audioController.playShortSound(pathToAnswer);
-        uiController.OffQuestionButton();
-        uiController.OffChatWithChatGPTButton();
-        yield return new WaitForSeconds(AudioController.getClipLength(pathToAnswer) + 0.5f);
+        uiController.HideQuestionButton();
+        uiController.HideChatWithChatGPTButton();
+        yield return new WaitForSeconds(audioController.getCurrentClipLength() + 0.5f);
         setClipToAudioControllerAndPlay($"Music/GeneralSounds/LetsContinue/lets_continue");
         yield return new WaitForSeconds(audioController.getCurrentClipLength() + 1.5f);
         playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
@@ -463,7 +447,7 @@ public class GameController : MonoBehaviour {
 
     private void setClipToAudioControllerAndPlay(string pathToClip) {
         audioController.StopCurrentClip();
-        audioController.setClip(pathToClip);
+        audioController.setClipByPath(pathToClip);
         audioController.PlayCurrentClip();
     }
 
@@ -477,9 +461,9 @@ public class GameController : MonoBehaviour {
         yield return new WaitForSeconds(0.5f);
         string pathToAnswer = $"Music/Lessons/{CurrentLessonNumber}/Answers/{questionNumber}";
         audioController.playShortSound(pathToAnswer);
-        uiController.OffQuestionButton();
+        uiController.HideQuestionButton();
         yield return new WaitForSeconds(AudioController.getClipLength(pathToAnswer));
         StartCoroutine("WaitingForQuestionsAfterLecture");
-        uiController.OnQuestionButton();
+        uiController.ShowQuestionButton();
     }
 }

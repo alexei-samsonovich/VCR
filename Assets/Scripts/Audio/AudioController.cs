@@ -6,44 +6,28 @@ public class AudioController : MonoBehaviour
 {
     [SerializeField] private AudioSource _audioSource;
 
-    public int samplerate = 44100;
-    public float frequency = 440;
-
 
     public void playShortSound(AudioClip clip) {
         _audioSource.PlayOneShot(clip);
     }
 
-    public void playShortSound(string path)
-    {
+    public void playShortSound(string path) {
         AudioClip _clip = Resources.Load(path) as AudioClip;
         _audioSource.PlayOneShot(_clip);
     }
 
-    public void test() {
-        _audioSource.time = 5.0f;
-    }
-
-    public void stopSound()
-    {
+    public void stopSound() {
         _audioSource.Stop();
     }
 
 
-    public void stopCoroutines()
-    {
-        this.StopAllCoroutines();
-    }
 
-
-    public static float getClipLength(string path)
-    {
+    public static float getClipLength(string path) {
         AudioClip clip = Resources.Load(path) as AudioClip;
         return clip.length;
     }
 
-    public void setClip(string pathToClip)
-    {
+    public void setClipByPath(string pathToClip) {
         AudioClip clip = Resources.Load(pathToClip) as AudioClip;
         _audioSource.clip = clip;
         _audioSource.loop = false;
@@ -54,13 +38,11 @@ public class AudioController : MonoBehaviour
         _audioSource.loop = false;
     }
 
-    public void PlayCurrentClip()
-    {
+    public void PlayCurrentClip() {
         _audioSource.Play();
     }
 
-    public float getCurrentClipLength()
-    {
+    public float getCurrentClipLength() {
         return _audioSource.clip.length;
     }
 

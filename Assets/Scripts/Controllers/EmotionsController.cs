@@ -15,6 +15,8 @@ public class EmotionsController : MonoBehaviour
 
     private string JSON_PATH_ALL_EMOTIONS = Application.streamingAssetsPath + "\\Emotions.json";
 
+    private float emotionTimer = 0.0f;
+
     public class Emotion
     {
         public double[] VAD;
@@ -42,6 +44,15 @@ public class EmotionsController : MonoBehaviour
             var emotion = getEmotion();
             Debug.Log($"emotion - {emotion}");
             setEmotion(emotion);
+        }
+
+        emotionTimer += Time.deltaTime;
+        if (emotionTimer > 18) {
+            string emotion = getEmotion();
+            Debug.LogError("Teacher show " + emotion + " emotion in EmotionController");
+            setEmotionForSomeSeconds(emotion, 3);
+            moralSchema.makeIndependentActionByTeacher(emotion);
+            emotionTimer = 0.0f;
         }
     }
 
@@ -106,6 +117,40 @@ public class EmotionsController : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    private void setEmotionForSomeSeconds(string emotion, int seconds, float emotionExtent = 50f) {
+        StartCoroutine(setEmotionForSomeSecondsCoroutine(emotion, seconds, emotionExtent));
+    }
+
+    private IEnumerator setEmotionForSomeSecondsCoroutine(string emotion, int seconds, float emotionExtent = 50f) {
+        switch (emotion) {
+            case "Anger":
+                emotionsManager.anger = emotionExtent;
+                break;
+            case "Disgust":
+                emotionsManager.disgust = emotionExtent;
+                break;
+            case "Fear":
+                emotionsManager.fear = emotionExtent;
+                break;
+            case "Happiness":
+                emotionsManager.happiness = emotionExtent;
+                break;
+            case "Sadness":
+                emotionsManager.sadness = emotionExtent;
+                break;
+            case "Surprise":
+                emotionsManager.surprise = emotionExtent;
+                break;
+            case "Neutral":
+                resetEmotions();
+                break;
+            default:
+                break;
+        }
+        yield return new WaitForSeconds(seconds);
+        resetEmotions();
     }
 
     public void resetEmotions()

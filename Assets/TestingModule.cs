@@ -75,7 +75,7 @@ public class TestingModule : MonoBehaviour {
         closeButtonInstance.transform.GetChild(0).GetComponent<Text>().text = "Закрыть";
         closeButtonInstance.GetComponent<Button>().onClick.AddListener(delegate {
 
-            uiController.OffTestingScrollViewAdapter();
+            uiController.HideTestingScrollViewAdapter();
 
             RelativeScoreInPercent = (int) (absoluteScore / questionIdToQuestionGameObj.Keys.Count) * 100;
 

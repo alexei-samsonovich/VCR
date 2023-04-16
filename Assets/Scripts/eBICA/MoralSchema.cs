@@ -33,31 +33,28 @@ public class MoralSchema : MonoBehaviour
     static public double[] teacherFeelings = new double[3];
     static public double[] studentFeelings = new double[3];
 
-    private void Start()
-    {
+    private void Start() {
         setupActs();
     }
 
-    private void Update()
-    {
+    private void Update() {
+
         if(Input.GetKeyDown(KeyCode.P))
         {
             Debug.Log($"Student Appraisals = [{studentAppraisals[0]}     {studentAppraisals[1]}        {studentAppraisals[2]}]");
             Debug.Log($"Student Feelings = [{studentFeelings[0]}       {studentFeelings[1]}          {studentFeelings[2]}]");
         }
 
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            test();
-        }
+        //if (Input.GetKeyDown(KeyCode.K))
+        //{
+        //    test();
+        //}
     }
 
-    public class FeelingState
-    {
+    public class FeelingState {
         public double[] feelingState;
 
-        FeelingState()
-        {
+        FeelingState() {
             feelingState = new double[3];
         }
 
@@ -183,6 +180,12 @@ public class MoralSchema : MonoBehaviour
         //studentAppraisals = recalculateAppraisals(studentAppraisals, allIndependentActions[action].getMoralFactorForAuthor());
     }
 
+    public void makeIndependentActionByTeacher(string action) {
+        rebuildAppraisalsAndFeelingsAfterTeacherAction(action, true);
+        //teacherAppraisals = recalculateAppraisals(teacherAppraisals, allIndependentActions[action].getMoralFactorForTarget());
+        //studentAppraisals = recalculateAppraisals(studentAppraisals, allIndependentActions[action].getMoralFactorForAuthor());
+    }
+
     public void setupActs()
     {
         feelingsStates = JsonConvert.DeserializeObject<Dictionary<string, FeelingState>>(File.ReadAllText(JSON_PATH_INDEPENDENT_FEELINGS_STATES));
@@ -292,6 +295,7 @@ public class MoralSchema : MonoBehaviour
         double maxValue = 0;
         double mainNorm = 0;
         double recNorm = 0;
+
         foreach (var el in allActs)
         {
             double difference = 0;
@@ -453,7 +457,7 @@ public class MoralSchema : MonoBehaviour
         return answer;
     }
 
-    public string getResponseActionNew(string studentAction)
+    public string getResponseActionWithoutRecalculateAfterStudentAction(string studentAction)
     {
         biasLikelihood = new List<Tuple<string, double>>();
         biasCriterion(studentAppraisals, studentFeelings, studentAction);
@@ -463,10 +467,10 @@ public class MoralSchema : MonoBehaviour
         return answer;
     }
 
-    private void test()
-    {
-        biasLikelihood = new List<Tuple<string, double>>();
-        biasCriterion(studentAppraisals, studentFeelings, "Student Ask Question During Lecture");
-    }
+    //private void test()
+    //{
+    //    biasLikelihood = new List<Tuple<string, double>>();
+    //    biasCriterion(studentAppraisals, studentFeelings, "Student Ask Question During Lecture");
+    //}
 
 }
