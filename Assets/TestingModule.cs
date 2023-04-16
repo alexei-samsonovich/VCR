@@ -77,7 +77,13 @@ public class TestingModule : MonoBehaviour {
 
             uiController.HideTestingScrollViewAdapter();
 
-            RelativeScoreInPercent = (int) (absoluteScore / questionIdToQuestionGameObj.Keys.Count) * 100;
+            Debug.LogError("absoluteScore= " + absoluteScore);
+
+            Debug.LogError("questionIdToQuestionGameObj.Keys.Count = " + questionIdToQuestionGameObj.Keys.Count);
+
+            RelativeScoreInPercent = (int) (((float) absoluteScore / questionIdToQuestionGameObj.Keys.Count) * 100);
+
+            Debug.LogError("Relative percent = " + RelativeScoreInPercent);
 
             Messenger<int>.Broadcast(GameEvent.STUDENT_FINISHED_TESTING_MODULE, RelativeScoreInPercent);
         });

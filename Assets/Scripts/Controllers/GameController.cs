@@ -381,7 +381,7 @@ public class GameController : MonoBehaviour {
 
     private void OnStudentFinishedTestingModule(int moduleScoreInPercent) {
         if (moduleScoreInPercent > 60) {
-            YandexSpeechKit.TextToSpeech($@"Вы набрали {moduleScoreInPercent} процента баллов в данной лекции. Отличная работа!" + 
+            YandexSpeechKit.TextToSpeech($@"Вы набрали {moduleScoreInPercent} процента от максимального балла в данной лекции. Отличная работа!" + 
                 "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
 
             var userStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
