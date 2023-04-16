@@ -9,6 +9,17 @@ public class UIController : MonoBehaviour
     [SerializeField] private GameObject QuestionsScrollView;
     [SerializeField] Button questionButton;
     [SerializeField] MouseLook mouseLook;
+
+
+    [SerializeField] private GameObject testingScrollView;
+    [SerializeField] public Button startTestingButton;
+
+
+    [SerializeField] private Button chatWithChatGptButton;
+
+
+    private TestingModule testingModule;
+
  
 
     private void Awake()
@@ -22,18 +33,13 @@ public class UIController : MonoBehaviour
         Messenger.RemoveListener(GameEvent.ASKS_FINISHED, OnAsksFinished);
     }
 
-    private void Start()
-    {
+    private void Start() {
         questionButton.interactable = false;
+        testingModule = this.gameObject.GetComponent<TestingModule>();
+        testingModule.UpdateQuestions();
+        OffChatWithChatGPTButton();
     }
 
-    private void Update()
-    {
-        //if(Input.GetKeyDown(KeyCode.Tab))
-        //{
-        //    mouseLook.enabled = !mouseLook.enabled;
-        //}
-    }
 
     private void OnLecturePartFinished()
     {
@@ -72,5 +78,31 @@ public class UIController : MonoBehaviour
     {
         QuestionsScrollView.SetActive(false);
         //mouseLook.enabled = true;
+    }
+
+    public void OffStartTestingModuleButton() {
+        startTestingButton.interactable = false;
+    }
+
+    public void OffChatWithChatGPTButton() {
+        chatWithChatGptButton.interactable = false;
+    }
+
+    public void OnChatWithChatGPTButton() {
+        chatWithChatGptButton.interactable = true;
+    }
+
+    public void TestingModuleButtonPressed() {
+        OffStartTestingModuleButton();
+        OffChatWithChatGPTButton();
+        Messenger.Broadcast(GameEvent.STUDENT_PRESSED_TESTING_BUTTON);
+    }
+
+    public void OnTestingScrollViewAdapter() {
+        testingScrollView.SetActive(true);
+    }
+
+    public void OffTestingScrollViewAdapter() {
+        testingScrollView.SetActive(false);
     }
 }

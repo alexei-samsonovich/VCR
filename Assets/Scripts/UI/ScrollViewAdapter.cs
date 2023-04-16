@@ -109,7 +109,7 @@ public class ScrollViewAdapter : MonoBehaviour {
 
     void OnReceivedModels(ButtonModel[] models) {
         foreach (Transform child in content) {
-            Destroy(child.gameObject);
+           // Destroy(child.gameObject);
         }
 
         foreach (var model in models) {

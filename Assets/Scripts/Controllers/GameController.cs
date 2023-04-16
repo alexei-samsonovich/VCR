@@ -21,12 +21,21 @@ public class GameController : MonoBehaviour {
     [SerializeField] private EmotionsController emotionsController;
     [SerializeField] private SpeechRecognizerController speechRecognizerController;
 
+    [SerializeField] private FPSInput playerFpsInput;
+
+    [SerializeField] private TestingModule testingModule;
+
     [SerializeField] private GameObject testButton;
     [SerializeField] private InputField testInputField;
+
+
+    private AudioClip lastChatGPTAudioClip;
 
     private PipeServer pipeServer;
 
     private Action<byte[]> YSKspeechSynthesizedHandler;
+
+    public static System.Diagnostics.Process pipeClientProcess;
 
     //private int lessonsCount;
 
@@ -40,6 +49,7 @@ public class GameController : MonoBehaviour {
     private float lectureInterruptTime = 0.0f;
 
     private Coroutine playLectureCoroutine;
+    private Coroutine startLectureCoroutine;
 
     bool isLectureInProgress = false;
     bool isStudentAskQuestion = false;
@@ -53,24 +63,56 @@ public class GameController : MonoBehaviour {
         Messenger.AddListener(PlayerEvent.SIT, StartGameProcess);
         Messenger.AddListener(GameEvent.LECTURE_PART_FINISHED, OnLectureFinished);
         Messenger<int>.AddListener(GameEvent.STUDENT_ASK_QUESTION, OnStudentAskQuestion);
+        Messenger<int>.AddListener(GameEvent.STUDENT_FINISHED_TESTING_MODULE, OnStudentFinishedTestingModule);
+        Messenger.AddListener(GameEvent.STUDENT_PRESSED_TESTING_BUTTON, OnTestingButtonPressed);
 
         YSKspeechSynthesizedHandler = (speechBytes) => {
             var audioClip = AudioConverter.Convert(speechBytes);
-            audioController.playShortSound(audioClip);
+            lastChatGPTAudioClip = audioClip;
+            setClipToAudioControllerAndPlay(audioClip);
+
+            if (isLectureInProgress == true) {
+                StopCoroutine("askStudentForQuestionDuringLecture");
+                StartCoroutine(waitChatGPTAnswerForQuestion());
+            }
         };
         YandexSpeechKit.onSpeechSynthesized += YSKspeechSynthesizedHandler;
     }
 
+    private IEnumerator waitChatGPTAnswerForQuestion() {
+
+        yield return new WaitForSeconds(0.5f);
+        uiController.OffQuestionButton();
+        uiController.OffChatWithChatGPTButton();
+        yield return new WaitForSeconds(lastChatGPTAudioClip.length + 1.5f);
+        setClipToAudioControllerAndPlay($"Music/GeneralSounds/LetsContinue/lets_continue");
+        yield return new WaitForSeconds(audioController.getCurrentClipLength() + 1.5f);
+        playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
+        isStudentAskQuestion = false;
+    }
+
     private void OnDestroy() {
-        // Удаляем обработчики событий
         Messenger.RemoveListener(PlayerEvent.SIT, StartGameProcess);
         Messenger.RemoveListener(GameEvent.LECTURE_PART_FINISHED, OnLectureFinished);
         Messenger<int>.RemoveListener(GameEvent.STUDENT_ASK_QUESTION, OnStudentAskQuestion);
+        Messenger<int>.RemoveListener(GameEvent.STUDENT_FINISHED_TESTING_MODULE, OnStudentFinishedTestingModule);
+        Messenger.RemoveListener(GameEvent.STUDENT_PRESSED_TESTING_BUTTON, OnTestingButtonPressed);
 
         if (YSKspeechSynthesizedHandler != null) YandexSpeechKit.onSpeechSynthesized -= YSKspeechSynthesizedHandler;
+
+
     }
 
+    //public void killPipeCient() {
+    //    if (pipeClientProcess != null) {
+    //        pipeClientProcess.Kill();
+    //    }
+    //}
+
     void Start() {
+
+        CurrentLessonNumber = MainMenuController.TestCurrentLesson;
+
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
 
         // Запускаем pipe server только если он еще не был запущен!
@@ -84,9 +126,9 @@ public class GameController : MonoBehaviour {
 
             // Запускаем pipe-клиент
             var pipeClientExePath = Application.dataPath.Replace("/Assets", "") + "/PipeClient/NamedPipeClient/NamedPipeClient/bin/Debug/net5.0/NamedPipeClient.exe";
-            var process = new System.Diagnostics.Process();
-            process.StartInfo.FileName = pipeClientExePath;
-            process.Start();
+            pipeClientProcess = new System.Diagnostics.Process();
+            pipeClientProcess.StartInfo.FileName = pipeClientExePath;
+            pipeClientProcess.Start();
 
         } else {
             pipeServer = PipeServer.Instance;
@@ -98,9 +140,6 @@ public class GameController : MonoBehaviour {
             testInputField.text = "";
         });
 
-        //lessonsCount = DirInfo.getCountOfFolders("/Resources/Music/Lessons");
-        //askingForQuestionCount = DirInfo.getCountOfFilesInFolder(pathToAsksForQuestions, ".mp3");
-
         if (MainMenuController.IsUserAuthorized) {
             Debug.LogError($"Username - {MainMenuController.Username}");
         }
@@ -109,6 +148,7 @@ public class GameController : MonoBehaviour {
     private void Update() {
 
         if (Input.GetKeyDown(KeyCode.LeftControl) && isStudentAskQuestion == false && isTeacherGivingLectureRightNow == true) {
+
             string responseAction = moralSchema.getResponseActionNew("Student Ask Question During Lecture");
             emotionsController.setEmotion(emotionsController.getEmotion());
             if (responseAction == "Teacher answer students question") {
@@ -154,9 +194,15 @@ public class GameController : MonoBehaviour {
         audioController.setClip($"Music/GeneralSounds/AskQuestion/ask_question");
         audioController.PlayCurrentClip();
         yield return new WaitForSeconds(audioController.getCurrentClipLength());
+
         uiController.OnQuestionButton();
+        uiController.OnChatWithChatGPTButton();
+
         speechRecognizerController.canAsk = true;
-        yield return new WaitForSeconds(15f);
+
+        yield return new WaitForSeconds(20f);
+
+
         uiController.OffQuestionButton();
         audioController.StopCurrentClip();
         audioController.setClip($"Music/GeneralSounds/LetsContinue/lets_continue");
@@ -237,10 +283,10 @@ public class GameController : MonoBehaviour {
     }
 
 
-
     private void StartGameProcess() {
         try {
-            StartCoroutine("startLecture");
+            startLectureCoroutine = StartCoroutine(startLecture());
+            uiController.OffChatWithChatGPTButton();
         }
         catch (Exception ex) {
             Debug.LogError($"Exception - {ex}");
@@ -318,22 +364,62 @@ public class GameController : MonoBehaviour {
     }
 
     private IEnumerator WaitingForQuestionsAfterLecture() {
-        yield return new WaitForSeconds(20.0f);
+        yield return new WaitForSeconds(14.0f);
+        YandexSpeechKit.TextToSpeech("Давайте перейдем к тестированию.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+        yield return new WaitForSeconds(4.0f);
         uiController.OffQuestionButton();
-        StartNextLecture();
+        uiController.OnTestingScrollViewAdapter();
     }
 
-    private void StartNextLecture() {
-        // Сбрасываем состояние студента перед выходом со сцены
-        PlayerState.setPlayerState(PlayerStateEnum.WALK);
+    private void OnTestingButtonPressed() {
 
-        var userStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
-        if (userStateId.HasValue) {
-            var newUserStateId = UserProgressUtils.getNewUserStateId(userStateId.Value, MainMenuController.TestCurrentLesson);
-            if (newUserStateId.HasValue) {
-                UserProgressUtils.setUserState(MainMenuController.Username, newUserStateId.Value);
+        playerFpsInput.speed = 0.0f;
+
+        uiController.OffStartTestingModuleButton();
+        uiController.OnTestingScrollViewAdapter();
+        uiController.OffChatWithChatGPTButton();
+
+        audioController.stopSound();
+
+        YandexSpeechKit.TextToSpeech("Давайте перейдем к тестированию, раз вы уже готовы", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+
+        isLectureInProgress = false;
+        isTeacherGivingLectureRightNow = false;
+        try {
+            if (playLectureCoroutine != null) StopCoroutine(playLectureCoroutine);
+            if (startLectureCoroutine != null) StopCoroutine(startLectureCoroutine);
+        }
+        catch (Exception ex) {
+            Debug.LogError(ex.Message);
+        }
+        
+    }
+
+    private void OnStudentFinishedTestingModule(int moduleScoreInPercent) {
+        if (moduleScoreInPercent > 60) {
+            YandexSpeechKit.TextToSpeech($@"Вы набрали {moduleScoreInPercent} процента баллов в данной лекции. Отличная работа!" + 
+                "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+
+            var userStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
+            if (userStateId.HasValue) {
+                var newUserStateId = UserProgressUtils.getNewUserStateId(userStateId.Value, MainMenuController.TestCurrentLesson);
+                if (newUserStateId.HasValue) {
+                    UserProgressUtils.setUserState(MainMenuController.Username, newUserStateId.Value);
+                }
             }
         }
+        else {
+            YandexSpeechKit.TextToSpeech("К сожалению вы не набрали достаточное количество баллов для прохождения данной лекции." 
+                + " Не расстраивайтесь и попробуйте еще раз.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+        }
+        StartCoroutine(FinishCurrentLecture());
+    }
+
+    private IEnumerator FinishCurrentLecture() {
+
+        yield return new WaitForSeconds(14.0f);
+        // Сбрасываем состояние студента перед выходом со сцены
+        PlayerState.setPlayerState(PlayerStateEnum.WALK);
 
         // Сброс переменных
         lectureInterruptTime = 0.0f;
@@ -341,18 +427,6 @@ public class GameController : MonoBehaviour {
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
 
-        /*if (currentPart != lessonsToParts[currentLesson])
-        {
-            currentPart += 1;
-            updateSlidesCount();
-            //playLectureCoroutine = StartCoroutine(PlayLectureFromCurrentSlideCoroutine());
-            //audioController.PlayLecture(currentLesson, currentPart);
-            //StartCoroutine(changingSlides());
-        }
-        else
-        {
-            // the lesson is over!
-        }*/
     }
 
     // Question number - уникален в рамках лекции
@@ -378,6 +452,7 @@ public class GameController : MonoBehaviour {
         setClipToAudioControllerAndPlay(pathToAnswer);
         //audioController.playShortSound(pathToAnswer);
         uiController.OffQuestionButton();
+        uiController.OffChatWithChatGPTButton();
         yield return new WaitForSeconds(AudioController.getClipLength(pathToAnswer) + 0.5f);
         setClipToAudioControllerAndPlay($"Music/GeneralSounds/LetsContinue/lets_continue");
         yield return new WaitForSeconds(audioController.getCurrentClipLength() + 1.5f);
@@ -389,6 +464,12 @@ public class GameController : MonoBehaviour {
     private void setClipToAudioControllerAndPlay(string pathToClip) {
         audioController.StopCurrentClip();
         audioController.setClip(pathToClip);
+        audioController.PlayCurrentClip();
+    }
+
+    private void setClipToAudioControllerAndPlay(AudioClip clip) {
+        audioController.StopCurrentClip();
+        audioController.setClip(clip);
         audioController.PlayCurrentClip();
     }
 

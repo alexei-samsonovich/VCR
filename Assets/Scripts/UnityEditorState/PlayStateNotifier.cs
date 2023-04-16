@@ -16,7 +16,7 @@ public static class PlayStateNotifier
             Debug.Log($"[PlayStateNotifier]: Read server connect status - {PipeServer.pipeReadServer?.IsConnected}");
             Debug.Log($"[PlayStateNotifier]: Write server connect status - {PipeServer.pipeWriteServer?.IsConnected}");
             PipeServer.Instance?.DestroySelf();
-            
+            GameController.pipeClientProcess.Kill();
         }
     }
 }
