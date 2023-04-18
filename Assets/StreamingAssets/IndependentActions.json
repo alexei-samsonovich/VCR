@@ -71,4 +71,37 @@
     "responseActionOn": "",
     "actionAuthor": "Teacher"
   },
+
+  "GreatButtonPressed": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "0.3", "0.1", "0" ],
+    "moralFactorForAuthor": [ "0.3", "0.1", "0" ],
+    "name": "Surprise",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
+  "LikeButtonPressed": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "0.2", "0.1", "0" ],
+    "moralFactorForAuthor": [ "0.2", "0.1", "0" ],
+    "name": "Surprise",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
+  "AverageButtonPressed": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "0.05", "0.05", "-0.05" ],
+    "moralFactorForAuthor": [ "0.05", "0.05", "0.05" ],
+    "name": "Surprise",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
+  "DoesntLikeButtonPressed": {
+    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
+    "moralFactorForTarget": [ "-0.3", "0.2", "-0.1" ],
+    "moralFactorForAuthor": [ "-0.3", "0.1", "0.2" ],
+    "name": "Surprise",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
 }

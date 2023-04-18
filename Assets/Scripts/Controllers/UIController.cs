@@ -10,6 +10,8 @@ public class UIController : MonoBehaviour
     [SerializeField] Button questionButton;
     [SerializeField] MouseLook mouseLook;
 
+    [SerializeField] MoralSchema moralSchema;
+
 
     [SerializeField] private GameObject testingScrollView;
     [SerializeField] public Button startTestingButton;
@@ -104,5 +106,19 @@ public class UIController : MonoBehaviour
 
     public void HideTestingScrollViewAdapter() {
         testingScrollView.SetActive(false);
+    }
+
+
+    public void GreatButtonAction() {
+        moralSchema.makeIndependentAction("GreatButtonPressed");
+    }
+    public void LikeButtonAction() {
+        moralSchema.makeIndependentAction("LikeButtonPressed");
+    }
+    public void AverageButtonAction() {
+        moralSchema.makeIndependentAction("AverageButtonPressed");
+    }
+    public void DoesntLikeButtonAction() {
+        moralSchema.makeIndependentAction("DoesntLikeButtonPressed");
     }
 }

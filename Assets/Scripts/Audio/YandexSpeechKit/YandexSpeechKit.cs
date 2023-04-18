@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class YandexSpeechKit {
 
-    private static readonly string IAmToken = "t1.9euelZrPlZTNlIybmp2Yk5XOkMvHm-3rnpWalpGJzJCUmIqUmImSkZiUlY_l9Pdxfw9e-e9PVS3L3fT3MS4NXvnvT1Utyw.4N1l377EN20QrCWI726OIF8fw6kQEZ6MWUttfWSw7pdCniQEoDyzqpuO8BHnFWeXY4sKPHLN84x2wfmlWXTMDw";
+    private static readonly string IAmToken = "t1.9euelZqZlZWNnpaMypGLk4uMyZqdkO3rnpWalpGJzJCUmIqUmImSkZiUlY_l8_daGAle-e8WS31M_t3z9xpHBl757xZLfUz-.aawaUtAVGr1sqcoRGzL_Qoxgsf-I9lmDkp65SNGLfZCmCvG_0Yio4pAjBLO1iuVss1fUOq2tieFgcHsUz2YpCQ";
     private static readonly string FolderId = "b1gs7puvlr7hqmmsjk4d";
 
     public static Action<byte []> onSpeechSynthesized;
@@ -97,6 +98,7 @@ public class YandexSpeechKit {
 
             var response = await httpClient.PostAsync("https://tts.api.cloud.yandex.net/speech/v1/tts:synthesize", content);
             var responseBytes = await response.Content.ReadAsByteArrayAsync();
+            Debug.LogError(Encoding.Default.GetString(responseBytes));
             //File.WriteAllBytes("testaudio2.mp3", responseBytes);
             onSpeechSynthesized?.Invoke(responseBytes);
         }
