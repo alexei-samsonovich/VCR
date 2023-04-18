@@ -10707,6 +10707,11 @@ MonoBehaviour:
   questionButton: {fileID: 2144993357}
   mouseLook: {fileID: 162208786}
   moralSchema: {fileID: 2097138464}
+  interactionButtons:
+  - {fileID: 2083097992}
+  - {fileID: 717635987}
+  - {fileID: 76032174}
+  - {fileID: 463513510}
   testingScrollView: {fileID: 2121439744}
   startTestingButton: {fileID: 1072437578}
   chatWithChatGptButton: {fileID: 754246140}

@@ -12,6 +12,8 @@ public class UIController : MonoBehaviour
 
     [SerializeField] MoralSchema moralSchema;
 
+    [SerializeField] List<Button> interactionButtons;
+
 
     [SerializeField] private GameObject testingScrollView;
     [SerializeField] public Button startTestingButton;
@@ -111,14 +113,39 @@ public class UIController : MonoBehaviour
 
     public void GreatButtonAction() {
         moralSchema.makeIndependentAction("GreatButtonPressed");
+        StartCoroutine("interactionButtonCLickedCoroutine");
     }
     public void LikeButtonAction() {
         moralSchema.makeIndependentAction("LikeButtonPressed");
+        StartCoroutine("interactionButtonCLickedCoroutine");
     }
     public void AverageButtonAction() {
         moralSchema.makeIndependentAction("AverageButtonPressed");
+        StartCoroutine("interactionButtonCLickedCoroutine");
     }
     public void DoesntLikeButtonAction() {
         moralSchema.makeIndependentAction("DoesntLikeButtonPressed");
+        StartCoroutine("interactionButtonCLickedCoroutine");
+    }
+
+    private void DisableInteractionButtons() {
+        foreach(var button in interactionButtons) {
+            button.interactable = false;
+        }
+        Debug.LogError("disable buttons");
+    }
+
+    private void EnableInteractionButtons() {
+        foreach (var button in interactionButtons) {
+            button.interactable = true;
+        }
+        Debug.LogError("enable buttons");
+    }
+
+
+    private IEnumerator interactionButtonCLickedCoroutine() {
+        DisableInteractionButtons();
+        yield return new WaitForSeconds(5);
+        EnableInteractionButtons();
     }
 }
