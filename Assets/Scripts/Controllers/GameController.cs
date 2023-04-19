@@ -141,13 +141,14 @@ public class GameController : MonoBehaviour {
 
             string responseAction = moralSchema.getResponseActionWithoutRecalculateAfterStudentAction("Student Ask Question During Lecture");
             emotionsController.setEmotion(emotionsController.getEmotion());
-            if (responseAction == "Teacher answer students question") {
-                isStudentAskQuestion = true;
-                StartCoroutine("askStudentForQuestionDuringLecture");
-            }
-            else if (responseAction == "Teacher ignore students question") {
-                StartCoroutine("resetEmotionsCoroutine");
-            }
+            StartCoroutine("askStudentForQuestionDuringLecture");
+            //if (responseAction == "Teacher answer students question") {
+            //    isStudentAskQuestion = true;
+            //    StartCoroutine("askStudentForQuestionDuringLecture");
+            //}
+            //else if (responseAction == "Teacher ignore students question") {
+            //    StartCoroutine("resetEmotionsCoroutine");
+            //}
         }
 
         if (isTeacherGivingLectureRightNow == true) {
@@ -355,6 +356,7 @@ public class GameController : MonoBehaviour {
         yield return new WaitForSeconds(4.0f);
         uiController.HideQuestionButton();
         uiController.ShowTestingScrollViewAdapter();
+        uiController.HideUserEstimatesButtons();
     }
 
     private void OnTestingButtonPressed() {

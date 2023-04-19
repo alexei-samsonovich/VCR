@@ -172,7 +172,7 @@ public class TestingModule : MonoBehaviour {
         var questionClickButton = viewGameObject.GetComponent<Button>();
         questionClickButton.onClick.AddListener(delegate {
             YandexSpeechKit.TextToSpeech(questionModel.Description, YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
-            emotionsController.setEmotionForSomeSeconds("Happiness", 4, 65);
+            emotionsController.setEmotionForSomeSeconds("Happiness", 4, 40);
         });
     }
 

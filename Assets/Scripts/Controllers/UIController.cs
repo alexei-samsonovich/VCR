@@ -110,6 +110,12 @@ public class UIController : MonoBehaviour
         testingScrollView.SetActive(false);
     }
 
+    public void HideUserEstimatesButtons() {
+        foreach (var button in interactionButtons) {
+            button.gameObject.SetActive(false);
+        }
+    }
+
 
     public void GreatButtonAction() {
         moralSchema.makeIndependentAction("GreatButtonPressed");
@@ -132,14 +138,12 @@ public class UIController : MonoBehaviour
         foreach(var button in interactionButtons) {
             button.interactable = false;
         }
-        Debug.LogError("disable buttons");
     }
 
     private void EnableInteractionButtons() {
         foreach (var button in interactionButtons) {
             button.interactable = true;
         }
-        Debug.LogError("enable buttons");
     }
 
 
