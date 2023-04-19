@@ -47,7 +47,7 @@ public class EmotionsController : MonoBehaviour
         }
 
         emotionTimer += Time.deltaTime;
-        if (emotionTimer > 18) {
+        if (emotionTimer > 10) {
             string emotion = getEmotion();
             Debug.LogError("Teacher show " + emotion + " emotion in EmotionController");
             setEmotionForSomeSeconds(emotion, 3);
@@ -71,18 +71,18 @@ public class EmotionsController : MonoBehaviour
         var feelings = moralSchema.getStudentFeelings();
         string answer = "";
         double min = 1000;
+        Debug.LogError(feelings);
         foreach (var emotion in emotions)
         {
             double difference = 0;
 
-            for (int i = 0; i < feelings.Length; i++)
-            {
+            for (int i = 0; i < feelings.Length; i++) {
                 difference += Math.Pow(feelings[i] - emotion.Value.VAD[i], 2);
-                if (difference < min)
-                {
-                    min = difference;
-                    answer = emotion.Key;
-                }
+            }
+            Debug.LogError(emotion.Key + " " + difference);
+            if (difference < min) {
+                min = difference;
+                answer = emotion.Key;
             }
         }
         return answer;
@@ -119,7 +119,7 @@ public class EmotionsController : MonoBehaviour
         }
     }
 
-    private void setEmotionForSomeSeconds(string emotion, int seconds, float emotionExtent = 50f) {
+    public void setEmotionForSomeSeconds(string emotion, int seconds, float emotionExtent = 50f) {
         StartCoroutine(setEmotionForSomeSecondsCoroutine(emotion, seconds, emotionExtent));
     }
 

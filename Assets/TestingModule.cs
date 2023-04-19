@@ -15,6 +15,7 @@ public class TestingModule : MonoBehaviour {
     [SerializeField] private RectTransform content;
     [SerializeField] private Button buttonPrefab;
     [SerializeField] private Text emptyContentRowPrefab;
+    [SerializeField] private EmotionsController emotionsController;
 
     private Dictionary<int, GameObject> questionIdToQuestionGameObj = new Dictionary<int, GameObject>();
     private Dictionary<int, List<GameObject>> questionIdToAnswerGameObjs = new Dictionary<int, List<GameObject>>();
@@ -74,17 +75,8 @@ public class TestingModule : MonoBehaviour {
         closeButtonInstance.transform.SetParent(content, false);
         closeButtonInstance.transform.GetChild(0).GetComponent<Text>().text = "Закрыть";
         closeButtonInstance.GetComponent<Button>().onClick.AddListener(delegate {
-
             uiController.HideTestingScrollViewAdapter();
-
-            Debug.LogError("absoluteScore= " + absoluteScore);
-
-            Debug.LogError("questionIdToQuestionGameObj.Keys.Count = " + questionIdToQuestionGameObj.Keys.Count);
-
             RelativeScoreInPercent = (int) (((float) absoluteScore / questionIdToQuestionGameObj.Keys.Count) * 100);
-
-            Debug.LogError("Relative percent = " + RelativeScoreInPercent);
-
             Messenger<int>.Broadcast(GameEvent.STUDENT_FINISHED_TESTING_MODULE, RelativeScoreInPercent);
         });
     }
@@ -103,6 +95,7 @@ public class TestingModule : MonoBehaviour {
 
             if (answerModel.Correct == "x") {
                 YandexSpeechKit.TextToSpeech("Правильный ответ. Отличная работа!", YSKVoice.ERMIL, YSKEmotion.GOOD);
+                emotionsController.setEmotionForSomeSeconds("Happiness", 3, 65);
                 absoluteScore++;
             }
 
@@ -179,6 +172,7 @@ public class TestingModule : MonoBehaviour {
         var questionClickButton = viewGameObject.GetComponent<Button>();
         questionClickButton.onClick.AddListener(delegate {
             YandexSpeechKit.TextToSpeech(questionModel.Description, YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+            emotionsController.setEmotionForSomeSeconds("Happiness", 4, 65);
         });
     }
 

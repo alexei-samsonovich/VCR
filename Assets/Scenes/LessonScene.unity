@@ -10760,6 +10760,7 @@ MonoBehaviour:
   content: {fileID: 1298548598}
   buttonPrefab: {fileID: 2695709822964753833, guid: ca2c2b142411a174497c0edd24167d70, type: 3}
   emptyContentRowPrefab: {fileID: 4976878580069640056, guid: c51180c2198b4984fbb73e6caef75072, type: 3}
+  emotionsController: {fileID: 317506479}
 --- !u!1001 &1352182461
 PrefabInstance:
   m_ObjectHideFlags: 0
