@@ -2849,6 +2849,7 @@ GameObject:
   m_Component:
   - component: {fileID: 317506480}
   - component: {fileID: 317506479}
+  - component: {fileID: 317506481}
   m_Layer: 0
   m_Name: EmotionsController
   m_TagString: Untagged
@@ -2884,6 +2885,20 @@ Transform:
   m_Father: {fileID: 1216147055}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &317506481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317506478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb6a1176e684dc940880d4706e39daeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _vhpEmotions: {fileID: 1046275560}
+  emotionShift: 1.01
 --- !u!1001 &326978237
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7380,8 +7395,8 @@ MonoBehaviour:
   speechRecognizerController: {fileID: 1327012600}
   playerFpsInput: {fileID: 1495685610}
   testingModule: {fileID: 1337291116}
-  testButton: {fileID: 754246138}
-  testInputField: {fileID: 979160432}
+  sendQuestionButton: {fileID: 754246138}
+  sendQuestionTextInputFIeld: {fileID: 979160432}
 --- !u!4 &884452122
 Transform:
   m_ObjectHideFlags: 0

@@ -90,6 +90,46 @@ public static class UserProgressUtils {
         //}
     }
 
+
+    public static int? getUserId(string username) {
+        using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
+            try {
+                connection.Open();
+
+                using (var command = connection.CreateCommand()) {
+
+                    var query = $@"
+                        SELECT 
+	                        us.id
+                        FROM
+	                        users as us
+                        WHERE 
+	                        us.username = '{username}'
+                    ";
+                    Debug.LogError("query = " + query);
+                    command.CommandText = query;
+                    using (var reader = command.ExecuteReader()) {
+                        if (reader.HasRows) {
+                            reader.Read();
+                            return Convert.ToInt32(reader["id"]);
+                        }
+                        else {
+                            return null;
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex) {
+                Debug.LogError(ex);
+                return null;
+            }
+            finally {
+                connection.Close();
+            }
+        }
+    }
+
     public static string getLessonSummary(int lessonNumber) {
         using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
             try {

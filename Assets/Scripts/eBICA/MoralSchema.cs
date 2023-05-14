@@ -19,8 +19,10 @@ public class MoralSchema : MonoBehaviour
     private string JSON_PATH_INDEPENDENT_ACTIONS = Application.streamingAssetsPath + "\\IndependentActions.json";
     private string JSON_PATH_INDEPENDENT_FEELINGS_STATES = Application.streamingAssetsPath + "\\FeelingsStates.json";
 
+    private static int APPRAISAL_SPACE_DIMENSION = 2;
+
     static bool processRecoveryOfFeelings = false;
-    static string studentCharacteristic = "NAN";
+    public static string studentCharacteristic = "NAN";
 
     public Dictionary<string, Act> allActs = new Dictionary<string, Act>();
     static Dictionary<string, Act> allIndependentActions = new Dictionary<string, Act>();
@@ -28,10 +30,10 @@ public class MoralSchema : MonoBehaviour
 
     public List<Tuple<string, double>> biasLikelihood = new List<Tuple<string, double>>();
 
-    static public double[] teacherAppraisals = new double[3];
-    static public double[] studentAppraisals = new double[3];
-    static public double[] teacherFeelings = new double[3];
-    static public double[] studentFeelings = new double[3];
+    static public double[] teacherAppraisals = new double[APPRAISAL_SPACE_DIMENSION];
+    static public double[] studentAppraisals = new double[APPRAISAL_SPACE_DIMENSION];
+    static public double[] teacherFeelings = new double[APPRAISAL_SPACE_DIMENSION];
+    static public double[] studentFeelings = new double[APPRAISAL_SPACE_DIMENSION];
 
     private void Start() {
         setupActs();
@@ -41,8 +43,8 @@ public class MoralSchema : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.P))
         {
-            Debug.Log($"Student Appraisals = [{studentAppraisals[0]}     {studentAppraisals[1]}        {studentAppraisals[2]}]");
-            Debug.Log($"Student Feelings = [{studentFeelings[0]}       {studentFeelings[1]}          {studentFeelings[2]}]");
+            Debug.Log($"Student Appraisals = [{studentAppraisals[0]}     {studentAppraisals[1]}]");
+            Debug.Log($"Student Feelings = [{studentFeelings[0]}       {studentFeelings[1]}]");
         }
 
         //if (Input.GetKeyDown(KeyCode.K))
@@ -52,10 +54,11 @@ public class MoralSchema : MonoBehaviour
     }
 
     public class FeelingState {
+
         public double[] feelingState;
 
         FeelingState() {
-            feelingState = new double[3];
+            feelingState = new double[APPRAISAL_SPACE_DIMENSION];
         }
 
         public void setActionAuthor(double[] inputFeelingState)
@@ -80,8 +83,8 @@ public class MoralSchema : MonoBehaviour
         public Act()
         {
             bodyFactorForTarget = new double[5];
-            moralFactorForTarget = new double[3];
-            moralFactorForAuthor = new double[3];
+            moralFactorForTarget = new double[APPRAISAL_SPACE_DIMENSION];
+            moralFactorForAuthor = new double[APPRAISAL_SPACE_DIMENSION];
         }
         public void setBodyFactorForTarget(double[] values)
         {
@@ -165,6 +168,7 @@ public class MoralSchema : MonoBehaviour
 
     public double[] recalculateAppraisals(double[] appraisals, double[] action)
     {
+        //Debug.LogError("recalculate appraisals lengths: " + appraisals.Length + "\t\t" + action.Length);
         double[] resultAppraisals = new double[appraisals.Length];
         for (int i = 0; i < appraisals.Length; ++i)
         {
@@ -199,7 +203,7 @@ public class MoralSchema : MonoBehaviour
         double dif = 20;
         foreach (var feelingMassive in feelingsStates)
         {
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < APPRAISAL_SPACE_DIMENSION; ++i)
             {
                 if (feelingMassive.Value.feelingState[i] != 0)
                 {
@@ -220,7 +224,7 @@ public class MoralSchema : MonoBehaviour
     {
         string studentCharacteristic = findFeelingsCharacteristic(feelings);
         double dif = 10;
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < APPRAISAL_SPACE_DIMENSION; ++i)
         {
             if (feelingsStates[studentCharacteristic].feelingState[i] != 0)
             {
@@ -242,7 +246,7 @@ public class MoralSchema : MonoBehaviour
             return feelings;
         }
         double diffNorm = 0;
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < APPRAISAL_SPACE_DIMENSION; ++i)
         {
             diffNorm += Math.Abs(feelings[i] - appraisals[i]);
         }
@@ -261,7 +265,7 @@ public class MoralSchema : MonoBehaviour
     double[] firstMethodRecalculateFeelings(double[] feelings, double[] appraisals)
     {
         double[] resultFeelings = new double[feelings.Length];
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < APPRAISAL_SPACE_DIMENSION; i++)
         {
             resultFeelings[i] = 1.1 * appraisals[i];
         }
@@ -272,7 +276,7 @@ public class MoralSchema : MonoBehaviour
     {
         Console.WriteLine("secondMethodRebuildFeelings");
         double[] resultFeelings = new double[feelings.Length];
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < APPRAISAL_SPACE_DIMENSION; ++i)
         {
             resultFeelings[i] = (1 - r1) * feelings[i] + r1 * (appraisals[i] - feelings[i]);
         }
@@ -284,7 +288,7 @@ public class MoralSchema : MonoBehaviour
     {
         Console.WriteLine("setConstantFeelings");
         studentCharacteristic = findFeelingsCharacteristic(feelings);
-        double[] ans = new double[3];
+        double[] ans = new double[APPRAISAL_SPACE_DIMENSION];
         feelingsStates[studentCharacteristic].feelingState.CopyTo(ans, 0);
         return ans;
     }
@@ -300,16 +304,16 @@ public class MoralSchema : MonoBehaviour
         {
             double difference = 0;
             var responseAction = el.Value;
-            Debug.Log($"appraisalsFactor = {appraisalsFactor}");
+            
             if (responseAction.getResponseActionOn() == action)
             {
                 var appraisalsAfterAction = recalculateAppraisals(appraisalsFactor, responseAction.getMoralFactorForTarget());
-                Debug.Log($"{responseAction.getName()} - {appraisalsAfterAction}");
+                
                 for (int i = 0; i < feelingsFactor.Length; ++i)
                 {
                     difference += Math.Pow(feelingsFactor[i] - appraisalsAfterAction[i], 2);
                 }
-                Debug.Log($"{responseAction.getName()} - {difference}");
+                
                 biasLikelihood.Add(new Tuple<string, double>(responseAction.getName(), difference));
                 mainNorm += difference;
                 maxValue = Math.Max(maxValue, difference);

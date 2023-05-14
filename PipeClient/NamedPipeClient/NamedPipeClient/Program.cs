@@ -15,20 +15,30 @@ namespace NamedPipeClient {
     class Program {
         static void Main(string[] args) {
 
-            var charGPTService = new ChatGPTService("Ты учитель по MS SQL, отвечай коротко. Ты не чат-бот, ты живой человек.");
-
-            Console.WriteLine(ChatGPTService.apiKey);
+            var charGPTService = new ChatGPTService("Ты учитель по MS SQL. Ты не чат-бот, ты живой человек.");
 
             PipeClient pipeClient = new PipeClient();
-            pipeClient.OnPipeCommandReceived += (pipeClient_, pipeCommand) => { 
-                Console.WriteLine($"Получено сообщение: " + pipeCommand.Command + "\n"); 
-            };
+
             pipeClient.OnPipeCommandReceived += (pipeClient_, pipeCommand) => {
+                Console.WriteLine($"Получено сообщение: " + pipeCommand.toString() + "\n");
+            };
+
+            pipeClient.OnPipeCommandReceived += (pipeClient_, pipeCommand) => {
+
+                if (!String.IsNullOrEmpty(pipeCommand.SystemRoleMessage)) {
+                    charGPTService.AddSystemMessage(pipeCommand.SystemRoleMessage);
+                }
+
+                charGPTService.PrintMessages();
+
+                //charGPTService.AddSystemMessage("Отвечай как бэтмен!");
+
                 string answer = charGPTService.getChatGPTResponseTextAsync(pipeCommand.Command).Result;
                 if (answer != null) {
                     pipeClient.SendMessage(answer);
                 }
             };
+
             pipeClient.Start();
 
             while (true) {
@@ -37,6 +47,30 @@ namespace NamedPipeClient {
                     pipeClient.SendMessage(message);
                 }
             }
+
+            //while (true) {
+
+            //    Console.WriteLine("\r\nDo you want pass system message? (y/n)");
+
+            //    var sysMessageAnswer = Console.ReadLine();
+
+            //    if (sysMessageAnswer?.ToLower() == "y" || sysMessageAnswer?.ToLower() == "yes") {
+
+            //        Console.WriteLine("Please, enter the system message: ");
+
+            //        var systemMessage = Console.ReadLine();
+
+            //        if (!String.IsNullOrEmpty(systemMessage)) {
+            //            charGPTService.AddSystemMessage(systemMessage);
+            //        }
+            //    }
+
+            //    var question = Console.ReadLine();
+
+            //    string answer = charGPTService.getChatGPTResponseTextAsync(question).Result;
+
+            //    Console.WriteLine("\r\nAnswer: " + answer);
+            //}
         }
     }
 
@@ -44,8 +78,13 @@ namespace NamedPipeClient {
     public struct PipeCommand {
         [JsonPropertyName("command")]
         public string Command { get; set; }
-        [JsonPropertyName("extraData")]
-        public string ExtraData { get; set; }
+
+        [JsonPropertyName("system")]
+        public string SystemRoleMessage { get; set; }
+
+        public string toString() {
+            return "{ " + this.Command + ", " + this.SystemRoleMessage + " }"; 
+        }
     }
 
     public class PipeClient {
@@ -257,6 +296,20 @@ class ChatGPTService {
         httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
     }
 
+    public void AddSystemMessage(String message) {
+
+        var newMessage = new Message() {
+            Role = "system",
+            Content = message
+        };
+
+        messages.Add(newMessage);
+    }
+
+
+    public void PrintMessages() {
+        messages.ForEach(Console.WriteLine);
+    }
 
     public async Task<string> getChatGPTResponseTextAsync(string question) {
         
@@ -264,7 +317,7 @@ class ChatGPTService {
 
         var newMessage = new Message() {
             Role = "user",
-            Content = question + ". коротко"
+            Content = question //+ ". коротко"
         };
 
         messages.Add(newMessage);

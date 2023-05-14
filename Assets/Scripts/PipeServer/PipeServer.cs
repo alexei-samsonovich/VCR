@@ -122,9 +122,22 @@ public class PipeServer {
         }
     }
 
-
-    public new void SendMessage(string message) {
+    public void SendMessage(string message) {
         SendMessage(new PipeCommand { command = message });
+    }
+
+
+    public void SendMessage(string message, string systemMessage) {
+
+        PipeCommand pipeCommand = new PipeCommand { command = message };
+
+        if (!String.IsNullOrEmpty(systemMessage)) {
+            pipeCommand.system = systemMessage;
+        }
+
+        Debug.LogError(pipeCommand.toString() + " - PIPE COMMAND");
+
+        SendMessage(pipeCommand);
     }
 
     public void SendMessage(PipeCommand pipeCommand) {
@@ -177,7 +190,12 @@ public class PipeServer {
 [Serializable]
 public struct PipeCommand {
     public string command;
-    public string extraData;
+    public string system;
+
+
+    public String toString() {
+        return "{" + this.command + " : " + this.system + "}";
+    }
 }
 
 
@@ -214,4 +232,5 @@ public class StreamString {
 
         return outBuffer.Length + 2;
     }
+
 }

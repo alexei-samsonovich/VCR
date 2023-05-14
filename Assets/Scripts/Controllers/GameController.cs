@@ -25,8 +25,8 @@ public class GameController : MonoBehaviour {
 
     [SerializeField] private TestingModule testingModule;
 
-    [SerializeField] private GameObject testButton;
-    [SerializeField] private InputField testInputField;
+    [SerializeField] private GameObject sendQuestionButton;
+    [SerializeField] private InputField sendQuestionTextInputFIeld;
 
 
     private PipeServer pipeServer;
@@ -101,7 +101,7 @@ public class GameController : MonoBehaviour {
 
         CurrentLessonNumber = MainMenuController.TestCurrentLesson;
 
-        if (CurrentLessonNumber == 2) CurrentLessonNumber = 3;
+        //if (CurrentLessonNumber == 2) CurrentLessonNumber = 3;
 
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
 
@@ -125,13 +125,69 @@ public class GameController : MonoBehaviour {
             pipeServer.CreateNewGameObjectPipeListener();
         }
 
-        testButton.GetComponent<Button>().onClick.AddListener(delegate {
-            pipeServer.SendMessage(testInputField.text);
-            testInputField.text = "";
+        sendQuestionButton.GetComponent<Button>().onClick.AddListener(delegate {
+            pipeServer.SendMessage(sendQuestionTextInputFIeld.text);
+            sendQuestionTextInputFIeld.text = "";
         });
 
         if (MainMenuController.IsUserAuthorized) {
             Debug.LogError($"Username - {MainMenuController.Username}");
+
+            int? userId = UserProgressUtils.getUserId(MainMenuController.Username);
+
+            if (userId.HasValue) {
+
+                using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
+                    try {
+                        connection.Open();
+
+                        using (var command = connection.CreateCommand()) {
+
+                            var query = $@"
+                                SELECT 
+	                                usinfo.appraisal_valence,
+                                    usinfo.appraisal_arousal,
+                                    usinfo.feeling_valence,
+                                    usinfo.feeling_valence,
+                                    usinfo.сharacteristic
+                                FROM
+	                                ebica_user_info as usinfo
+                                WHERE 
+	                                usinfo.user = {userId.Value}
+                            ";
+                            Debug.LogError("query = " + query);
+                            command.CommandText = query;
+                            using (var reader = command.ExecuteReader()) {
+                                if (reader.HasRows) {
+
+                                    reader.Read();
+
+                                    double[] studentAppraisals = new double[2] {
+                                        Convert.ToDouble(reader["appraisal_valence"]),
+                                        Convert.ToDouble(reader["appraisal_arousal"])
+                                    };
+                                    double[] studentFeelings = new double[2] {
+                                        Convert.ToDouble(reader["feeling_valence"]),
+                                        Convert.ToDouble(reader["feeling_valence"])
+                                    };
+
+                                    string studentCharacteristic = reader["сharacteristic"] as string;
+
+                                    MoralSchema.studentAppraisals = studentAppraisals;
+                                    MoralSchema.studentFeelings = studentFeelings;
+                                    MoralSchema.studentCharacteristic = studentCharacteristic;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex) {
+                        Debug.LogError(ex);
+                    }
+                    finally {
+                        connection.Close();
+                    }
+                }
+            }
         }
     }
 
@@ -385,8 +441,17 @@ public class GameController : MonoBehaviour {
 
     private void OnStudentFinishedTestingModule(int moduleScoreInPercent) {
         if (moduleScoreInPercent > 60) {
-            YandexSpeechKit.TextToSpeech($@"Вы набрали {moduleScoreInPercent} процента от максимального балла в данной лекции. Отличная работа!" + 
+            if (moduleScoreInPercent == 100) {
+                YandexSpeechKit.TextToSpeech($@"Вы набрали максимальный балл в тесте. Нельзя не отметить, что вы прекрасно постарались. " +
                 "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+            } else if (moduleScoreInPercent > 80) {
+                YandexSpeechKit.TextToSpeech($@"Вы набрали {moduleScoreInPercent} процента от максимального балла в данной лекции. ВЫ хорошо постарались." +
+                "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+            } else {
+                YandexSpeechKit.TextToSpeech($@"Вы набрали {moduleScoreInPercent} процента от максимального балла в данной лекции. " +
+                "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+            }
+            
 
             var userStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
             if (userStateId.HasValue) {
