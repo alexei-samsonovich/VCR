@@ -8,7 +8,7 @@ using System.IO;
 
 public class MoralSchema : MonoBehaviour
 {
-    const double r = 1e-1;
+    const double r = 1e-3;
     private const double r1 = 0.3;
     private const double k = 0.1;
     const double criticalValueForDiffNorms = 0.32;
@@ -43,7 +43,7 @@ public class MoralSchema : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.P))
         {
-            Debug.Log($"Student Appraisals = [{studentAppraisals[0]}     {studentAppraisals[1]}]");
+            Debug.Log($"Student Appraisals = [{studentAppraisals[0]}     {studentAppraisals[1]}  {studentCharacteristic}]");
             Debug.Log($"Student Feelings = [{studentFeelings[0]}       {studentFeelings[1]}]");
         }
 

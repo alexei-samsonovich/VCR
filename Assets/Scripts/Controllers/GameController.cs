@@ -126,6 +126,8 @@ public class GameController : MonoBehaviour {
         }
 
         sendQuestionButton.GetComponent<Button>().onClick.AddListener(delegate {
+            // Веди себя как добрый преподаватель. Обьясняй как будто мне пять лет
+            // Веди себя как злой и недовольный преподаватель
             pipeServer.SendMessage(sendQuestionTextInputFIeld.text);
             sendQuestionTextInputFIeld.text = "";
         });

@@ -133,6 +133,10 @@ public class UIController : MonoBehaviour
         moralSchema.makeIndependentAction("DoesntLikeButtonPressed");
         StartCoroutine("interactionButtonCLickedCoroutine");
     }
+    public void HateButtonAction() {
+        moralSchema.makeIndependentAction("HateButtonPressed");
+        StartCoroutine("interactionButtonCLickedCoroutine");
+    }
 
     private void DisableInteractionButtons() {
         foreach(var button in interactionButtons) {
