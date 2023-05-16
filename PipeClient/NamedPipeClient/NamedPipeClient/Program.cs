@@ -15,7 +15,7 @@ namespace NamedPipeClient {
     class Program {
         static void Main(string[] args) {
 
-            var charGPTService = new ChatGPTService("Ты учитель по MS SQL. Ты не чат-бот, ты живой человек.");
+            var charGPTService = new ChatGPTService("Ты учитель по MS SQL");
 
             PipeClient pipeClient = new PipeClient();
 
