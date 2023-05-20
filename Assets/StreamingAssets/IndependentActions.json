@@ -1,113 +1,141 @@
 {
   "lookAtTeacher": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "0.0", "0.0" ],
-    "moralFactorForAuthor": [ "0.1", "0" ],
+    "moralFactorForTarget": [ "0.0", "0.0", "0" ],
+    "moralFactorForAuthor": [ "0.04", "0.1", "0" ],
     "name": "lookAtTeacher",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "doesntLookAtTeacher": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "0.0", "0.0" ],
-    "moralFactorForAuthor": [ "-0.1", "0" ],
+    "moralFactorForTarget": [ "0.0", "0.0", "0" ],
+    "moralFactorForAuthor": [ "-0.04", "-0.1", "0" ],
     "name": "DoesntLookAtTeacher",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "Anger": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "-0.1", "0.02"],
-    "moralFactorForAuthor": [ "0", "0" ],
+    "moralFactorForTarget": [ "-0.2", "-0.2", "0"],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
     "name": "Anger",
     "responseActionOn": "",
     "actionAuthor": "Teacher"
   },
   "Disgust": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "-0.1", "-0.01"],
-    "moralFactorForAuthor": [ "0", "0" ],
+    "moralFactorForTarget": [ "-0.1", "-0.05", "0"],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
     "name": "Disgust",
     "responseActionOn": "",
     "actionAuthor": "Teacher"
   },
   "Fear": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "-0.02", "0.06" ],
-    "moralFactorForAuthor": [ "0", "0" ],
+    "moralFactorForTarget": [ "-0.02", "-0.1", "0" ],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
     "name": "Fear",
     "responseActionOn": "",
     "actionAuthor": "Teacher"
   },
   "Happiness": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "0.1", "0.12"],
-    "moralFactorForAuthor": [ "0", "0" ],
+    "moralFactorForTarget": [ "0.3", "0.3", "0"],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
     "name": "Happiness",
     "responseActionOn": "",
     "actionAuthor": "Teacher"
   },
   "Sadness": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "-0.05", "-0.04" ],
-    "moralFactorForAuthor": [ "0", "0" ],
+    "moralFactorForTarget": [ "-0.05", "-0.04", "0" ],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
     "name": "Sadness",
     "responseActionOn": "",
     "actionAuthor": "Teacher"
   },
   "Surprise": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "0.06", "0.18" ],
-    "moralFactorForAuthor": [ "0", "0"],
+    "moralFactorForTarget": [ "0.12", "0.18", "0" ],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
     "name": "Surprise",
     "responseActionOn": "",
     "actionAuthor": "Teacher"
   },
   "Neutral": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "0", "0" ],
-    "moralFactorForAuthor": [ "0", "0" ],
+    "moralFactorForTarget": [ "0.005", "0.003", "0" ],
+    "moralFactorForAuthor": [ "0", "0", "0" ],
     "name": "Neutral",
     "responseActionOn": "",
     "actionAuthor": "Teacher"
   },
 
   "GreatButtonPressed": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "5", "0.1"],
-    "moralFactorForAuthor": [ "5", "0.1"],
+    "moralFactorForTarget": [ "180", "90", "0"],
+    "moralFactorForAuthor": [ "180", "90", "0"],
     "name": "GreatButtonPressed",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "LikeButtonPressed": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "2", "0.1"],
-    "moralFactorForAuthor": [ "2", "0.1"],
+    "moralFactorForTarget": [ "90", "40", "0"],
+    "moralFactorForAuthor": [ "90", "40", "0"],
     "name": "LikeButtonPressed",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "AverageButtonPressed": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "0", "0.05"],
-    "moralFactorForAuthor": [ "0", "0.05"],
+    "moralFactorForTarget": [ "25", "15", "0"],
+    "moralFactorForAuthor": [ "25", "15", "0"],
     "name": "AverageButtonPressed",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "DoesntLikeButtonPressed": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "-5", "0.2"],
-    "moralFactorForAuthor": [ "-5", "0.1"],
+    "moralFactorForTarget": [ "-90", "-40", "0"],
+    "moralFactorForAuthor": [ "-90", "-40", "0"],
     "name": "DoesntLikeButtonPressed",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "HateButtonPressed": {
-    "bodyFactorForTarget": [ "0", "0", "0", "0", "0" ],
-    "moralFactorForTarget": [ "-10", "0.2"],
-    "moralFactorForAuthor": [ "-10", "0.1"],
+    "moralFactorForTarget": [ "-180", "-90", "0"],
+    "moralFactorForAuthor": [ "-180", "-90", "0"],
+    "name": "HateButtonPressed",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
+  "test_0_20": {
+    "moralFactorForTarget": [ "-1", "0", "-50"],
+    "moralFactorForAuthor": [ "-1", "0", "-50"],
+    "name": "HateButtonPressed",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
+  "test_20_40": {
+    "moralFactorForTarget": [ "-6", "0", "-25"],
+    "moralFactorForAuthor": [ "-6", "0", "-25"],
+    "name": "HateButtonPressed",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
+  "test_40_60": {
+    "moralFactorForTarget": [ "-6", "0", "-10"],
+    "moralFactorForAuthor": [ "-6", "0", "-10"],
+    "name": "HateButtonPressed",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
+  "test_60_80": {
+    "moralFactorForTarget": [ "-6", "0", "20"],
+    "moralFactorForAuthor": [ "-6", "0", "20"],
+    "name": "HateButtonPressed",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
+  "test_80_100": {
+    "moralFactorForTarget": [ "-6", "0", "100"],
+    "moralFactorForAuthor": [ "-6", "0", "100"],
+    "name": "HateButtonPressed",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
+  "student_ask_question": {
+    "moralFactorForTarget": [ "0", "0", "0"],
+    "moralFactorForAuthor": [ "20", "40", "10"],
     "name": "HateButtonPressed",
     "responseActionOn": "",
     "actionAuthor": "Student"

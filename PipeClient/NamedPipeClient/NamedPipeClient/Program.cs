@@ -25,6 +25,8 @@ namespace NamedPipeClient {
 
             pipeClient.OnPipeCommandReceived += (pipeClient_, pipeCommand) => {
 
+                Console.WriteLine("system message: " + pipeCommand.SystemRoleMessage);
+
                 if (!String.IsNullOrEmpty(pipeCommand.SystemRoleMessage)) {
                     charGPTService.AddSystemMessage(pipeCommand.SystemRoleMessage);
                 }

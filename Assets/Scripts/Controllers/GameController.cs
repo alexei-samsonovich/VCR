@@ -28,6 +28,8 @@ public class GameController : MonoBehaviour {
     [SerializeField] private GameObject sendQuestionButton;
     [SerializeField] private InputField sendQuestionTextInputFIeld;
 
+    private static Boolean isEbicaEstimatesAlreadyLoaded = false;
+
 
     private PipeServer pipeServer;
 
@@ -110,7 +112,19 @@ public class GameController : MonoBehaviour {
             pipeServer = new PipeServer();
             pipeServer.onPipeCommandReceived += (pipeServer_, pipeCommand) => {
                 Debug.LogError("Получение сообщение от клиента.\nСообщение: " + pipeCommand.command);
-                YandexSpeechKit.TextToSpeech(pipeCommand.command, YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+
+                double studentValence = moralSchema.getStudentFeelings()[0];
+
+                YSKEmotion voiceEmotion= YSKEmotion.NEUTRAL;
+
+
+                if (studentValence > 0.3) {
+                    voiceEmotion = YSKEmotion.GOOD;
+                }
+
+                Debug.LogError("emotion = " + voiceEmotion);
+
+                YandexSpeechKit.TextToSpeech(pipeCommand.command, YSKVoice.ERMIL, voiceEmotion);
             };
             pipeServer.Start();
 
@@ -128,7 +142,41 @@ public class GameController : MonoBehaviour {
         sendQuestionButton.GetComponent<Button>().onClick.AddListener(delegate {
             // Веди себя как добрый преподаватель. Обьясняй как будто мне пять лет
             // Веди себя как злой и недовольный преподаватель
-            pipeServer.SendMessage(sendQuestionTextInputFIeld.text);
+
+            //string studentCharacteristic = moralSchema.getStudentCharacteristic();
+            double[] studentFeelings = moralSchema.getStudentFeelings();
+
+            double valence = studentFeelings[0];
+            double interest = studentFeelings[1];
+            double cognition = studentFeelings[2];
+
+            string systemMessage = null;
+
+            if (valence > 0.2) {
+                systemMessage = "Веди себя как добрый преподаватель.";
+            }
+            else if (valence < -0.2) {
+                systemMessage = "Веди себя как злой и недовольный преподаватель.";
+            }
+
+            if (interest > 0.2) {
+                systemMessage += "Отвечай развернуто, неформально. ";
+            }
+            else if (interest < -0.2) {
+                systemMessage += "Отвечай очень формально. ";
+            }
+
+            if (cognition > 0.2) {
+                systemMessage += "Обьясняй как будто я очень умный профессор. ";
+            }
+            else if (cognition < -0.2) {
+                systemMessage += "Обьясняй как будто мне пять лет. ";
+            }
+
+            Debug.LogError("systemMessage = " + systemMessage);
+            
+
+            pipeServer.SendMessage(sendQuestionTextInputFIeld.text, systemMessage);
             sendQuestionTextInputFIeld.text = "";
         });
 
@@ -137,7 +185,7 @@ public class GameController : MonoBehaviour {
 
             int? userId = UserProgressUtils.getUserId(MainMenuController.Username);
 
-            if (userId.HasValue) {
+            if (userId.HasValue && isEbicaEstimatesAlreadyLoaded == false) {
 
                 using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
                     try {
@@ -148,9 +196,11 @@ public class GameController : MonoBehaviour {
                             var query = $@"
                                 SELECT 
 	                                usinfo.appraisal_valence,
-                                    usinfo.appraisal_arousal,
+                                    usinfo.appraisal_interest,
+                                    usinfo.appraisal_cognition,
                                     usinfo.feeling_valence,
-                                    usinfo.feeling_valence,
+                                    usinfo.feeling_interest,
+                                    usinfo.feeling_cognition,
                                     usinfo.сharacteristic
                                 FROM
 	                                ebica_user_info as usinfo
@@ -164,13 +214,16 @@ public class GameController : MonoBehaviour {
 
                                     reader.Read();
 
-                                    double[] studentAppraisals = new double[2] {
+                                    double[] studentAppraisals = new double[3] {
                                         Convert.ToDouble(reader["appraisal_valence"]),
-                                        Convert.ToDouble(reader["appraisal_arousal"])
+                                        Convert.ToDouble(reader["appraisal_interest"]),
+                                        Convert.ToDouble(reader["appraisal_cognition"])
                                     };
-                                    double[] studentFeelings = new double[2] {
+
+                                    double[] studentFeelings = new double[3] {
                                         Convert.ToDouble(reader["feeling_valence"]),
-                                        Convert.ToDouble(reader["feeling_valence"])
+                                        Convert.ToDouble(reader["feeling_interest"]),
+                                        Convert.ToDouble(reader["feeling_cognition"])
                                     };
 
                                     string studentCharacteristic = reader["сharacteristic"] as string;
@@ -180,6 +233,7 @@ public class GameController : MonoBehaviour {
                                     MoralSchema.studentCharacteristic = studentCharacteristic;
                                 }
                             }
+                            isEbicaEstimatesAlreadyLoaded = true;
                         }
                     }
                     catch (Exception ex) {
@@ -197,7 +251,8 @@ public class GameController : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.LeftControl) && isStudentAskQuestion == false && isTeacherGivingLectureRightNow == true) {
 
-            string responseAction = moralSchema.getResponseActionWithoutRecalculateAfterStudentAction("Student Ask Question During Lecture");
+            //string responseAction = moralSchema.getResponseActionWithoutRecalculateAfterStudentAction("Student Ask Question During Lecture");
+            moralSchema.makeIndependentAction("student_ask_question");
             emotionsController.setEmotion(emotionsController.getEmotion());
             StartCoroutine("askStudentForQuestionDuringLecture");
             //if (responseAction == "Teacher answer students question") {
@@ -445,15 +500,27 @@ public class GameController : MonoBehaviour {
         if (moduleScoreInPercent > 60) {
             if (moduleScoreInPercent == 100) {
                 YandexSpeechKit.TextToSpeech($@"Вы набрали максимальный балл в тесте. Нельзя не отметить, что вы прекрасно постарались. " +
-                "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+                "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.GOOD);
             } else if (moduleScoreInPercent > 80) {
                 YandexSpeechKit.TextToSpeech($@"Вы набрали {moduleScoreInPercent} процента от максимального балла в данной лекции. ВЫ хорошо постарались." +
-                "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+                "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.GOOD);
             } else {
                 YandexSpeechKit.TextToSpeech($@"Вы набрали {moduleScoreInPercent} процента от максимального балла в данной лекции. " +
                 "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
             }
-            
+
+            if (moduleScoreInPercent > 0 && moduleScoreInPercent < 20) {
+                moralSchema.makeIndependentAction("test_0_20");
+            } else if (moduleScoreInPercent >= 20 && moduleScoreInPercent < 40) {
+                moralSchema.makeIndependentAction("test_20_40");
+            } else if (moduleScoreInPercent >= 40 && moduleScoreInPercent < 60) {
+                moralSchema.makeIndependentAction("test_40_60");
+            } else if (moduleScoreInPercent >= 60 && moduleScoreInPercent < 80) {
+                moralSchema.makeIndependentAction("test_60_80");
+            } else if (moduleScoreInPercent >=80 && moduleScoreInPercent <= 100) {
+                moralSchema.makeIndependentAction("test_80_100");
+            }
+
 
             var userStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
             if (userStateId.HasValue) {

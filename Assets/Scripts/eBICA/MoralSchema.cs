@@ -19,7 +19,7 @@ public class MoralSchema : MonoBehaviour
     private string JSON_PATH_INDEPENDENT_ACTIONS = Application.streamingAssetsPath + "\\IndependentActions.json";
     private string JSON_PATH_INDEPENDENT_FEELINGS_STATES = Application.streamingAssetsPath + "\\FeelingsStates.json";
 
-    private static int APPRAISAL_SPACE_DIMENSION = 2;
+    private static int APPRAISAL_SPACE_DIMENSION = 3;
 
     static bool processRecoveryOfFeelings = false;
     public static string studentCharacteristic = "NAN";
@@ -73,7 +73,6 @@ public class MoralSchema : MonoBehaviour
     }
     public class Act
     {
-        public double[] bodyFactorForTarget;
         public double[] moralFactorForTarget;
         public double[] moralFactorForAuthor;
         public string name;
@@ -82,14 +81,10 @@ public class MoralSchema : MonoBehaviour
 
         public Act()
         {
-            bodyFactorForTarget = new double[5];
             moralFactorForTarget = new double[APPRAISAL_SPACE_DIMENSION];
             moralFactorForAuthor = new double[APPRAISAL_SPACE_DIMENSION];
         }
-        public void setBodyFactorForTarget(double[] values)
-        {
-            values.CopyTo(bodyFactorForTarget, 0);
-        }
+
         public void setMoralFactorForTarget(double[] values)
         {
             values.CopyTo(moralFactorForTarget, 0);
@@ -111,11 +106,6 @@ public class MoralSchema : MonoBehaviour
         public void setActionAuthor(string actionAuthor)
         {
             this.actionAuthor = actionAuthor;
-        }
-
-        public double[] getBodyFactorForTarget()
-        {
-            return bodyFactorForTarget;
         }
         public double[] getMoralFactorForTarget()
         {
@@ -170,8 +160,10 @@ public class MoralSchema : MonoBehaviour
     {
         //Debug.LogError("recalculate appraisals lengths: " + appraisals.Length + "\t\t" + action.Length);
         double[] resultAppraisals = new double[appraisals.Length];
+        //Debug.LogError("Length - " + appraisals.Length);
         for (int i = 0; i < appraisals.Length; ++i)
         {
+            //Debug.LogError("i = " + i);
             resultAppraisals[i] = (1.0 - r) * appraisals[i] + r * action[i];
         }
         return resultAppraisals;

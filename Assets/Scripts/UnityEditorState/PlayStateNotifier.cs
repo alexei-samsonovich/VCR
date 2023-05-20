@@ -31,12 +31,15 @@ public static class PlayStateNotifier
 
                             using (var command = connection.CreateCommand()) {
                                 var query = $@"
-                                    insert or replace into ebica_user_info(user, appraisal_valence, appraisal_arousal, feeling_valence, feeling_arousal, ñharacteristic) 
+                                    insert or replace into ebica_user_info(user, appraisal_valence, appraisal_interest, appraisal_cognition, feeling_valence, feeling_interest, feeling_cognition, ñharacteristic) 
                                     VALUES(
-                                            {userId.Value}, {((decimal)studentAppraisals[0]).ToString().Replace(",", ".")}, 
+                                            {userId.Value},
+                                            {((decimal)studentAppraisals[0]).ToString().Replace(",", ".")}, 
                                             {((decimal)studentAppraisals[1]).ToString().Replace(",", ".")}, 
+                                            {((decimal)studentAppraisals[2]).ToString().Replace(",", ".")}, 
                                             {((decimal)studentFeelings[0]).ToString().Replace(",", ".")}, 
                                             {((decimal)studentFeelings[1]).ToString().Replace(",", ".")}, 
+                                            {((decimal)studentFeelings[2]).ToString().Replace(",", ".")}, 
                                             '{studentCharacteristic}');
                                 ";
                                 command.CommandText = query;
