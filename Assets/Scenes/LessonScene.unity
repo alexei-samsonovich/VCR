@@ -7394,6 +7394,9 @@ MonoBehaviour:
   moralSchema: {fileID: 2097138464}
   emotionsController: {fileID: 317506479}
   speechRecognizerController: {fileID: 1327012600}
+  changeFOVs:
+  - {fileID: 963194233}
+  - {fileID: 162208793}
   playerFpsInput: {fileID: 1495685610}
   testingModule: {fileID: 1337291116}
   sendQuestionButton: {fileID: 754246138}
@@ -10185,7 +10188,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 5
+  m_ScrollSensitivity: 45
   m_Viewport: {fileID: 148868428}
   m_HorizontalScrollbar: {fileID: 2057680667}
   m_VerticalScrollbar: {fileID: 1656086177}
@@ -16415,7 +16418,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 5
+  m_ScrollSensitivity: 45
   m_Viewport: {fileID: 1398482046}
   m_HorizontalScrollbar: {fileID: 52978386}
   m_VerticalScrollbar: {fileID: 707069397}

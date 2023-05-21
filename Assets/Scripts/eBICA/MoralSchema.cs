@@ -43,8 +43,8 @@ public class MoralSchema : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.P))
         {
-            Debug.Log($"Student Appraisals = [{studentAppraisals[0]}     {studentAppraisals[1]}  {studentCharacteristic}]");
-            Debug.Log($"Student Feelings = [{studentFeelings[0]}       {studentFeelings[1]}]");
+            Debug.Log(String.Join("\t", getStudentAppraisals().ToArray()));
+            Debug.Log(String.Join("\t", getStudentFeelings().ToArray()));
         }
 
         //if (Input.GetKeyDown(KeyCode.K))
@@ -171,6 +171,9 @@ public class MoralSchema : MonoBehaviour
 
     public void makeIndependentAction(string action)
     {
+        if (action.Contains("test") || action == "test_0_20") {
+            Debug.LogError("test finished, action - " + action);
+        }
         rebuildAppraisalsAndFeelingsAfterStudentAction(action, true);
         //teacherAppraisals = recalculateAppraisals(teacherAppraisals, allIndependentActions[action].getMoralFactorForTarget());
         //studentAppraisals = recalculateAppraisals(studentAppraisals, allIndependentActions[action].getMoralFactorForAuthor());

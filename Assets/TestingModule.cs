@@ -84,7 +84,8 @@ public class TestingModule : MonoBehaviour {
     void InitializeQuestionAnswerView(GameObject viewGameObject, QuestionAnswer answerModel, int questionNumber, int answerNumber) {
 
         var answerButtonText = viewGameObject.transform.GetChild(0).GetComponent<Text>();
-        answerButtonText.text = questionNumber + "." + answerNumber + " " + answerModel.Text;
+        //answerButtonText.text = questionNumber + "." + answerNumber + " " + answerModel.Text;
+        answerButtonText.text = "•  " + answerModel.Text;
 
         var answerClickButton = viewGameObject.GetComponent<Button>();
         //answerClickButton.onClick.AddListener(delegate {
@@ -168,6 +169,14 @@ public class TestingModule : MonoBehaviour {
 
         var questionButtonText = viewGameObject.transform.GetChild(0).GetComponent<Text>();
         questionButtonText.text = "Вопрос " + questionNumber + ". " + questionModel.Text;
+
+        viewGameObject.transform.GetComponent<Image>().color = Color.green;
+        //Button button = viewGameObject.transform.GetComponent<Button>();
+        //Color newColor = new Color(61, 251, 77, 255);
+        ////Color newColor = Color.cyan;
+        //var colors = button.colors;
+        //colors.normalColor = newColor;
+        //button.colors = colors;
 
         var questionClickButton = viewGameObject.GetComponent<Button>();
         questionClickButton.onClick.AddListener(delegate {

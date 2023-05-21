@@ -1,18 +1,12 @@
 {
   "friend": {
-    "feelingState": [ "0.5", "0", "0"]
+    "feelingState": [ "0.5", "0.21", "0"]
   },
   "enemy": {
-    "feelingState": [ "-0.5", "0", "0" ]
-  },
-  "party-goer": {
-    "feelingState": [ "0", "0.5", "0" ]
-  },
-  "bore": {
-    "feelingState": [ "0", "-0.5", "0" ]
+    "feelingState": [ "-0.5", "-0.21", "0" ]
   },
   "genius": {
-    "feelingState": [ "0", "0", "0.5" ]
+    "feelingState": [ "0.21", "0.21", "0.5" ]
   },
   "fool": {
     "feelingState": [ "0", "0", "-0.5" ]

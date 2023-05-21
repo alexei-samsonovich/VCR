@@ -20,6 +20,7 @@ public class GameController : MonoBehaviour {
     [SerializeField] private MoralSchema moralSchema;
     [SerializeField] private EmotionsController emotionsController;
     [SerializeField] private SpeechRecognizerController speechRecognizerController;
+    [SerializeField] private List<ChangeFieldOfView> changeFOVs;
 
     [SerializeField] private FPSInput playerFpsInput;
 
@@ -107,6 +108,9 @@ public class GameController : MonoBehaviour {
 
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
 
+
+        changeFOVs.ForEach(it => it.enabled = true);
+
         // Запускаем pipe server только если он еще не был запущен!
         if (PipeServer.Instance == null) {
             pipeServer = new PipeServer();
@@ -144,6 +148,9 @@ public class GameController : MonoBehaviour {
             // Веди себя как злой и недовольный преподаватель
 
             //string studentCharacteristic = moralSchema.getStudentCharacteristic();
+
+            string userMessage = sendQuestionTextInputFIeld.text;
+
             double[] studentFeelings = moralSchema.getStudentFeelings();
 
             double valence = studentFeelings[0];
@@ -152,31 +159,44 @@ public class GameController : MonoBehaviour {
 
             string systemMessage = null;
 
+            List<string> additionMessages = new List<string>();
+
             if (valence > 0.2) {
-                systemMessage = "Веди себя как добрый преподаватель.";
+                //systemMessage = "(Веди себя как добрый преподаватель. Отвечай коротко)";
+                additionMessages.Add("Веди себя как добрый преподаватель. Отвечай коротко и неформально");
             }
             else if (valence < -0.2) {
-                systemMessage = "Веди себя как злой и недовольный преподаватель.";
+                //systemMessage = "Веди себя как злой и недовольный преподаватель.";
+                additionMessages.Add("Веди себя как злой и недовольный преподаватель. Отвечай формально");
             }
 
             if (interest > 0.2) {
-                systemMessage += "Отвечай развернуто, неформально. ";
+                //systemMessage += "Отвечай развернуто, неформально. ";
+                additionMessages.Add("Отвечай развернуто, неформально.");
             }
             else if (interest < -0.2) {
-                systemMessage += "Отвечай очень формально. ";
+                //systemMessage += "Отвечай очень формально. ";
+                additionMessages.Add("Отвечай очень формально. ");
             }
 
             if (cognition > 0.2) {
-                systemMessage += "Обьясняй как будто я очень умный профессор. ";
+                //systemMessage += "Обьясняй как будто я очень умный профессор. ";
+                additionMessages.Add("Обьясняй как будто я очень умный профессор. ");
             }
             else if (cognition < -0.2) {
-                systemMessage += "Обьясняй как будто мне пять лет. ";
+                //systemMessage += "Обьясняй как будто мне пять лет. ";
+                additionMessages.Add("Обьясняй как будто мне пять лет. ");
             }
 
-            Debug.LogError("systemMessage = " + systemMessage);
-            
+            if (additionMessages.Count > 0) {
+                userMessage += "(" + String.Join(" ", additionMessages.ToArray()) + ")";
+            }
 
-            pipeServer.SendMessage(sendQuestionTextInputFIeld.text, systemMessage);
+            Debug.LogError("userMessage = " + userMessage);
+
+
+            //pipeServer.SendMessage(sendQuestionTextInputFIeld.text, systemMessage);
+            pipeServer.SendMessage(userMessage);
             sendQuestionTextInputFIeld.text = "";
         });
 
@@ -475,6 +495,8 @@ public class GameController : MonoBehaviour {
     private void OnTestingButtonPressed() {
 
         playerFpsInput.speed = 0.0f;
+        changeFOVs.ForEach(it => it.enabled = false);
+
 
         uiController.HideStartTestingModuleButton();
         uiController.ShowTestingScrollViewAdapter();
@@ -497,31 +519,9 @@ public class GameController : MonoBehaviour {
     }
 
     private void OnStudentFinishedTestingModule(int moduleScoreInPercent) {
+
+
         if (moduleScoreInPercent > 60) {
-            if (moduleScoreInPercent == 100) {
-                YandexSpeechKit.TextToSpeech($@"Вы набрали максимальный балл в тесте. Нельзя не отметить, что вы прекрасно постарались. " +
-                "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.GOOD);
-            } else if (moduleScoreInPercent > 80) {
-                YandexSpeechKit.TextToSpeech($@"Вы набрали {moduleScoreInPercent} процента от максимального балла в данной лекции. ВЫ хорошо постарались." +
-                "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.GOOD);
-            } else {
-                YandexSpeechKit.TextToSpeech($@"Вы набрали {moduleScoreInPercent} процента от максимального балла в данной лекции. " +
-                "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
-            }
-
-            if (moduleScoreInPercent > 0 && moduleScoreInPercent < 20) {
-                moralSchema.makeIndependentAction("test_0_20");
-            } else if (moduleScoreInPercent >= 20 && moduleScoreInPercent < 40) {
-                moralSchema.makeIndependentAction("test_20_40");
-            } else if (moduleScoreInPercent >= 40 && moduleScoreInPercent < 60) {
-                moralSchema.makeIndependentAction("test_40_60");
-            } else if (moduleScoreInPercent >= 60 && moduleScoreInPercent < 80) {
-                moralSchema.makeIndependentAction("test_60_80");
-            } else if (moduleScoreInPercent >=80 && moduleScoreInPercent <= 100) {
-                moralSchema.makeIndependentAction("test_80_100");
-            }
-
-
             var userStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
             if (userStateId.HasValue) {
                 var newUserStateId = UserProgressUtils.getNewUserStateId(userStateId.Value, MainMenuController.TestCurrentLesson);
@@ -530,10 +530,42 @@ public class GameController : MonoBehaviour {
                 }
             }
         }
+
+        if (moduleScoreInPercent == 100) {
+            YandexSpeechKit.TextToSpeech($@"Вы набрали максимальный балл. Нельзя не отметить, что вы прекрасно постарались. " +
+            "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.GOOD);
+        } else if (moduleScoreInPercent > 80) {
+            YandexSpeechKit.TextToSpeech($@"Вы набрали {moduleScoreInPercent} процента от максимального балла. Вы хорошо постарались." +
+            "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.GOOD);
+        }
         else {
-            YandexSpeechKit.TextToSpeech("К сожалению вы не набрали достаточное количество баллов для прохождения данной лекции." 
+            YandexSpeechKit.TextToSpeech("К сожалению вы не набрали достаточное количество баллов для прохождения данной лекции."
                 + " Не расстраивайтесь и попробуйте еще раз.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
         }
+
+        Debug.LogError("moduleScoreInPercent = " + moduleScoreInPercent);
+
+        if (moduleScoreInPercent > 0 && moduleScoreInPercent < 20) {
+            Debug.LogError("test_0_20");
+            moralSchema.makeIndependentAction("test_0_20");
+        }
+        else if (moduleScoreInPercent >= 20 && moduleScoreInPercent < 40) {
+            Debug.LogError("test_20_40");
+            moralSchema.makeIndependentAction("test_20_40");
+        }
+        else if (moduleScoreInPercent >= 40 && moduleScoreInPercent < 60) {
+            Debug.LogError("test_40_60");
+            moralSchema.makeIndependentAction("test_40_60");
+        }
+        else if (moduleScoreInPercent >= 60 && moduleScoreInPercent < 80) {
+            Debug.LogError("test_60_80");
+            moralSchema.makeIndependentAction("test_60_80");
+        }
+        else if (moduleScoreInPercent >= 80 && moduleScoreInPercent <= 100) {
+            Debug.LogError("test_80_100");
+            moralSchema.makeIndependentAction("test_80_100");
+        }
+
         StartCoroutine(FinishCurrentLecture());
     }
 
