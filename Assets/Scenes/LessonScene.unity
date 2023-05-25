@@ -7385,6 +7385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f42ef930412b7345ac36cc8d4991848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ActivateEmotionalAnswersWithChatGPT: 1
   uiController: {fileID: 1337291113}
   audioController: {fileID: 117648696}
   proyectorScreen: {fileID: 42055075}

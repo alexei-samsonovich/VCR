@@ -11,6 +11,8 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
+    [SerializeField] private bool ActivateEmotionalAnswersWithChatGPT = false;
+
     [SerializeField] private UIController uiController;
     [SerializeField] private AudioController audioController;
     [SerializeField] private GameObject proyectorScreen;
@@ -28,6 +30,8 @@ public class GameController : MonoBehaviour {
 
     [SerializeField] private GameObject sendQuestionButton;
     [SerializeField] private InputField sendQuestionTextInputFIeld;
+
+    
 
     private static Boolean isEbicaEstimatesAlreadyLoaded = false;
 
@@ -144,8 +148,6 @@ public class GameController : MonoBehaviour {
         }
 
         sendQuestionButton.GetComponent<Button>().onClick.AddListener(delegate {
-            // Веди себя как добрый преподаватель. Обьясняй как будто мне пять лет
-            // Веди себя как злой и недовольный преподаватель
 
             //string studentCharacteristic = moralSchema.getStudentCharacteristic();
 
@@ -157,39 +159,41 @@ public class GameController : MonoBehaviour {
             double interest = studentFeelings[1];
             double cognition = studentFeelings[2];
 
-            string systemMessage = null;
+            //string systemMessage = null;
 
-            List<string> additionMessages = new List<string>();
+            if (ActivateEmotionalAnswersWithChatGPT) {
+                List<string> additionMessages = new List<string>();
 
-            if (valence > 0.2) {
-                //systemMessage = "(Веди себя как добрый преподаватель. Отвечай коротко)";
-                additionMessages.Add("Веди себя как добрый преподаватель. Отвечай коротко и неформально");
-            }
-            else if (valence < -0.2) {
-                //systemMessage = "Веди себя как злой и недовольный преподаватель.";
-                additionMessages.Add("Веди себя как злой и недовольный преподаватель. Отвечай формально");
-            }
+                if (valence > 0.2) {
+                    //systemMessage = "(Веди себя как добрый преподаватель. Отвечай коротко)";
+                    additionMessages.Add("Веди себя как добрый преподаватель. Отвечай коротко и неформально");
+                }
+                else if (valence < -0.2) {
+                    //systemMessage = "Веди себя как злой и недовольный преподаватель.";
+                    additionMessages.Add("Веди себя как злой и недовольный преподаватель.");
+                }
 
-            if (interest > 0.2) {
-                //systemMessage += "Отвечай развернуто, неформально. ";
-                additionMessages.Add("Отвечай развернуто, неформально.");
-            }
-            else if (interest < -0.2) {
-                //systemMessage += "Отвечай очень формально. ";
-                additionMessages.Add("Отвечай очень формально. ");
-            }
+                if (interest > 0.2) {
+                    //systemMessage += "Отвечай развернуто, неформально. ";
+                    additionMessages.Add("Отвечай развернуто, неформально.");
+                }
+                else if (interest < -0.2) {
+                    //systemMessage += "Отвечай очень формально. ";
+                    additionMessages.Add("Отвечай очень формально. ");
+                }
 
-            if (cognition > 0.2) {
-                //systemMessage += "Обьясняй как будто я очень умный профессор. ";
-                additionMessages.Add("Обьясняй как будто я очень умный профессор. ");
-            }
-            else if (cognition < -0.2) {
-                //systemMessage += "Обьясняй как будто мне пять лет. ";
-                additionMessages.Add("Обьясняй как будто мне пять лет. ");
-            }
+                if (cognition > 0.2) {
+                    //systemMessage += "Обьясняй как будто я очень умный профессор. ";
+                    additionMessages.Add("Обьясняй как будто я очень умный профессор. ");
+                }
+                else if (cognition < -0.2) {
+                    //systemMessage += "Обьясняй как будто мне пять лет. ";
+                    additionMessages.Add("Обьясняй как будто мне пять лет. ");
+                }
 
-            if (additionMessages.Count > 0) {
-                userMessage += "(" + String.Join(" ", additionMessages.ToArray()) + ")";
+                if (additionMessages.Count > 0) {
+                    userMessage += "(" + String.Join(" ", additionMessages.ToArray()) + ")";
+                }
             }
 
             Debug.LogError("userMessage = " + userMessage);
