@@ -140,4 +140,25 @@
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
+  "student_interrupt_lecture": {
+    "moralFactorForTarget": [ "0", "0", "0"],
+    "moralFactorForAuthor": [ "-10", "400", "0"],
+    "name": "student_interrupt_lecture",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
+  "student_retakes_lectures": {
+    "moralFactorForTarget": [ "0", "0", "0"],
+    "moralFactorForAuthor": [ "5", "100", "0"],
+    "name": "student_retakes_lectures",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
+  "student_takes_the_lecture_in_his_order": {
+    "moralFactorForTarget": [ "0", "0", "0"],
+    "moralFactorForAuthor": [ "-20", "300", "0"],
+    "name": "student_takes_the_lecture_in_his_order",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
 }

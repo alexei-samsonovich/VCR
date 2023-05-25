@@ -17,7 +17,7 @@ public static class UserProgressUtils {
     public static int StartStateId { get; } = 1;
 
     ////// ID "урока", который изучил только что зарегистрированный пользователь 
-    ////// Ќебольшой костыль, но он необходим, чтобы унифицировать процесс в том числе и только дл€ зарегистрированного пользовател€
+    ////// Ќебольшой костыль, но он необходим, чтобы унифицировать процесс в том числе и дл€ только что зарегистрированного пользовател€
     //////public static int EmptyLessonId { get; private set; }
 
     public static Dictionary<int, int> LessonIdToNumber { get; } = new Dictionary<int, int>();
@@ -460,6 +460,86 @@ public static class UserProgressUtils {
                         if (reader.HasRows) {
                             reader.Read();
                             return Convert.ToInt32(reader["state_id"]);
+                        }
+                        else {
+                            return null;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) {
+                Debug.LogError(ex);
+                return null;
+            }
+            finally {
+                connection.Close();
+            }
+        }
+    }
+
+    public static int? getNextDefaultLectureId(int currentStateId) {
+        using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
+            try {
+                connection.Open();
+
+                using (var command = connection.CreateCommand()) {
+
+                    string query;
+
+                    query = $@"
+                        SELECT
+	                        states.next_default_lesson_id
+                        FROM 
+	                        states
+                        WHERE
+                            states.id = {currentStateId} AND states.next_default_lesson_id IS NOT NULL
+                    ";
+                    command.CommandText = query;
+                    using (var reader = command.ExecuteReader()) {
+                        if (reader.HasRows) {
+                            reader.Read();
+                            return Convert.ToInt32(reader["next_default_lesson_id"]);
+                        }
+                        else {
+                            return null;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) {
+                Debug.LogError(ex);
+                return null;
+            }
+            finally {
+                connection.Close();
+            }
+        }
+    }
+
+    public static string getNextDefaultLectureSummary(int currentStateId) {
+        using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
+            try {
+                connection.Open();
+
+                using (var command = connection.CreateCommand()) {
+
+                    string query;
+
+                    query = $@"
+                        SELECT
+	                        lessons.summary
+                        FROM 
+	                        states
+                        INNER JOIN
+                            lessons
+                                ON states.next_default_lesson_id = lessons.id
+                                AND states.id = {currentStateId}
+                    ";
+                    command.CommandText = query;
+                    using (var reader = command.ExecuteReader()) {
+                        if (reader.HasRows) {
+                            reader.Read();
+                            return (string) reader["summary"];
                         }
                         else {
                             return null;

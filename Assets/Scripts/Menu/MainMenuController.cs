@@ -21,7 +21,7 @@ public class MainMenuController : MonoBehaviour {
 
     [SerializeField] private GameObject lessonsMenu;
 
-    public static int TestCurrentLesson { get; set; } = 1;
+    public static int CurrentLessonNumber { get; set; } = 1;
 
 
     public static bool IsUserAuthorized { get; private set; } = false;
@@ -299,7 +299,7 @@ public class MainMenuController : MonoBehaviour {
     }
 
     public void StartLesson(int currentLessonNumber) {
-        TestCurrentLesson = currentLessonNumber;
+        CurrentLessonNumber = currentLessonNumber;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 

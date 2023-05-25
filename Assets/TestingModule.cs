@@ -32,7 +32,14 @@ public class TestingModule : MonoBehaviour {
 
     public void UpdateQuestions() {
         clearScrollContent();
-        List<Question> questions = getLessonQuestions(GameController.CurrentLessonNumber);
+
+        List<Question> questions;
+        if (GameController.CurrentLessonNumber > 3) {
+            questions = getLessonQuestions(1);
+        } else {
+            questions = getLessonQuestions(GameController.CurrentLessonNumber);
+        }
+        
         //if (questions != null) {
             renderTestQuestionsAndAnswers(questions);
         //}
@@ -42,58 +49,60 @@ public class TestingModule : MonoBehaviour {
 
         int questionNumber = 1;
 
-        if (questions != null && questions.Count > 0) {
-            foreach (var question in questions) {
-
-                List<QuestionAnswer> answers = getQuestionAnswers(question.Id);
-
-                if (answers == null) break;
-
-                questionIdToAnswerGameObjs.Add(question.Id, new List<GameObject>());
-
-                var questionInstance = GameObject.Instantiate(buttonPrefab.gameObject) as GameObject;
-                questionInstance.transform.SetParent(content, false);
-                InitializeQuestionView(questionInstance, question, questionNumber);
-
-                questionIdToQuestionGameObj.Add(question.Id, questionInstance);
-
-                int answerNumber = 1;
-
-                foreach (var answer in answers) {
-                    var answerInstance = GameObject.Instantiate(buttonPrefab.gameObject) as GameObject;
-                    answerInstance.transform.SetParent(content, false);
-                    InitializeQuestionAnswerView(answerInstance, answer, questionNumber, answerNumber);
-
-                    questionIdToAnswerGameObjs[answer.QuestionId].Add(answerInstance);
-                    answerNumber++;
-                }
-
-                var emptyContentRow = GameObject.Instantiate(emptyContentRowPrefab.gameObject) as GameObject;
-                emptyContentRow.transform.SetParent(content, false);
-                questionNumber++;
-
-            }
-
-            var closeButtonInstance = GameObject.Instantiate(buttonPrefab.gameObject) as GameObject;
-            closeButtonInstance.transform.SetParent(content, false);
-            closeButtonInstance.transform.GetChild(0).GetComponent<Text>().text = "Закрыть";
-            closeButtonInstance.GetComponent<Button>().onClick.AddListener(delegate {
+        if (questions == null || questions.Count == 0) {
+            var closeButtonInstanceWithNoQuestionsLecture = GameObject.Instantiate(buttonPrefab.gameObject) as GameObject;
+            closeButtonInstanceWithNoQuestionsLecture.transform.SetParent(content, false);
+            closeButtonInstanceWithNoQuestionsLecture.transform.GetChild(0).GetComponent<Text>().text = "Закрыть";
+            closeButtonInstanceWithNoQuestionsLecture.GetComponent<Button>().onClick.AddListener(delegate {
                 uiController.HideTestingScrollViewAdapter();
-                RelativeScoreInPercent = (int)(((float)absoluteScore / questionIdToQuestionGameObj.Keys.Count) * 100);
+                RelativeScoreInPercent = 100;
                 Messenger<int>.Broadcast(GameEvent.STUDENT_FINISHED_TESTING_MODULE, RelativeScoreInPercent);
             });
 
             return;
         }
 
-        var closeButtonInstanceWithNoQuestionsLecture = GameObject.Instantiate(buttonPrefab.gameObject) as GameObject;
-        closeButtonInstanceWithNoQuestionsLecture.transform.SetParent(content, false);
-        closeButtonInstanceWithNoQuestionsLecture.transform.GetChild(0).GetComponent<Text>().text = "Закрыть";
-        closeButtonInstanceWithNoQuestionsLecture.GetComponent<Button>().onClick.AddListener(delegate {
+        foreach (var question in questions) {
+
+            List<QuestionAnswer> answers = getQuestionAnswers(question.Id);
+
+            if (answers == null) break;
+
+            questionIdToAnswerGameObjs.Add(question.Id, new List<GameObject>());
+
+            var questionInstance = GameObject.Instantiate(buttonPrefab.gameObject) as GameObject;
+            questionInstance.transform.SetParent(content, false);
+            InitializeQuestionView(questionInstance, question, questionNumber);
+
+            questionIdToQuestionGameObj.Add(question.Id, questionInstance);
+
+            int answerNumber = 1;
+
+            foreach (var answer in answers) {
+                var answerInstance = GameObject.Instantiate(buttonPrefab.gameObject) as GameObject;
+                answerInstance.transform.SetParent(content, false);
+                InitializeQuestionAnswerView(answerInstance, answer, questionNumber, answerNumber);
+
+                questionIdToAnswerGameObjs[answer.QuestionId].Add(answerInstance);
+                answerNumber++;
+            }
+
+            var emptyContentRow = GameObject.Instantiate(emptyContentRowPrefab.gameObject) as GameObject;
+            emptyContentRow.transform.SetParent(content, false);
+            questionNumber++;
+
+        }
+
+        var closeButtonInstance = GameObject.Instantiate(buttonPrefab.gameObject) as GameObject;
+        closeButtonInstance.transform.SetParent(content, false);
+        closeButtonInstance.transform.GetChild(0).GetComponent<Text>().text = "Закрыть";
+        closeButtonInstance.GetComponent<Button>().onClick.AddListener(delegate {
             uiController.HideTestingScrollViewAdapter();
-            RelativeScoreInPercent = 100;
+            RelativeScoreInPercent = (int)(((float)absoluteScore / questionIdToQuestionGameObj.Keys.Count) * 100);
             Messenger<int>.Broadcast(GameEvent.STUDENT_FINISHED_TESTING_MODULE, RelativeScoreInPercent);
         });
+
+        return;
 
     }
 

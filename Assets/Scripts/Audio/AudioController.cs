@@ -20,8 +20,6 @@ public class AudioController : MonoBehaviour
         _audioSource.Stop();
     }
 
-
-
     public static float getClipLength(string path) {
         AudioClip clip = Resources.Load(path) as AudioClip;
         return clip.length;
@@ -43,7 +41,10 @@ public class AudioController : MonoBehaviour
     }
 
     public float getCurrentClipLength() {
-        return _audioSource.clip.length;
+        if (_audioSource.clip != null) {
+            return _audioSource.clip.length;
+        }
+        return 0.0f;
     }
 
     public void StopCurrentClip()

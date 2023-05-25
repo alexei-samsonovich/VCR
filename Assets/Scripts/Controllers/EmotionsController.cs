@@ -19,21 +19,16 @@ public class EmotionsController : MonoBehaviour
 
     public class Emotion
     {
-        public double[] VAD;
+        public double[] VIL;
 
         Emotion()
         {
-            VAD = new double[3];
+            VIL = new double[3];
         }
 
-        public void setVAD(double[] VAD)
+        public void setVIL(double[] VIL)
         {
-            VAD.CopyTo(this.VAD, 0);
-        }
-
-        public double[] getBodyFactorForTarget()
-        {
-            return VAD;
+            VIL.CopyTo(this.VIL, 0);
         }
     }
 
@@ -77,7 +72,7 @@ public class EmotionsController : MonoBehaviour
             double difference = 0;
             //Debug.LogError("Length: " + feelings.Length + "\t" + emotion.Value.VAD.Length);
             for (int i = 0; i < feelings.Length; i++) {
-                difference += Math.Pow(feelings[i] - emotion.Value.VAD[i], 2);
+                difference += Math.Pow(feelings[i] - emotion.Value.VIL[i], 2);
             }
             //Debug.LogError(emotion.Key + " " + difference);
             if (difference < min) {

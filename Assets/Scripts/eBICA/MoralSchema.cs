@@ -171,8 +171,8 @@ public class MoralSchema : MonoBehaviour
 
     public void makeIndependentAction(string action)
     {
-        if (action.Contains("test") || action == "test_0_20") {
-            Debug.LogError("test finished, action - " + action);
+        if (action == "student_takes_the_lecture_in_his_order" || action == "student_retakes_lectures") {
+            Debug.LogError(" test student initiative " + action);
         }
         rebuildAppraisalsAndFeelingsAfterStudentAction(action, true);
         //teacherAppraisals = recalculateAppraisals(teacherAppraisals, allIndependentActions[action].getMoralFactorForTarget());

@@ -106,7 +106,7 @@ public class GameController : MonoBehaviour {
 
     void Start() {
 
-        CurrentLessonNumber = MainMenuController.TestCurrentLesson;
+        CurrentLessonNumber = MainMenuController.CurrentLessonNumber;
 
         //if (CurrentLessonNumber == 2) CurrentLessonNumber = 3;
 
@@ -123,10 +123,10 @@ public class GameController : MonoBehaviour {
 
                 double studentValence = moralSchema.getStudentFeelings()[0];
 
-                YSKEmotion voiceEmotion= YSKEmotion.NEUTRAL;
+                YSKEmotion voiceEmotion = YSKEmotion.NEUTRAL;
 
 
-                if (studentValence > 0.3) {
+                if (studentValence > 0.2) {
                     voiceEmotion = YSKEmotion.GOOD;
                 }
 
@@ -156,8 +156,8 @@ public class GameController : MonoBehaviour {
             double[] studentFeelings = moralSchema.getStudentFeelings();
 
             double valence = studentFeelings[0];
-            double interest = studentFeelings[1];
-            double cognition = studentFeelings[2];
+            double initiative = studentFeelings[1];
+            double learnability = studentFeelings[2];
 
             //string systemMessage = null;
 
@@ -173,20 +173,20 @@ public class GameController : MonoBehaviour {
                     additionMessages.Add("Веди себя как злой и недовольный преподаватель.");
                 }
 
-                if (interest > 0.2) {
+                if (initiative > 0.2) {
                     //systemMessage += "Отвечай развернуто, неформально. ";
                     additionMessages.Add("Отвечай развернуто, неформально.");
                 }
-                else if (interest < -0.2) {
+                else if (initiative < -0.2) {
                     //systemMessage += "Отвечай очень формально. ";
                     additionMessages.Add("Отвечай очень формально. ");
                 }
 
-                if (cognition > 0.2) {
+                if (learnability > 0.2) {
                     //systemMessage += "Обьясняй как будто я очень умный профессор. ";
                     additionMessages.Add("Обьясняй как будто я очень умный профессор. ");
                 }
-                else if (cognition < -0.2) {
+                else if (learnability < -0.2) {
                     //systemMessage += "Обьясняй как будто мне пять лет. ";
                     additionMessages.Add("Обьясняй как будто мне пять лет. ");
                 }
@@ -220,11 +220,11 @@ public class GameController : MonoBehaviour {
                             var query = $@"
                                 SELECT 
 	                                usinfo.appraisal_valence,
-                                    usinfo.appraisal_interest,
-                                    usinfo.appraisal_cognition,
+                                    usinfo.appraisal_initiative,
+                                    usinfo.appraisal_learnability,
                                     usinfo.feeling_valence,
-                                    usinfo.feeling_interest,
-                                    usinfo.feeling_cognition,
+                                    usinfo.feeling_initiative,
+                                    usinfo.feeling_learnability,
                                     usinfo.сharacteristic
                                 FROM
 	                                ebica_user_info as usinfo
@@ -240,14 +240,14 @@ public class GameController : MonoBehaviour {
 
                                     double[] studentAppraisals = new double[3] {
                                         Convert.ToDouble(reader["appraisal_valence"]),
-                                        Convert.ToDouble(reader["appraisal_interest"]),
-                                        Convert.ToDouble(reader["appraisal_cognition"])
+                                        Convert.ToDouble(reader["appraisal_initiative"]),
+                                        Convert.ToDouble(reader["appraisal_learnability"])
                                     };
 
                                     double[] studentFeelings = new double[3] {
                                         Convert.ToDouble(reader["feeling_valence"]),
-                                        Convert.ToDouble(reader["feeling_interest"]),
-                                        Convert.ToDouble(reader["feeling_cognition"])
+                                        Convert.ToDouble(reader["feeling_initiative"]),
+                                        Convert.ToDouble(reader["feeling_learnability"])
                                     };
 
                                     string studentCharacteristic = reader["сharacteristic"] as string;
@@ -269,6 +269,37 @@ public class GameController : MonoBehaviour {
                 }
             }
         }
+
+
+        var currentStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
+
+        // Студент ПОВТОРНО слушает лекцию, либо студент пошел не по тому пути, который советует преподаватель
+        if (currentStateId.HasValue) {
+            var learnedLessonNumbers = UserProgressUtils.getLearnedLessonsNumbers(currentStateId.Value);
+            if (learnedLessonNumbers.Contains(CurrentLessonNumber)) {
+                Debug.LogError("Студент повторяется с лекциями...");
+                // Необходимо дождаться пока действия будут проинициализированы в моральной схемы
+                StartCoroutine(delayedMoralSchemaActionExecution("student_retakes_lectures"));
+            }
+            else {
+                if (UserProgressUtils.LessonNumberToId.TryGetValue(CurrentLessonNumber, out int currentLessonId)) {
+                    var nextDefaultLectureId = UserProgressUtils.getNextDefaultLectureId(currentStateId.Value);
+                    if (nextDefaultLectureId.HasValue) {
+                        if (nextDefaultLectureId.Value != currentLessonId) {
+                            Debug.LogError("Студент сошел с пути истинного...");
+                            YandexSpeechKit.TextToSpeech("На данном этапе я советовал к прохождению немного другую лекцию. Но да ладно.", YSKVoice.ERMIL, YSKEmotion.GOOD);
+                            // Необходимо дождаться пока действия будут проинициализированы в моральной схемы
+                            StartCoroutine(delayedMoralSchemaActionExecution("student_takes_the_lecture_in_his_order"));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private IEnumerator delayedMoralSchemaActionExecution(string independentAction, float delay = 2.0f) {
+        yield return new WaitForSeconds(delay);
+        moralSchema.makeIndependentAction(independentAction);
     }
 
     private void Update() {
@@ -501,6 +532,10 @@ public class GameController : MonoBehaviour {
         playerFpsInput.speed = 0.0f;
         changeFOVs.ForEach(it => it.enabled = false);
 
+        int lectureSlidesCount = DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/{CurrentLessonNumber}/Slides", ".mat");
+        if (CurrentSlideNumber < lectureSlidesCount) {
+            moralSchema.makeIndependentAction("student_interrupt_lecture");
+        }
 
         uiController.HideStartTestingModuleButton();
         uiController.ShowTestingScrollViewAdapter();
@@ -524,23 +559,39 @@ public class GameController : MonoBehaviour {
 
     private void OnStudentFinishedTestingModule(int moduleScoreInPercent) {
 
+        if (moduleScoreInPercent >= 60) {
 
-        if (moduleScoreInPercent > 60) {
             var userStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
+            int? newUserStateId = null;
             if (userStateId.HasValue) {
-                var newUserStateId = UserProgressUtils.getNewUserStateId(userStateId.Value, MainMenuController.TestCurrentLesson);
+                newUserStateId = UserProgressUtils.getNewUserStateId(userStateId.Value, MainMenuController.CurrentLessonNumber);
                 if (newUserStateId.HasValue) {
                     UserProgressUtils.setUserState(MainMenuController.Username, newUserStateId.Value);
                 }
             }
-        }
 
-        if (moduleScoreInPercent == 100) {
-            YandexSpeechKit.TextToSpeech($@"Вы набрали максимальный балл. Нельзя не отметить, что вы прекрасно постарались. " +
-            "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.GOOD);
-        } else if (moduleScoreInPercent > 80) {
-            YandexSpeechKit.TextToSpeech($@"Вы набрали {moduleScoreInPercent} процента от максимального балла. Вы хорошо постарались." +
-            "Можете переходить к изучению следующих лекций.", YSKVoice.ERMIL, YSKEmotion.GOOD);
+            string defaultCongratsText = $@"Вы набрали {moduleScoreInPercent} процента от максимального балла.";
+            if (moduleScoreInPercent == 100) {
+                defaultCongratsText = $@"Вы набрали максимальный балл. Нельзя не отметить, что вы прекрасно постарались. ";
+            } else if (moduleScoreInPercent >= 80) {
+                defaultCongratsText += " Вы хорошо постарались. ";
+            }
+
+            var currentActualUserStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
+
+            if (currentActualUserStateId.HasValue) {
+                String nextDefaultLectureSummary = UserProgressUtils.getNextDefaultLectureSummary(currentActualUserStateId.Value);
+                if (nextDefaultLectureSummary != null) {
+                    defaultCongratsText += " Предлагаю перейти к изучению лекции под названием " + nextDefaultLectureSummary;
+                }
+                else {
+                    defaultCongratsText += " Можете переходить к изучению следующих лекций.";
+                }
+            } else {
+                defaultCongratsText += " Можете переходить к изучению следующих лекций.";
+            }
+
+            YandexSpeechKit.TextToSpeech(defaultCongratsText, YSKVoice.ERMIL, YSKEmotion.GOOD);
         }
         else {
             YandexSpeechKit.TextToSpeech("К сожалению вы не набрали достаточное количество баллов для прохождения данной лекции."
@@ -574,8 +625,11 @@ public class GameController : MonoBehaviour {
     }
 
     private IEnumerator FinishCurrentLecture() {
+        
+        // Почему-то getCurrentClipLength сразу не возвращает необходимую длину 
+        yield return new WaitForSeconds(2.0f);
 
-        yield return new WaitForSeconds(14.0f);
+        yield return new WaitForSeconds(audioController.getCurrentClipLength() + 1.0f);
         // Сбрасываем состояние студента перед выходом со сцены
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
 
