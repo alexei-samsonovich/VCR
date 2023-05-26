@@ -32,7 +32,6 @@ public class GameController : MonoBehaviour {
     [SerializeField] private InputField sendQuestionTextInputFIeld;
 
     
-
     private static Boolean isEbicaEstimatesAlreadyLoaded = false;
 
 
@@ -61,12 +60,12 @@ public class GameController : MonoBehaviour {
 
 
     private void Awake() {
-        // Добавляем обработчики событий
         Messenger.AddListener(PlayerEvent.SIT, StartGameProcess);
         Messenger.AddListener(GameEvent.LECTURE_PART_FINISHED, OnLectureFinished);
         Messenger<int>.AddListener(GameEvent.STUDENT_ASK_QUESTION, OnStudentAskQuestion);
         Messenger<int>.AddListener(GameEvent.STUDENT_FINISHED_TESTING_MODULE, OnStudentFinishedTestingModule);
         Messenger.AddListener(GameEvent.STUDENT_PRESSED_TESTING_BUTTON, OnTestingButtonPressed);
+        Messenger<AudioClip>.AddListener(GameEvent.STUDENT_AUDIO_RECORD_FINISHED, OnStudentAudioRecordFinished);
 
         YSKspeechSynthesizedHandler = (speechBytes) => {
             var audioClip = AudioConverter.Convert(speechBytes);
@@ -78,6 +77,13 @@ public class GameController : MonoBehaviour {
             }
         };
         YandexSpeechKit.onSpeechSynthesized += YSKspeechSynthesizedHandler;
+    }
+
+    private async void OnStudentAudioRecordFinished(AudioClip clip) {
+        byte[] bytes = AudioConverter.ConvertClipToOGG(clip);
+        string recognizedText = await YandexSpeechKit.SpeechToText(bytes);
+        Debug.LogError("recognized text from gamecontroller: " + recognizedText);
+        sendQuestionActions(recognizedText);
     }
 
     private IEnumerator waitChatGPTAnswerForQuestion() {
@@ -111,7 +117,6 @@ public class GameController : MonoBehaviour {
         //if (CurrentLessonNumber == 2) CurrentLessonNumber = 3;
 
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
-
 
         changeFOVs.ForEach(it => it.enabled = true);
 
@@ -148,60 +153,7 @@ public class GameController : MonoBehaviour {
         }
 
         sendQuestionButton.GetComponent<Button>().onClick.AddListener(delegate {
-
-            //string studentCharacteristic = moralSchema.getStudentCharacteristic();
-
-            string userMessage = sendQuestionTextInputFIeld.text;
-
-            double[] studentFeelings = moralSchema.getStudentFeelings();
-
-            double valence = studentFeelings[0];
-            double initiative = studentFeelings[1];
-            double learnability = studentFeelings[2];
-
-            //string systemMessage = null;
-
-            if (ActivateEmotionalAnswersWithChatGPT) {
-                List<string> additionMessages = new List<string>();
-
-                if (valence > 0.2) {
-                    //systemMessage = "(Веди себя как добрый преподаватель. Отвечай коротко)";
-                    additionMessages.Add("Веди себя как добрый преподаватель. Отвечай коротко и неформально");
-                }
-                else if (valence < -0.2) {
-                    //systemMessage = "Веди себя как злой и недовольный преподаватель.";
-                    additionMessages.Add("Веди себя как злой и недовольный преподаватель.");
-                }
-
-                if (initiative > 0.2) {
-                    //systemMessage += "Отвечай развернуто, неформально. ";
-                    additionMessages.Add("Отвечай развернуто, неформально.");
-                }
-                else if (initiative < -0.2) {
-                    //systemMessage += "Отвечай очень формально. ";
-                    additionMessages.Add("Отвечай очень формально. ");
-                }
-
-                if (learnability > 0.2) {
-                    //systemMessage += "Обьясняй как будто я очень умный профессор. ";
-                    additionMessages.Add("Обьясняй как будто я очень умный профессор. ");
-                }
-                else if (learnability < -0.2) {
-                    //systemMessage += "Обьясняй как будто мне пять лет. ";
-                    additionMessages.Add("Обьясняй как будто мне пять лет. ");
-                }
-
-                if (additionMessages.Count > 0) {
-                    userMessage += "(" + String.Join(" ", additionMessages.ToArray()) + ")";
-                }
-            }
-
-            Debug.LogError("userMessage = " + userMessage);
-
-
-            //pipeServer.SendMessage(sendQuestionTextInputFIeld.text, systemMessage);
-            pipeServer.SendMessage(userMessage);
-            sendQuestionTextInputFIeld.text = "";
+            sendQuestionActions(sendQuestionTextInputFIeld.text);
         });
 
         if (MainMenuController.IsUserAuthorized) {
@@ -297,6 +249,63 @@ public class GameController : MonoBehaviour {
         }
     }
 
+    private void sendQuestionActions(string userMessage) {
+
+        //string studentCharacteristic = moralSchema.getStudentCharacteristic();
+
+        double[] studentFeelings = moralSchema.getStudentFeelings();
+
+        double valence = studentFeelings[0];
+        double initiative = studentFeelings[1];
+        double learnability = studentFeelings[2];
+
+        //string systemMessage = null;
+
+        if (ActivateEmotionalAnswersWithChatGPT) {
+            List<string> additionMessages = new List<string>();
+
+            if (valence > 0.2) {
+                //systemMessage = "(Веди себя как добрый преподаватель. Отвечай коротко)";
+                additionMessages.Add("Веди себя как добрый преподаватель. Отвечай коротко и неформально");
+            }
+            else if (valence < -0.2) {
+                //systemMessage = "Веди себя как злой и недовольный преподаватель.";
+                additionMessages.Add("Веди себя как злой и недовольный преподаватель.");
+            }
+
+            if (initiative > 0.2) {
+                //systemMessage += "Отвечай развернуто, неформально. ";
+                additionMessages.Add("Отвечай развернуто, неформально.");
+            }
+            else if (initiative < -0.2) {
+                //systemMessage += "Отвечай очень формально. ";
+                additionMessages.Add("Отвечай очень формально. ");
+            }
+
+            if (learnability > 0.2) {
+                //systemMessage += "Обьясняй как будто я очень умный профессор. ";
+                additionMessages.Add("Обьясняй как будто я очень умный профессор. ");
+            }
+            else if (learnability < -0.2) {
+                //systemMessage += "Обьясняй как будто мне пять лет. ";
+                additionMessages.Add("Обьясняй как будто мне пять лет. ");
+            }
+
+            if (additionMessages.Count > 0) {
+                userMessage += "(" + String.Join(" ", additionMessages.ToArray()) + ")";
+            }
+        }
+
+        Debug.LogError("userMessage = " + userMessage);
+
+
+        //pipeServer.SendMessage(sendQuestionTextInputFIeld.text, systemMessage);
+        pipeServer.SendMessage(userMessage);
+        sendQuestionTextInputFIeld.text = "";
+
+        return;
+    }
+
     private IEnumerator delayedMoralSchemaActionExecution(string independentAction, float delay = 2.0f) {
         yield return new WaitForSeconds(delay);
         moralSchema.makeIndependentAction(independentAction);
@@ -308,6 +317,7 @@ public class GameController : MonoBehaviour {
 
             //string responseAction = moralSchema.getResponseActionWithoutRecalculateAfterStudentAction("Student Ask Question During Lecture");
             moralSchema.makeIndependentAction("student_ask_question");
+            audioController.StartMicrophoneRecord();
             emotionsController.setEmotion(emotionsController.getEmotion());
             StartCoroutine("askStudentForQuestionDuringLecture");
             //if (responseAction == "Teacher answer students question") {

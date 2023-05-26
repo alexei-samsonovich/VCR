@@ -27,6 +27,10 @@ public static class AudioConverter
         return CreateAudioClip(File.ReadAllBytes(fullFileName));
     }
 
+    public static byte[] ConvertClipToOGG(AudioClip clip) {
+        return OggVorbis.VorbisPlugin.GetOggVorbis(clip);
+    }
+
     #endregion
 
 

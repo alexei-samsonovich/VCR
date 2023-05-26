@@ -11,7 +11,7 @@ using UnityEngine.Events;
 
 public class YandexSpeechKit {
 
-    private static readonly string IAmToken = "t1.9euelZqcmJuTmM6Lm5XOnImKlJiPy-3rnpWalpGJzJCUmIqUmImSkZiUlY_l8_cTbkBc-e9rbkoR_t3z91McPlz572tuShH-.VuINFnfESCPzr27NDzvrtBR9aEP5iGOqW7lRLN7tNGxZnbiU4t1Ir9R6K5NGqNkACQy-XqoAh1SzVc_O-8AeBA";
+    private static readonly string IAmToken = "t1.9euelZrMmMaexpLJlpacyZuTlMvPzO3rnpWalpGJzJCUmIqUmImSkZiUlY_l8_cHSDtc-e9rTB9K_t3z90d2OFz572tMH0r-.5II07Kv1DhmqfUX7TczPU4oR2gtEAC_y1alYjy6PInmAEjVg8XjQaTGdbxvJf7beTbc_V7plliMJIK9ucHtSBQ";
     private static readonly string FolderId = "b1gs7puvlr7hqmmsjk4d";
 
     public static Action<byte []> onSpeechSynthesized;
@@ -34,6 +34,44 @@ public class YandexSpeechKit {
         Speech(text, voice, lang, emotion, speed);
         return;
     }
+
+    public async static Task<string> SpeechToText(byte[] data, YSKLang lang = YSKLang.RU, YSKAudioFormat format = YSKAudioFormat.OggOpus) {
+        HttpClient httpClient = new HttpClient();
+        try {
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + IAmToken);
+
+            var parameters = new Dictionary<string, object>
+            {
+                    { "data", data },
+                    { "lang", YSKLang.RU.getStringValue() },
+                    { "format", format.getStringValue() },
+                    { "folderId", FolderId }
+            };
+            string query = QueryString(parameters);
+
+            ByteArrayContent byteContent = new ByteArrayContent(data);
+            var response = await httpClient.PostAsync("https://stt.api.cloud.yandex.net/speech/v1/stt:recognize?" + query, byteContent);
+            var recognizedString = await response.Content.ReadAsStringAsync();
+            Debug.LogError(recognizedString);
+            return recognizedString;
+        }
+        catch (Exception ex) {
+            Debug.LogError($"[YandexSpeechKit] SpeechToText error: {ex}");
+            return "";
+        }
+        finally {
+            httpClient.Dispose();
+        }
+    }
+
+    private static string QueryString(IDictionary<string, object> dict) {
+        var list = new List<string>();
+        foreach (var item in dict) {
+            list.Add(item.Key + "=" + item.Value);
+        }
+        return string.Join("&", list);
+    }
+
 
     #region private speech methods
 

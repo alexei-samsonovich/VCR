@@ -1317,6 +1317,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _audioSource: {fileID: 1046275558}
+  minLoudThreeshold: 0.01
 --- !u!4 &117648697
 Transform:
   m_ObjectHideFlags: 0
