@@ -83,7 +83,9 @@ public class GameController : MonoBehaviour {
         byte[] bytes = AudioConverter.ConvertClipToOGG(clip);
         string recognizedText = await YandexSpeechKit.SpeechToText(bytes);
         Debug.LogError("recognized text from gamecontroller: " + recognizedText);
-        sendQuestionActions(recognizedText);
+        if (recognizedText != null && recognizedText.Length > 0) {
+            sendQuestionActions(recognizedText);
+        }
     }
 
     private IEnumerator waitChatGPTAnswerForQuestion() {
@@ -367,7 +369,7 @@ public class GameController : MonoBehaviour {
 
         speechRecognizerController.canAsk = true;
 
-        yield return new WaitForSeconds(20f);
+        yield return new WaitForSeconds(30f);
 
 
         uiController.HideQuestionButton();
