@@ -219,7 +219,7 @@ public class MoralSchema : MonoBehaviour
     //}
 
     string findFeelingsCharacteristic(double[] feelings) {
-        Debug.LogError("feelings = " + String.Join(",", feelings));
+        //Debug.LogError("feelings = " + String.Join(",", feelings));
         string choise = ""; 
         double dif = 20;
         foreach (var feelingMassive in feelingsStates) {
@@ -232,9 +232,9 @@ public class MoralSchema : MonoBehaviour
                 dif = mid;
                 choise = feelingMassive.Key;
             }
-            Debug.LogError("Diff = " + mid + ", Characteristic = " + feelingMassive.Key);
+            //Debug.LogError("Diff = " + mid + ", Characteristic = " + feelingMassive.Key);
         }
-        Debug.LogError("student characteristic = " + choise);
+        //Debug.LogError("student characteristic = " + choise);
         return choise;
     }
 

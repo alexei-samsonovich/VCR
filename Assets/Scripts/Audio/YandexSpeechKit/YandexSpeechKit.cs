@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using UnityEngine.Events;
 
 public class YandexSpeechKit {
 
-    private static readonly string IAmToken = "t1.9euelZrMmMaexpLJlpacyZuTlMvPzO3rnpWalpGJzJCUmIqUmImSkZiUlY_l8_cHSDtc-e9rTB9K_t3z90d2OFz572tMH0r-.5II07Kv1DhmqfUX7TczPU4oR2gtEAC_y1alYjy6PInmAEjVg8XjQaTGdbxvJf7beTbc_V7plliMJIK9ucHtSBQ";
+    private static readonly string IAmToken = "t1.9euelZrMmMaexpLJlpacyZuTlMvPzO3rnpWalpGJzJCUmIqUmImSkZiUlY_l8_dJJDlc-e9yUFdx_d3z9wlTNlz573JQV3H9.iXROscklJ0J-YjKf9rilyyiEhrLVJbi-I4hhHx8ETInGwXvWp0DctLauaJNy2-3s8OVuJNH8RwCvPbbBN5eaAA";
     private static readonly string FolderId = "b1gs7puvlr7hqmmsjk4d";
 
     public static Action<byte []> onSpeechSynthesized;
@@ -52,8 +53,16 @@ public class YandexSpeechKit {
             ByteArrayContent byteContent = new ByteArrayContent(data);
             var response = await httpClient.PostAsync("https://stt.api.cloud.yandex.net/speech/v1/stt:recognize?" + query, byteContent);
             var recognizedString = await response.Content.ReadAsStringAsync();
-            Debug.LogError(recognizedString);
-            return recognizedString;
+
+            var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(recognizedString);
+
+            if (!values.ContainsKey("result")) {
+                return null;
+            }
+
+            var resultText = values["result"];
+            Debug.LogError(resultText);
+            return resultText;
         }
         catch (Exception ex) {
             Debug.LogError($"[YandexSpeechKit] SpeechToText error: {ex}");

@@ -86,6 +86,7 @@ public class GameController : MonoBehaviour {
         string recognizedText = await YandexSpeechKit.SpeechToText(bytes);
         Debug.LogError("recognized text from gamecontroller: " + recognizedText);
         if (recognizedText != null && recognizedText.Length > 0) {
+            Debug.LogError("length = " + recognizedText.Length + ", recognized text = " + recognizedText);
             sendQuestionActions(recognizedText);
         }
     }
@@ -231,22 +232,34 @@ public class GameController : MonoBehaviour {
 
         // Студент ПОВТОРНО слушает лекцию, либо студент пошел не по тому пути, который советует преподаватель
         if (currentStateId.HasValue) {
-            var learnedLessonNumbers = UserProgressUtils.getLearnedLessonsNumbers(currentStateId.Value);
-            if (learnedLessonNumbers.Contains(CurrentLessonNumber)) {
-                Debug.LogError("Студент повторяется с лекциями...");
-                // Необходимо дождаться пока действия будут проинициализированы в моральной схемы
-                StartCoroutine(delayedMoralSchemaActionExecution("student_retakes_lectures"));
-            }
-            else {
-                if (UserProgressUtils.LessonNumberToId.TryGetValue(CurrentLessonNumber, out int currentLessonId)) {
-                    var nextDefaultLectureId = UserProgressUtils.getNextDefaultLectureId(currentStateId.Value);
-                    if (nextDefaultLectureId.HasValue) {
-                        if (nextDefaultLectureId.Value != currentLessonId) {
-                            Debug.LogError("Студент сошел с пути истинного...");
-                            YandexSpeechKit.TextToSpeech("На данном этапе я советовал к прохождению немного другую лекцию. Но да ладно.", YSKVoice.ERMIL, YSKEmotion.GOOD);
-                            // Необходимо дождаться пока действия будут проинициализированы в моральной схемы
-                            StartCoroutine(delayedMoralSchemaActionExecution("student_takes_the_lecture_in_his_order"));
-                        }
+            //    var learnedLessonNumbers = UserProgressUtils.getLearnedLessonsNumbers(currentStateId.Value);
+            //    if (learnedLessonNumbers.Contains(CurrentLessonNumber)) {
+            //        Debug.LogError("Студент повторяется с лекциями...");
+            //        // Необходимо дождаться пока действия будут проинициализированы в моральной схемы
+            //        StartCoroutine(delayedMoralSchemaActionExecution("student_retakes_lectures"));
+            //    }
+            //    else {
+            //        if (UserProgressUtils.LessonNumberToId.TryGetValue(CurrentLessonNumber, out int currentLessonId)) {
+            //            var nextDefaultLectureId = UserProgressUtils.getNextDefaultLectureId(currentStateId.Value);
+            //            if (nextDefaultLectureId.HasValue) {
+            //                if (nextDefaultLectureId.Value != currentLessonId) {
+            //                    Debug.LogError("Студент сошел с пути истинного...");
+            //                    YandexSpeechKit.TextToSpeech("На данном этапе я советовал к прохождению немного другую лекцию. Но да ладно.", YSKVoice.ERMIL, YSKEmotion.GOOD);
+            //                    // Необходимо дождаться пока действия будут проинициализированы в моральной схемы
+            //                    StartCoroutine(delayedMoralSchemaActionExecution("student_takes_the_lecture_in_his_order"));
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+            if (UserProgressUtils.LessonNumberToId.TryGetValue(CurrentLessonNumber, out int currentLessonId)) {
+                var nextDefaultLectureId = UserProgressUtils.getNextDefaultLectureId(currentStateId.Value);
+                if (nextDefaultLectureId.HasValue) {
+                    if (nextDefaultLectureId.Value != currentLessonId) {
+                        Debug.LogError("Студент сошел с пути истинного...");
+                        YandexSpeechKit.TextToSpeech("На данном этапе я советовал к прохождению немного другую лекцию. Но да ладно.", YSKVoice.ERMIL, YSKEmotion.GOOD);
+                        // Необходимо дождаться пока действия будут проинициализированы в моральной схемы
+                        StartCoroutine(delayedMoralSchemaActionExecution("student_takes_the_lecture_in_his_order"));
                     }
                 }
             }
