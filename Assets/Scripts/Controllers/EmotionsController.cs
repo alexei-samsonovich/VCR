@@ -83,7 +83,7 @@ public class EmotionsController : MonoBehaviour
         return answer;
     }
 
-    public void setEmotion(string emotion, float emotionExtent = 50f)
+    public void setEmotion(string emotion, float emotionExtent = 65f)
     {
         Debug.Log($"set emotion - {emotion}");
         switch (emotion)

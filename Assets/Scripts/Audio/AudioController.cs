@@ -40,8 +40,6 @@ public class AudioController : MonoBehaviour
     }
 
     public float GetAverageLoudnessFromClipInLastSampleWindow(int clipPosition, AudioClip clip, int sampleWindow) {
-
-        Debug.LogError("Clip position = " + clipPosition);
         var startPosition = clipPosition - sampleWindow + 1;
         if (startPosition < 0) {
             return 0;
