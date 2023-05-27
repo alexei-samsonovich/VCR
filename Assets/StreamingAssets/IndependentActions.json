@@ -1,14 +1,14 @@
 {
   "lookAtTeacher": {
     "moralFactorForTarget": [ "0.0", "0.0", "0" ],
-    "moralFactorForAuthor": [ "0.06", "0.15", "0" ],
+    "moralFactorForAuthor": [ "0.03", "0.01", "0.01" ],
     "name": "lookAtTeacher",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "doesntLookAtTeacher": {
     "moralFactorForTarget": [ "0.0", "0.0", "0" ],
-    "moralFactorForAuthor": [ "-0.06", "-0.15", "0" ],
+    "moralFactorForAuthor": [ "-0.03", "-0.01", "-0.01" ],
     "name": "DoesntLookAtTeacher",
     "responseActionOn": "",
     "actionAuthor": "Student"
@@ -64,92 +64,92 @@
   },
 
   "GreatButtonPressed": {
-    "moralFactorForTarget": [ "180", "90", "0"],
-    "moralFactorForAuthor": [ "180", "90", "0"],
+    "moralFactorForTarget": [ "90", "25", "0"],
+    "moralFactorForAuthor": [ "90", "25", "0"],
     "name": "GreatButtonPressed",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "LikeButtonPressed": {
-    "moralFactorForTarget": [ "90", "40", "0"],
-    "moralFactorForAuthor": [ "90", "40", "0"],
+    "moralFactorForTarget": [ "45", "40", "0"],
+    "moralFactorForAuthor": [ "45", "25", "0"],
     "name": "LikeButtonPressed",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "AverageButtonPressed": {
-    "moralFactorForTarget": [ "25", "15", "0"],
-    "moralFactorForAuthor": [ "25", "15", "0"],
+    "moralFactorForTarget": [ "12", "25", "0"],
+    "moralFactorForAuthor": [ "12", "25", "0"],
     "name": "AverageButtonPressed",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "DoesntLikeButtonPressed": {
-    "moralFactorForTarget": [ "-90", "-40", "0"],
-    "moralFactorForAuthor": [ "-90", "-40", "0"],
+    "moralFactorForTarget": [ "-45", "25", "0"],
+    "moralFactorForAuthor": [ "-45", "25", "0"],
     "name": "DoesntLikeButtonPressed",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "HateButtonPressed": {
-    "moralFactorForTarget": [ "-180", "-90", "0"],
-    "moralFactorForAuthor": [ "-180", "-90", "0"],
+    "moralFactorForTarget": [ "-90", "25", "0"],
+    "moralFactorForAuthor": [ "-90", "25", "0"],
     "name": "HateButtonPressed",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "test_0_20": {
     "moralFactorForTarget": [ "0", "0", "0"],
-    "moralFactorForAuthor": [ "-30", "0", "-800"],
+    "moralFactorForAuthor": [ "-30", "0", "-240"],
     "name": "test_0_20",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "test_20_40": {
     "moralFactorForTarget": [ "0", "0", "0"],
-    "moralFactorForAuthor": [ "-20", "0", "-400"],
+    "moralFactorForAuthor": [ "-20", "0", "-120"],
     "name": "test_20_40",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "test_40_60": {
     "moralFactorForTarget": [ "0", "0", "0"],
-    "moralFactorForAuthor": [ "-10", "0", "-150"],
+    "moralFactorForAuthor": [ "-10", "0", "-70"],
     "name": "test_40_60",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "test_60_80": {
     "moralFactorForTarget": [ "0", "0", "0"],
-    "moralFactorForAuthor": [ "20", "0", "250"],
+    "moralFactorForAuthor": [ "20", "0", "120"],
     "name": "test_60_80",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "test_80_100": {
     "moralFactorForTarget": [ "0", "0", "0"],
-    "moralFactorForAuthor": [ "50", "0", "500"],
+    "moralFactorForAuthor": [ "50", "0", "250"],
     "name": "test_80_100",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "student_ask_question": {
     "moralFactorForTarget": [ "0", "0", "0"],
-    "moralFactorForAuthor": [ "20", "40", "10"],
+    "moralFactorForAuthor": [ "20", "70", "0"],
     "name": "student_ask_question",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "student_interrupt_lecture": {
     "moralFactorForTarget": [ "0", "0", "0"],
-    "moralFactorForAuthor": [ "-10", "400", "0"],
+    "moralFactorForAuthor": [ "-10", "200", "0"],
     "name": "student_interrupt_lecture",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "student_retakes_lectures": {
     "moralFactorForTarget": [ "0", "0", "0"],
-    "moralFactorForAuthor": [ "5", "100", "0"],
+    "moralFactorForAuthor": [ "5", "50", "0"],
     "name": "student_retakes_lectures",
     "responseActionOn": "",
     "actionAuthor": "Student"

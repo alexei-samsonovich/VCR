@@ -11,7 +11,9 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
-    [SerializeField] private bool ActivateEmotionalAnswersWithChatGPT = false;
+    [Tooltip("»спользуетс€ дл€ включени€ эмоциональной окраски ответов виртуального преподавател€," +
+        " а также про€вление эмоций с помощью мимики при вопросах от студента")]
+    [SerializeField] private bool ActivateEmotionalBehaviour = false;
 
     [SerializeField] private UIController uiController;
     [SerializeField] private AudioController audioController;
@@ -263,7 +265,7 @@ public class GameController : MonoBehaviour {
 
         //string systemMessage = null;
 
-        if (ActivateEmotionalAnswersWithChatGPT) {
+        if (ActivateEmotionalBehaviour) {
             List<string> additionMessages = new List<string>();
 
             if (valence > 0.2) {
@@ -277,20 +279,20 @@ public class GameController : MonoBehaviour {
 
             if (initiative > 0.2) {
                 //systemMessage += "ќтвечай развернуто, неформально. ";
-                additionMessages.Add("ќтвечай развернуто, неформально.");
+                additionMessages.Add(" ќтвечай немного подавлено.");
             }
             else if (initiative < -0.2) {
                 //systemMessage += "ќтвечай очень формально. ";
-                additionMessages.Add("ќтвечай очень формально. ");
+                additionMessages.Add(" ќтвечай уверенно.");
             }
 
             if (learnability > 0.2) {
                 //systemMessage += "ќбь€сн€й как будто € очень умный профессор. ";
-                additionMessages.Add("ќбь€сн€й как будто € очень умный профессор. ");
+                additionMessages.Add(" ќбь€сн€й как будто € очень умный профессор. ");
             }
             else if (learnability < -0.2) {
                 //systemMessage += "ќбь€сн€й как будто мне п€ть лет. ";
-                additionMessages.Add("ќбь€сн€й как будто мне п€ть лет. ");
+                additionMessages.Add(" ќбь€сн€й как будто мне п€ть лет. ");
             }
 
             if (additionMessages.Count > 0) {
@@ -320,7 +322,10 @@ public class GameController : MonoBehaviour {
             //string responseAction = moralSchema.getResponseActionWithoutRecalculateAfterStudentAction("Student Ask Question During Lecture");
             moralSchema.makeIndependentAction("student_ask_question");
             audioController.StartMicrophoneRecord();
-            emotionsController.setEmotion(emotionsController.getEmotion());
+            if (ActivateEmotionalBehaviour) {
+                emotionsController.setEmotion(emotionsController.getEmotion());
+            }
+            
             StartCoroutine("askStudentForQuestionDuringLecture");
             //if (responseAction == "Teacher answer students question") {
             //    isStudentAskQuestion = true;

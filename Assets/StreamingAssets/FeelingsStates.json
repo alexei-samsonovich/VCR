@@ -1,9 +1,9 @@
 {
   "friend": {
-    "feelingState": [ "0.5", "0.21", "0"]
+    "feelingState": [ "0.5", "0.1", "0.1"]
   },
   "enemy": {
-    "feelingState": [ "-0.5", "-0.21", "0" ]
+    "feelingState": [ "-0.5", "0.4", "-0.1" ]
   },
   "genius": {
     "feelingState": [ "0.21", "0.21", "0.5" ]

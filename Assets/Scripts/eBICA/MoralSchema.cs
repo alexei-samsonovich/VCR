@@ -8,10 +8,9 @@ using System.IO;
 
 public class MoralSchema : MonoBehaviour
 {
-    const double r = 1e-3;
-    private const double r1 = 0.3;
-    private const double k = 0.1;
-    const double criticalValueForDiffNorms = 0.32;
+    const double r = 2e-3;
+    private const double r1 = 0.8;
+    const double criticalValueForDiffNorms = 0.65;
 
     private static bool unstableRelations = true;
 
@@ -19,10 +18,12 @@ public class MoralSchema : MonoBehaviour
     private string JSON_PATH_INDEPENDENT_ACTIONS = Application.streamingAssetsPath + "\\IndependentActions.json";
     private string JSON_PATH_INDEPENDENT_FEELINGS_STATES = Application.streamingAssetsPath + "\\FeelingsStates.json";
 
-    private static int APPRAISAL_SPACE_DIMENSION = 3;
+    private static int ESTIMATE_SPACE_DIMENSION = 3;
 
     static bool processRecoveryOfFeelings = false;
     public static string studentCharacteristic = "NAN";
+
+    private static bool isMoralSchemaActive = false;
 
     public Dictionary<string, Act> allActs = new Dictionary<string, Act>();
     static Dictionary<string, Act> allIndependentActions = new Dictionary<string, Act>();
@@ -30,10 +31,10 @@ public class MoralSchema : MonoBehaviour
 
     public List<Tuple<string, double>> biasLikelihood = new List<Tuple<string, double>>();
 
-    static public double[] teacherAppraisals = new double[APPRAISAL_SPACE_DIMENSION];
-    static public double[] studentAppraisals = new double[APPRAISAL_SPACE_DIMENSION];
-    static public double[] teacherFeelings = new double[APPRAISAL_SPACE_DIMENSION];
-    static public double[] studentFeelings = new double[APPRAISAL_SPACE_DIMENSION];
+    static public double[] teacherAppraisals = new double[ESTIMATE_SPACE_DIMENSION];
+    static public double[] studentAppraisals = new double[ESTIMATE_SPACE_DIMENSION];
+    static public double[] teacherFeelings = new double[ESTIMATE_SPACE_DIMENSION];
+    static public double[] studentFeelings = new double[ESTIMATE_SPACE_DIMENSION];
 
     private void Start() {
         setupActs();
@@ -58,7 +59,7 @@ public class MoralSchema : MonoBehaviour
         public double[] feelingState;
 
         FeelingState() {
-            feelingState = new double[APPRAISAL_SPACE_DIMENSION];
+            feelingState = new double[ESTIMATE_SPACE_DIMENSION];
         }
 
         public void setActionAuthor(double[] inputFeelingState)
@@ -81,8 +82,8 @@ public class MoralSchema : MonoBehaviour
 
         public Act()
         {
-            moralFactorForTarget = new double[APPRAISAL_SPACE_DIMENSION];
-            moralFactorForAuthor = new double[APPRAISAL_SPACE_DIMENSION];
+            moralFactorForTarget = new double[ESTIMATE_SPACE_DIMENSION];
+            moralFactorForAuthor = new double[ESTIMATE_SPACE_DIMENSION];
         }
 
         public void setMoralFactorForTarget(double[] values)
@@ -156,6 +157,13 @@ public class MoralSchema : MonoBehaviour
         return studentCharacteristic;
     }
 
+
+    public void setupActs() {
+        feelingsStates = JsonConvert.DeserializeObject<Dictionary<string, FeelingState>>(File.ReadAllText(JSON_PATH_INDEPENDENT_FEELINGS_STATES));
+        allActs = JsonConvert.DeserializeObject<Dictionary<string, Act>>(File.ReadAllText(JSON_PATH_ALL_ACTIONS));
+        allIndependentActions = JsonConvert.DeserializeObject<Dictionary<string, Act>>(File.ReadAllText(JSON_PATH_INDEPENDENT_ACTIONS));
+    }
+
     public double[] recalculateAppraisals(double[] appraisals, double[] action)
     {
         //Debug.LogError("recalculate appraisals lengths: " + appraisals.Length + "\t\t" + action.Length);
@@ -172,7 +180,7 @@ public class MoralSchema : MonoBehaviour
     public void makeIndependentAction(string action)
     {
         if (action == "student_takes_the_lecture_in_his_order" || action == "student_retakes_lectures") {
-            Debug.LogError(" test student initiative " + action);
+            Debug.LogError(" makeIndependentAction student initiative " + action);
         }
         rebuildAppraisalsAndFeelingsAfterStudentAction(action, true);
         //teacherAppraisals = recalculateAppraisals(teacherAppraisals, allIndependentActions[action].getMoralFactorForTarget());
@@ -185,32 +193,48 @@ public class MoralSchema : MonoBehaviour
         //studentAppraisals = recalculateAppraisals(studentAppraisals, allIndependentActions[action].getMoralFactorForAuthor());
     }
 
-    public void setupActs()
-    {
-        feelingsStates = JsonConvert.DeserializeObject<Dictionary<string, FeelingState>>(File.ReadAllText(JSON_PATH_INDEPENDENT_FEELINGS_STATES));
-        allActs = JsonConvert.DeserializeObject<Dictionary<string, Act>>(File.ReadAllText(JSON_PATH_ALL_ACTIONS));
-        allIndependentActions = JsonConvert.DeserializeObject<Dictionary<string, Act>>(File.ReadAllText(JSON_PATH_INDEPENDENT_ACTIONS));
-    }
 
-    string findFeelingsCharacteristic(double[] feelings)
-    {
-        string choise = "";
+
+    //string findFeelingsCharacteristic(double[] feelings)
+    //{
+    //    string choise = "";
+    //    double dif = 20;
+    //    foreach (var feelingMassive in feelingsStates)
+    //    {
+    //        for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; ++i)
+    //        {
+    //            if (feelingMassive.Value.feelingState[i] != 0)
+    //            {
+    //                double mid = Math.Abs(feelingMassive.Value.feelingState[i] - feelings[i]);
+    //                if (mid < dif)
+    //                {
+    //                    dif = mid;
+    //                    choise = feelingMassive.Key;
+    //                }
+    //            }
+    //        }
+    //    }
+    //    Debug.LogError("student characteristic = " + choise);
+    //    return choise;
+    //}
+
+    string findFeelingsCharacteristic(double[] feelings) {
+        Debug.LogError("feelings = " + String.Join(",", feelings));
+        string choise = ""; 
         double dif = 20;
-        foreach (var feelingMassive in feelingsStates)
-        {
-            for (int i = 0; i < APPRAISAL_SPACE_DIMENSION; ++i)
-            {
-                if (feelingMassive.Value.feelingState[i] != 0)
-                {
-                    double mid = Math.Abs(feelingMassive.Value.feelingState[i] - feelings[i]);
-                    if (mid < dif)
-                    {
-                        dif = mid;
-                        choise = feelingMassive.Key;
-                    }
-                }
+        foreach (var feelingMassive in feelingsStates) {
+            double mid = 0.0D;
+            for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; ++i) {
+                mid += Math.Pow(feelingMassive.Value.feelingState[i] - feelings[i], 2);
             }
+            mid = Math.Sqrt(mid);
+            if (mid < dif) {
+                dif = mid;
+                choise = feelingMassive.Key;
+            }
+            Debug.LogError("Diff = " + mid + ", Characteristic = " + feelingMassive.Key);
         }
+        Debug.LogError("student characteristic = " + choise);
         return choise;
     }
 
@@ -218,49 +242,48 @@ public class MoralSchema : MonoBehaviour
     void isRelationsUnstable(double[] feelings)
     {
         string studentCharacteristic = findFeelingsCharacteristic(feelings);
-        double dif = 10;
-        for (int i = 0; i < APPRAISAL_SPACE_DIMENSION; ++i)
-        {
-            if (feelingsStates[studentCharacteristic].feelingState[i] != 0)
-            {
-                dif = Math.Min(Math.Abs(feelings[i] - feelingsStates[studentCharacteristic].feelingState[i]), dif);
-            }
+        double dif = 0;
+        for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; ++i) {
+            dif += Math.Pow(feelingsStates[studentCharacteristic].feelingState[i] - feelings[i], 2);
         }
-        if (dif < 0.15)
-        {
+        dif = Math.Sqrt(dif);
+        if (dif < 0.4) {
             unstableRelations = false;
         }
     }
 
     double[] recalculateFeelings(double[] feelings, double[] appraisals)
     {
-        isRelationsUnstable(feelings);
-        if (unstableRelations)
-        {
-            feelings = firstMethodRecalculateFeelings(feelings, appraisals);
-            return feelings;
+
+        if (!isMoralSchemaActive) {
+            isRelationsUnstable(feelings);
+            if (unstableRelations) {
+                feelings = firstMethodRecalculateFeelings(feelings, appraisals);
+                return feelings;
+            }
+            isMoralSchemaActive = true;
         }
+
         double diffNorm = 0;
-        for (int i = 0; i < APPRAISAL_SPACE_DIMENSION; ++i)
-        {
+        for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; ++i) {
             diffNorm += Math.Abs(feelings[i] - appraisals[i]);
         }
+
         processRecoveryOfFeelings = diffNorm > criticalValueForDiffNorms;
-        if (processRecoveryOfFeelings)
-        {
+
+        if (processRecoveryOfFeelings) {
             feelings = secondMethodRecalculateFeelings(feelings, appraisals);
-        }
-        else
-        {
+        } else {
             feelings = setConstantFeelings(feelings);
         }
+
         return feelings;
     }
 
-    double[] firstMethodRecalculateFeelings(double[] feelings, double[] appraisals)
-    {
+    double[] firstMethodRecalculateFeelings(double[] feelings, double[] appraisals) {
+        Debug.LogError("firstMethodRecalculateFeelings");
         double[] resultFeelings = new double[feelings.Length];
-        for (int i = 0; i < APPRAISAL_SPACE_DIMENSION; i++)
+        for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; i++)
         {
             resultFeelings[i] = 1.1 * appraisals[i];
         }
@@ -269,9 +292,9 @@ public class MoralSchema : MonoBehaviour
 
     double[] secondMethodRecalculateFeelings(double[] feelings, double[] appraisals)
     {
-        Console.WriteLine("secondMethodRebuildFeelings");
+        Debug.LogError("secondMethodRebuildFeelings");
         double[] resultFeelings = new double[feelings.Length];
-        for (int i = 0; i < APPRAISAL_SPACE_DIMENSION; ++i)
+        for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; ++i)
         {
             resultFeelings[i] = (1 - r1) * feelings[i] + r1 * (appraisals[i] - feelings[i]);
         }
@@ -281,9 +304,9 @@ public class MoralSchema : MonoBehaviour
 
     double[] setConstantFeelings(double[] feelings)
     {
-        Console.WriteLine("setConstantFeelings");
+        Debug.LogError("setConstantFeelings");
         studentCharacteristic = findFeelingsCharacteristic(feelings);
-        double[] ans = new double[APPRAISAL_SPACE_DIMENSION];
+        double[] ans = new double[ESTIMATE_SPACE_DIMENSION];
         feelingsStates[studentCharacteristic].feelingState.CopyTo(ans, 0);
         return ans;
     }
@@ -329,16 +352,13 @@ public class MoralSchema : MonoBehaviour
 
     void rebuildAppraisalsAndFeelingsAfterStudentAction(string studentAction, bool independent = false)
     {
-        if(independent == true)
-        {
+        if (independent == true) {
             studentAppraisals = recalculateAppraisals(studentAppraisals, allIndependentActions[studentAction].getMoralFactorForAuthor());
             studentFeelings = recalculateFeelings(studentFeelings, studentAppraisals);
 
             teacherAppraisals = recalculateAppraisals(teacherAppraisals, allIndependentActions[studentAction].getMoralFactorForTarget());
             //teacherFeelings = recalculateFeelings(teacherFeelings, teacherAppraisals);
-        }
-        else
-        {
+        } else {
             studentAppraisals = recalculateAppraisals(studentAppraisals, allActs[studentAction].getMoralFactorForAuthor());
             studentFeelings = recalculateFeelings(studentFeelings, studentAppraisals);
 
@@ -465,11 +485,5 @@ public class MoralSchema : MonoBehaviour
         rebuildAppraisalsAndFeelingsAfterTeacherAction(answer);
         return answer;
     }
-
-    //private void test()
-    //{
-    //    biasLikelihood = new List<Tuple<string, double>>();
-    //    biasCriterion(studentAppraisals, studentFeelings, "Student Ask Question During Lecture");
-    //}
 
 }
