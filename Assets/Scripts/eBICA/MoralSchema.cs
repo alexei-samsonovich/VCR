@@ -281,7 +281,7 @@ public class MoralSchema : MonoBehaviour
     }
 
     double[] firstMethodRecalculateFeelings(double[] feelings, double[] appraisals) {
-        Debug.LogError("firstMethodRecalculateFeelings");
+        //Debug.LogError("firstMethodRecalculateFeelings");
         double[] resultFeelings = new double[feelings.Length];
         for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; i++)
         {
@@ -292,7 +292,7 @@ public class MoralSchema : MonoBehaviour
 
     double[] secondMethodRecalculateFeelings(double[] feelings, double[] appraisals)
     {
-        Debug.LogError("secondMethodRebuildFeelings");
+        //Debug.LogError("secondMethodRebuildFeelings");
         double[] resultFeelings = new double[feelings.Length];
         for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; ++i)
         {
@@ -304,7 +304,7 @@ public class MoralSchema : MonoBehaviour
 
     double[] setConstantFeelings(double[] feelings)
     {
-        Debug.LogError("setConstantFeelings");
+        //Debug.LogError("setConstantFeelings");
         studentCharacteristic = findFeelingsCharacteristic(feelings);
         double[] ans = new double[ESTIMATE_SPACE_DIMENSION];
         feelingsStates[studentCharacteristic].feelingState.CopyTo(ans, 0);

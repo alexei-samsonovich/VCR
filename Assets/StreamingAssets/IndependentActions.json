@@ -1,14 +1,14 @@
 {
   "lookAtTeacher": {
     "moralFactorForTarget": [ "0.0", "0.0", "0" ],
-    "moralFactorForAuthor": [ "0.03", "0.01", "0.01" ],
+    "moralFactorForAuthor": [ "0.045", "0.015", "0.015" ],
     "name": "lookAtTeacher",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "doesntLookAtTeacher": {
     "moralFactorForTarget": [ "0.0", "0.0", "0" ],
-    "moralFactorForAuthor": [ "-0.03", "-0.01", "-0.01" ],
+    "moralFactorForAuthor": [ "-0.045", "-0.015", "-0.015" ],
     "name": "DoesntLookAtTeacher",
     "responseActionOn": "",
     "actionAuthor": "Student"

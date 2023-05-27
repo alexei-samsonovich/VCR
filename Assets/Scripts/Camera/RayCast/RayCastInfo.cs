@@ -55,12 +55,12 @@ public class RayCastInfo : MonoBehaviour
                     if (hit.transform.tag == "Teacher" || hit.transform.tag == "Board")
                     {
                         textLabel.text = $"Student look at {hit.transform.tag}";
-                        //moralSchema.makeIndependentAction("lookAtTeacher");
+                        moralSchema.makeIndependentAction("lookAtTeacher");
                     }
                     else
                     {
                         textLabel.text = $"Student doesnt look at teacher or board";
-                        //moralSchema.makeIndependentAction("doesntLookAtTeacher");
+                        moralSchema.makeIndependentAction("doesntLookAtTeacher");
                     }
                 }
                 else
@@ -78,12 +78,12 @@ public class RayCastInfo : MonoBehaviour
                     if(hit.transform.tag == "Teacher" || hit.transform.tag == "Board")
                     {
                         textLabel.text = $"Student look at {hit.transform.tag}";
-                        //moralSchema.makeIndependentAction("lookAtTeacher");
+                        moralSchema.makeIndependentAction("lookAtTeacher");
                     }
                     else
                     {
                         textLabel.text = $"Student doesnt look at teacher or board";
-                        //moralSchema.makeIndependentAction("doesntLookAtTeacher");
+                        moralSchema.makeIndependentAction("doesntLookAtTeacher");
                     }
                 }
                 else
