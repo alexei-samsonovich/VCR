@@ -116,7 +116,7 @@ public class PipeServer {
                 }
             }
             catch (Exception ex) {
-                Debug.LogError(ex);
+                Debug.LogWarning(ex);
             }
             Debug.Log("[PipeServer]: Write server finished");
         }

@@ -1,8 +1,8 @@
 {
   "lookAtTeacher": {
     "id" : "1",
-    "moralFactorForTarget": [ "0.0", "0.0", "0" ],
-    "moralFactorForAuthor": [ "0.135", "0.015", "0.045" ],
+    "moralFactorForTarget": [ "0.0", "0", "0" ],
+    "moralFactorForAuthor": [ "0.135", "0", "0.045" ],
     "name": "lookAtTeacher",
     "nameInRussian": "Студент смотрит на преподавателя или доску",
     "responseActionOn": "",
@@ -10,8 +10,8 @@
   },
   "doesntLookAtTeacher": {
     "id" : "2",
-    "moralFactorForTarget": [ "0.0", "0.0", "0" ],
-    "moralFactorForAuthor": [ "-0.135", "-0.015", "-0.045" ],
+    "moralFactorForTarget": [ "0.0", "0", "0" ],
+    "moralFactorForAuthor": [ "-0.135", "0", "-0.045" ],
     "name": "DoesntLookAtTeacher",
     "nameInRussian": "Студент смотрит не на преподавателя и не на доску",
     "responseActionOn": "",

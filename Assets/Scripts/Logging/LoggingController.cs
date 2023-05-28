@@ -52,26 +52,26 @@ public class LoggingController : MonoBehaviour {
         eventsLogs = new StreamWriter(writePath, true, Encoding.GetEncoding("UTF-8"));
         using (eventsLogs) {
             eventsLogs.WriteLine(
-                "Global time," +
-                "Time From start," +
+                "Timestamp," +
+                "Time from start," +
                 "Action author," +
                 "Action id," +
                 "Action name," + 
-                "Student Appraisals Valence," +
-                "Student Appraisals Initiative," +
-                "Student Appraisals Learnability," +
-                "Student Feelings Valence," +
-                "Student Feelings Initiative," +
-                "Student Feelings Learnability," +
+                "Student appraisals valence," +
+                "Student appraisals initiative," +
+                "Student appraisals learnability," +
+                "Student feelings valence," +
+                "Student feelings initiative," +
+                "Student feelings learnability," +
                 "Student characteristic," +
-                "Coordinate X Student," +
-                "Coordinate Y Student," +
-                "Coordinate Z Student," +
-                "Azimuth Student," +
-                "Coordinate X Teacher," +
-                "Coordinate Y Teacher," +
-                "Coordinate Z Teacher," +
-                "Azimuth Teacher,"
+                "Coordinate X student," +
+                "Coordinate Y student," +
+                "Coordinate Z student," +
+                "Azimuth student," +
+                "Coordinate X teacher," +
+                "Coordinate Y teacher," +
+                "Coordinate Z teacher," +
+                "Azimuth teacher,"
                 );
         }
 
