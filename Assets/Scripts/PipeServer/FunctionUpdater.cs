@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 
 /*
- * Вызывает функцию каждый фрейм в Update, пока она не вернет true
+ * Р’С‹Р·С‹РІР°РµС‚ С„СѓРЅРєС†РёСЋ РєР°Р¶РґС‹Р№ С„СЂРµР№Рј РІ Update, РїРѕРєР° РѕРЅР° РЅРµ РІРµСЂРЅРµС‚ true
  * */
 public class FunctionUpdater {
 
     /*
-     * Класс для хука Action'a в MonoBehaviour
+     * РљР»Р°СЃСЃ РґР»СЏ С…СѓРєР° Action'a РІ MonoBehaviour
      * */
     private class MonoBehaviourHook : MonoBehaviour {
 
@@ -21,7 +21,7 @@ public class FunctionUpdater {
     }
 
     private static List<FunctionUpdater> updaterList; 
-    private static GameObject initGameObject; // Глобальный объект используемый для инициализации класса, разрушается при смене сцены
+    private static GameObject initGameObject; // Р“Р»РѕР±Р°Р»СЊРЅС‹Р№ РѕР±СЉРµРєС‚ РёСЃРїРѕР»СЊР·СѓРµРјС‹Р№ РґР»СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РєР»Р°СЃСЃР°, СЂР°Р·СЂСѓС€Р°РµС‚СЃСЏ РїСЂРё СЃРјРµРЅРµ СЃС†РµРЅС‹
 
     private static void InitIfNeeded() {
         if (initGameObject == null) {

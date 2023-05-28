@@ -79,15 +79,15 @@ public class MainMenuController : MonoBehaviour {
         //UserProgressUtils.addNewStateToDB(17, new List<int> { 1, 2, 3, 4, 5, 6, 7, 9, 10, 11 });
         //UserProgressUtils.addNewStateToDB(18, new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 });
 
-//        string text = $@"Отличие varchar от nvarchar заключается в том, что varchar позволяет хранить строки в формате аски, где один символ занимает 1 байт, а nvarchar хранит строки в формате Unicode, где каждый символ занимает 2 байта.
-//Тип varchar стоит использовать только в том случае, если вы на 100% уверены, что в данном поле не потребуется хранить Unicode символы. Например, varchar можно использовать для хранения адресов электронной почты, т.к. они обычно содержат только аски символы.
+//        string text = $@"РћС‚Р»РёС‡РёРµ varchar РѕС‚ nvarchar Р·Р°РєР»СЋС‡Р°РµС‚СЃСЏ РІ С‚РѕРј, С‡С‚Рѕ varchar РїРѕР·РІРѕР»СЏРµС‚ С…СЂР°РЅРёС‚СЊ СЃС‚СЂРѕРєРё РІ С„РѕСЂРјР°С‚Рµ Р°СЃРєРё, РіРґРµ РѕРґРёРЅ СЃРёРјРІРѕР» Р·Р°РЅРёРјР°РµС‚ 1 Р±Р°Р№С‚, Р° nvarchar С…СЂР°РЅРёС‚ СЃС‚СЂРѕРєРё РІ С„РѕСЂРјР°С‚Рµ Unicode, РіРґРµ РєР°Р¶РґС‹Р№ СЃРёРјРІРѕР» Р·Р°РЅРёРјР°РµС‚ 2 Р±Р°Р№С‚Р°.
+//РўРёРї varchar СЃС‚РѕРёС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С‚РѕР»СЊРєРѕ РІ С‚РѕРј СЃР»СѓС‡Р°Рµ, РµСЃР»Рё РІС‹ РЅР° 100% СѓРІРµСЂРµРЅС‹, С‡С‚Рѕ РІ РґР°РЅРЅРѕРј РїРѕР»Рµ РЅРµ РїРѕС‚СЂРµР±СѓРµС‚СЃСЏ С…СЂР°РЅРёС‚СЊ Unicode СЃРёРјРІРѕР»С‹. РќР°РїСЂРёРјРµСЂ, varchar РјРѕР¶РЅРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ Р°РґСЂРµСЃРѕРІ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚С‹, С‚.Рє. РѕРЅРё РѕР±С‹С‡РЅРѕ СЃРѕРґРµСЂР¶Р°С‚ С‚РѕР»СЊРєРѕ Р°СЃРєРё СЃРёРјРІРѕР»С‹.
 
 //";
 //        YandexSpeechKit.TextToAudioFile(text, "/Assets/Resources/Music/Lessons/2/Answers", "1");
 
         setLessonButtonsOnClickListeners();
 
-        // Необходимо "разлочивать" курсор, т.к. в сцене лекций он лочится
+        // РќРµРѕР±С…РѕРґРёРјРѕ "СЂР°Р·Р»РѕС‡РёРІР°С‚СЊ" РєСѓСЂСЃРѕСЂ, С‚.Рє. РІ СЃС†РµРЅРµ Р»РµРєС†РёР№ РѕРЅ Р»РѕС‡РёС‚СЃСЏ
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
 
@@ -101,7 +101,7 @@ public class MainMenuController : MonoBehaviour {
             passwordInputField.interactable = false;
 
             messageText.color = Color.green;
-            messageText.text = "Вы уже авторизованы!";
+            messageText.text = "Р’С‹ СѓР¶Рµ Р°РІС‚РѕСЂРёР·РѕРІР°РЅС‹!";
 
             activateLessonButtons();
 
@@ -222,7 +222,7 @@ public class MainMenuController : MonoBehaviour {
                                         passwordInputField.interactable = false;
 
                                         messageText.color = Color.green;
-                                        messageText.text = "Вы успешно вошли в систему!";
+                                        messageText.text = "Р’С‹ СѓСЃРїРµС€РЅРѕ РІРѕС€Р»Рё РІ СЃРёСЃС‚РµРјСѓ!";
 
                                         MainMenuController.Username = username;
                                         MainMenuController.IsUserAuthorized = true;
@@ -230,12 +230,12 @@ public class MainMenuController : MonoBehaviour {
                                         activateLessonButtons();
                                     }
                                     else {
-                                        messageText.text = "Неверный пароль";
+                                        messageText.text = "РќРµРІРµСЂРЅС‹Р№ РїР°СЂРѕР»СЊ";
                                     }
                                 }
                             }
                             else {
-                                messageText.text = "Неверное имя пользователя";
+                                messageText.text = "РќРµРІРµСЂРЅРѕРµ РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ";
                             }
                         }
                     }
@@ -246,7 +246,7 @@ public class MainMenuController : MonoBehaviour {
             }
         }
         else {
-            messageText.text = "Необходимо ввести имя пользователя и пароль";
+            messageText.text = "РќРµРѕР±С…РѕРґРёРјРѕ РІРІРµСЃС‚Рё РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ Рё РїР°СЂРѕР»СЊ";
         }
     }
 
@@ -276,7 +276,7 @@ public class MainMenuController : MonoBehaviour {
                                 passwordInputField.interactable = false;
 
                                 messageText.color = Color.green;
-                                messageText.text = "Вы успешно вошли в систему!";
+                                messageText.text = "Р’С‹ СѓСЃРїРµС€РЅРѕ РІРѕС€Р»Рё РІ СЃРёСЃС‚РµРјСѓ!";
 
                                 MainMenuController.Username = username;
                                 MainMenuController.IsUserAuthorized = true;
@@ -286,7 +286,7 @@ public class MainMenuController : MonoBehaviour {
                             }
                         }
                         else {
-                            messageText.text = "Имя пользователя занято";
+                            messageText.text = "РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ Р·Р°РЅСЏС‚Рѕ";
                         }
                         connection.Close();
                     }
@@ -294,7 +294,7 @@ public class MainMenuController : MonoBehaviour {
             }
         }
         else {
-            messageText.text = "Необходимо ввести имя пользователя и пароль";
+            messageText.text = "РќРµРѕР±С…РѕРґРёРјРѕ РІРІРµСЃС‚Рё РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ Рё РїР°СЂРѕР»СЊ";
         }
     }
 
@@ -304,7 +304,7 @@ public class MainMenuController : MonoBehaviour {
     }
 
     public void ExitGame() {
-        Debug.LogError("Игра закрылась.");
+        Debug.LogError("РРіСЂР° Р·Р°РєСЂС‹Р»Р°СЃСЊ.");
         Application.Quit();
     }
 }

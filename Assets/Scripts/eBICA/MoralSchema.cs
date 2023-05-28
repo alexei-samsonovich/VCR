@@ -400,7 +400,7 @@ public class MoralSchema : MonoBehaviour
         limitAppraisalsAndFeelings();
     }
 
-    // Возвращает действие с наибольшей вероятностью
+    // В¬РѕР·РІСЂР°С‰Р°РµС‚ РґРµР№СЃС‚РІРёРµ СЃ РЅР°РёР±РѕР»СЊС€РµР№ РІРµСЂРѕВ¤С‚РЅРѕСЃС‚СЊСЋ
     public string getResponseAction()
     {
         string response = "";
@@ -423,7 +423,7 @@ public class MoralSchema : MonoBehaviour
         return response;
     }
 
-    // Возвращает действие в соответствии с их вероятностями.
+    // В¬РѕР·РІСЂР°С‰Р°РµС‚ РґРµР№СЃС‚РІРёРµ РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РёС… РІРµСЂРѕВ¤С‚РЅРѕСЃС‚В¤РјРё.
     public string getResponseActionByLikelihood()
     {
         string response = "";
@@ -455,7 +455,7 @@ public class MoralSchema : MonoBehaviour
         return response;
     }
 
-    // Установление лимита для векторов VAD от -0.5 до 0.5
+    // вЂќСЃС‚Р°РЅРѕРІР»РµРЅРёРµ Р»РёРјРёС‚Р° РґР»В¤ РІРµРєС‚РѕСЂРѕРІ VAD РѕС‚ -0.5 РґРѕ 0.5
     double[] limitVectorsOfPAD(double[] vec)
     {
         for (int i = 0; i < vec.Length; ++i)

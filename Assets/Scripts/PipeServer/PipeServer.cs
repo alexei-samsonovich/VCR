@@ -35,14 +35,14 @@ public class PipeServer {
     }
 
     public void Start() {
-        //Debug.LogError("Ожидаем подключения клиента...");
+        //Debug.LogError("РћР¶РёРґР°РµРј РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР»РёРµРЅС‚Р°...");
         readThread = new Thread(ServerThreadRead);
         readThread.Start();
         writeThread = new Thread(ServerThreadWrite);
         writeThread.Start();
 
-        // Создаем на сцене unity объект и прокидываем ему функцию для callback'a 
-        // объект вызывает ее каждый фрейм в функции Update
+        // РЎРѕР·РґР°РµРј РЅР° СЃС†РµРЅРµ unity РѕР±СЉРµРєС‚ Рё РїСЂРѕРєРёРґС‹РІР°РµРј РµРјСѓ С„СѓРЅРєС†РёСЋ РґР»СЏ callback'a 
+        // РѕР±СЉРµРєС‚ РІС‹Р·С‹РІР°РµС‚ РµРµ РєР°Р¶РґС‹Р№ С„СЂРµР№Рј РІ С„СѓРЅРєС†РёРё Update
         FunctionUpdater.Create(ReadMessages);
     }
 
@@ -55,7 +55,7 @@ public class PipeServer {
             
             Debug.Log("[PipeServer]: Start pipe read server...");
 
-            // Ожидаем подключения клиента
+            // РћР¶РёРґР°РµРј РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР»РёРµРЅС‚Р°
             pipeReadServer.WaitForConnection();
             Debug.Log("[PipeServer]: Client Read connected!");
 
@@ -66,8 +66,8 @@ public class PipeServer {
                     string jsonMessage = readStreamString.ReadString();
                     Debug.Log($"[PipeServer]: get json message - {jsonMessage} ");
 
-                    //На всякий случай добавляем лок при добавлении сообщения в очередь
-                    // прочитанных, но еще не полученных сообщений
+                    //РќР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ РґРѕР±Р°РІР»СЏРµРј Р»РѕРє РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё СЃРѕРѕР±С‰РµРЅРёСЏ РІ РѕС‡РµСЂРµРґСЊ
+                    // РїСЂРѕС‡РёС‚Р°РЅРЅС‹С…, РЅРѕ РµС‰Рµ РЅРµ РїРѕР»СѓС‡РµРЅРЅС‹С… СЃРѕРѕР±С‰РµРЅРёР№
                     lock (readLock) {
                         readQueue.Enqueue(jsonMessage);
                     }
@@ -87,7 +87,7 @@ public class PipeServer {
     private void ServerThreadWrite() {
         using (pipeWriteServer = new NamedPipeServerStream(WritePipeName, PipeDirection.Out)) {
             Debug.Log("[PipeServer]: Start pipe write server...");
-            // Ожидаем подключения клиента
+            // РћР¶РёРґР°РµРј РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР»РёРµРЅС‚Р°
             pipeWriteServer.WaitForConnection();
             Debug.Log("[PipeServer]: Client Write connected!");
 
@@ -98,7 +98,7 @@ public class PipeServer {
                     string messageFromQueue = null;
 
 
-                    // На всякий случай добавляем лок при считывании сообщения из очереди
+                    // РќР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ РґРѕР±Р°РІР»СЏРµРј Р»РѕРє РїСЂРё СЃС‡РёС‚С‹РІР°РЅРёРё СЃРѕРѕР±С‰РµРЅРёСЏ РёР· РѕС‡РµСЂРµРґРё
                     lock (writeLock) {
                         if (writeQueue.Count > 0) {
                             messageFromQueue = writeQueue.Dequeue();
@@ -157,7 +157,7 @@ public class PipeServer {
     }
 
     public void DestroySelf() {
-        // Запускается в OnDestroy, вырубает потоки-серверы
+        // Р—Р°РїСѓСЃРєР°РµС‚СЃСЏ РІ OnDestroy, РІС‹СЂСѓР±Р°РµС‚ РїРѕС‚РѕРєРё-СЃРµСЂРІРµСЂС‹
         Debug.Log("[PipeServer]: Pipe server destroy self!");
         Debug.Log("[PipeServer]: is alive read thread - " + readThread.IsAlive);
         Debug.Log("[PipeServer]: is alive write thread - " + writeThread.IsAlive);

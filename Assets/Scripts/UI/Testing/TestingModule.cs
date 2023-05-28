@@ -52,7 +52,7 @@ public class TestingModule : MonoBehaviour {
         if (questions == null || questions.Count == 0) {
             var closeButtonInstanceWithNoQuestionsLecture = GameObject.Instantiate(buttonPrefab.gameObject) as GameObject;
             closeButtonInstanceWithNoQuestionsLecture.transform.SetParent(content, false);
-            closeButtonInstanceWithNoQuestionsLecture.transform.GetChild(0).GetComponent<Text>().text = "Закрыть";
+            closeButtonInstanceWithNoQuestionsLecture.transform.GetChild(0).GetComponent<Text>().text = "Р—Р°РєСЂС‹С‚СЊ";
             closeButtonInstanceWithNoQuestionsLecture.GetComponent<Button>().onClick.AddListener(delegate {
                 uiController.HideTestingScrollViewAdapter();
                 RelativeScoreInPercent = 100;
@@ -95,7 +95,7 @@ public class TestingModule : MonoBehaviour {
 
         var closeButtonInstance = GameObject.Instantiate(buttonPrefab.gameObject) as GameObject;
         closeButtonInstance.transform.SetParent(content, false);
-        closeButtonInstance.transform.GetChild(0).GetComponent<Text>().text = "Закрыть";
+        closeButtonInstance.transform.GetChild(0).GetComponent<Text>().text = "Р—Р°РєСЂС‹С‚СЊ";
         closeButtonInstance.GetComponent<Button>().onClick.AddListener(delegate {
             uiController.HideTestingScrollViewAdapter();
             RelativeScoreInPercent = (int)(((float)absoluteScore / questionIdToQuestionGameObj.Keys.Count) * 100);
@@ -110,7 +110,7 @@ public class TestingModule : MonoBehaviour {
 
         var answerButtonText = viewGameObject.transform.GetChild(0).GetComponent<Text>();
         //answerButtonText.text = questionNumber + "." + answerNumber + " " + answerModel.Text;
-        answerButtonText.text = "•  " + answerModel.Text;
+        answerButtonText.text = "вЂў  " + answerModel.Text;
 
         var answerClickButton = viewGameObject.GetComponent<Button>();
         //answerClickButton.onClick.AddListener(delegate {
@@ -120,7 +120,7 @@ public class TestingModule : MonoBehaviour {
         answerClickButton.onClick.AddListener(delegate {
 
             if (answerModel.Correct == "x") {
-                YandexSpeechKit.TextToSpeech("Правильный ответ. Отличная работа!", YSKVoice.ERMIL, YSKEmotion.GOOD);
+                YandexSpeechKit.TextToSpeech("РџСЂР°РІРёР»СЊРЅС‹Р№ РѕС‚РІРµС‚. РћС‚Р»РёС‡РЅР°СЏ СЂР°Р±РѕС‚Р°!", YSKVoice.ERMIL, YSKEmotion.GOOD);
                 emotionsController.setEmotionForSomeSeconds("Happiness", 3, 65);
                 absoluteScore++;
             }
@@ -193,7 +193,7 @@ public class TestingModule : MonoBehaviour {
     void InitializeQuestionView(GameObject viewGameObject, Question questionModel, int questionNumber) {
 
         var questionButtonText = viewGameObject.transform.GetChild(0).GetComponent<Text>();
-        questionButtonText.text = "Вопрос " + questionNumber + ". " + questionModel.Text;
+        questionButtonText.text = "Р’РѕРїСЂРѕСЃ " + questionNumber + ". " + questionModel.Text;
 
         viewGameObject.transform.GetComponent<Image>().color = Color.green;
 
