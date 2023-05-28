@@ -139,6 +139,7 @@ public class MoralSchema : MonoBehaviour
 
     public void makeIndependentActionByTeacher(string action) {
         rebuildAppraisalsAndFeelingsAfterTeacherAction(action, true);
+        loggingController.UpdateLogs("teacher", allIndependentActions[action]);
         //teacherAppraisals = recalculateAppraisals(teacherAppraisals, allIndependentActions[action].getMoralFactorForTarget());
         //studentAppraisals = recalculateAppraisals(studentAppraisals, allIndependentActions[action].getMoralFactorForAuthor());
     }
