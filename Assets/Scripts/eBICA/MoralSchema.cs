@@ -25,9 +25,9 @@ public class MoralSchema : MonoBehaviour
 
     private static bool isMoralSchemaActive = false;
 
-    public Dictionary<string, Act> allActs = new Dictionary<string, Act>();
-    static Dictionary<string, Act> allIndependentActions = new Dictionary<string, Act>();
-    static Dictionary<string, FeelingState> feelingsStates = new Dictionary<string, FeelingState>();
+    private static Dictionary<string, Act> allActs = new Dictionary<string, Act>();
+    private static Dictionary<string, Act> allIndependentActions = new Dictionary<string, Act>();
+    private static Dictionary<string, FeelingState> feelingsStates = new Dictionary<string, FeelingState>();
 
     public List<Tuple<string, double>> biasLikelihood = new List<Tuple<string, double>>();
 
@@ -54,6 +54,10 @@ public class MoralSchema : MonoBehaviour
         //}
     }
 
+    public List<Act> getIndependentActions() {
+        return allIndependentActions.Values.ToList();
+    }
+
     public class FeelingState {
 
         public double[] feelingState;
@@ -74,9 +78,11 @@ public class MoralSchema : MonoBehaviour
     }
     public class Act
     {
+        private int id; 
         public double[] moralFactorForTarget;
         public double[] moralFactorForAuthor;
         public string name;
+        public string nameInRussian;
         public string responseActionOn;
         public string actionAuthor;
 
@@ -131,6 +137,10 @@ public class MoralSchema : MonoBehaviour
         public string getActionAuthor()
         {
             return actionAuthor;
+        }
+
+        public int getId() {
+            return id;
         }
 
     };

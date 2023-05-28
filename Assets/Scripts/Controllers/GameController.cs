@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,8 +11,8 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
-    [Tooltip("Используется для включения эмоциональной окраски ответов виртуального преподавателя," +
-        " а также проявление эмоций с помощью мимики при вопросах от студента")]
+    [Tooltip("РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РІРєР»СЋС‡РµРЅРёСЏ СЌРјРѕС†РёРѕРЅР°Р»СЊРЅРѕР№ РѕРєСЂР°СЃРєРё РѕС‚РІРµС‚РѕРІ РІРёСЂС‚СѓР°Р»СЊРЅРѕРіРѕ РїСЂРµРїРѕРґР°РІР°С‚РµР»СЏ," +
+        " Р° С‚Р°РєР¶Рµ РїСЂРѕСЏРІР»РµРЅРёРµ СЌРјРѕС†РёР№ СЃ РїРѕРјРѕС‰СЊСЋ РјРёРјРёРєРё РїСЂРё РІРѕРїСЂРѕСЃР°С… РѕС‚ СЃС‚СѓРґРµРЅС‚Р°")]
     [SerializeField] private bool ActivateEmotionalBehaviour = false;
 
     [SerializeField] private UIController uiController;
@@ -125,11 +125,11 @@ public class GameController : MonoBehaviour {
 
         changeFOVs.ForEach(it => it.enabled = true);
 
-        // Запускаем pipe server только если он еще не был запущен!
+        // Р—Р°РїСѓСЃРєР°РµРј pipe server С‚РѕР»СЊРєРѕ РµСЃР»Рё РѕРЅ РµС‰Рµ РЅРµ Р±С‹Р» Р·Р°РїСѓС‰РµРЅ!
         if (PipeServer.Instance == null) {
             pipeServer = new PipeServer();
             pipeServer.onPipeCommandReceived += (pipeServer_, pipeCommand) => {
-                Debug.LogError("Получение сообщение от клиента.\nСообщение: " + pipeCommand.command);
+                Debug.LogError("РџРѕР»СѓС‡РµРЅРёРµ СЃРѕРѕР±С‰РµРЅРёРµ РѕС‚ РєР»РёРµРЅС‚Р°.\nРЎРѕРѕР±С‰РµРЅРёРµ: " + pipeCommand.command);
 
                 double studentValence = moralSchema.getStudentFeelings()[0];
 
@@ -146,7 +146,7 @@ public class GameController : MonoBehaviour {
             };
             pipeServer.Start();
 
-            // Запускаем pipe-клиент
+            // Р—Р°РїСѓСЃРєР°РµРј pipe-РєР»РёРµРЅС‚
             var pipeClientExePath = Application.dataPath.Replace("/Assets", "") + "/PipeClient/NamedPipeClient/NamedPipeClient/bin/Debug/net5.0/NamedPipeClient.exe";
             pipeClientProcess = new System.Diagnostics.Process();
             pipeClientProcess.StartInfo.FileName = pipeClientExePath;
@@ -182,7 +182,7 @@ public class GameController : MonoBehaviour {
                                     usinfo.feeling_valence,
                                     usinfo.feeling_initiative,
                                     usinfo.feeling_learnability,
-                                    usinfo.сharacteristic
+                                    usinfo.СЃharacteristic
                                 FROM
 	                                ebica_user_info as usinfo
                                 WHERE 
@@ -207,7 +207,7 @@ public class GameController : MonoBehaviour {
                                         Convert.ToDouble(reader["feeling_learnability"])
                                     };
 
-                                    string studentCharacteristic = reader["сharacteristic"] as string;
+                                    string studentCharacteristic = reader["СЃharacteristic"] as string;
 
                                     MoralSchema.studentAppraisals = studentAppraisals;
                                     MoralSchema.studentFeelings = studentFeelings;
@@ -230,12 +230,12 @@ public class GameController : MonoBehaviour {
 
         var currentStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
 
-        // Студент ПОВТОРНО слушает лекцию, либо студент пошел не по тому пути, который советует преподаватель
+        // РЎС‚СѓРґРµРЅС‚ РџРћР’РўРћР РќРћ СЃР»СѓС€Р°РµС‚ Р»РµРєС†РёСЋ, Р»РёР±Рѕ СЃС‚СѓРґРµРЅС‚ РїРѕС€РµР» РЅРµ РїРѕ С‚РѕРјСѓ РїСѓС‚Рё, РєРѕС‚РѕСЂС‹Р№ СЃРѕРІРµС‚СѓРµС‚ РїСЂРµРїРѕРґР°РІР°С‚РµР»СЊ
         if (currentStateId.HasValue) {
             //    var learnedLessonNumbers = UserProgressUtils.getLearnedLessonsNumbers(currentStateId.Value);
             //    if (learnedLessonNumbers.Contains(CurrentLessonNumber)) {
-            //        Debug.LogError("Студент повторяется с лекциями...");
-            //        // Необходимо дождаться пока действия будут проинициализированы в моральной схемы
+            //        Debug.LogError("РЎС‚СѓРґРµРЅС‚ РїРѕРІС‚РѕСЂСЏРµС‚СЃСЏ СЃ Р»РµРєС†РёСЏРјРё...");
+            //        // РќРµРѕР±С…РѕРґРёРјРѕ РґРѕР¶РґР°С‚СЊСЃСЏ РїРѕРєР° РґРµР№СЃС‚РІРёСЏ Р±СѓРґСѓС‚ РїСЂРѕРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅС‹ РІ РјРѕСЂР°Р»СЊРЅРѕР№ СЃС…РµРјС‹
             //        StartCoroutine(delayedMoralSchemaActionExecution("student_retakes_lectures"));
             //    }
             //    else {
@@ -243,9 +243,9 @@ public class GameController : MonoBehaviour {
             //            var nextDefaultLectureId = UserProgressUtils.getNextDefaultLectureId(currentStateId.Value);
             //            if (nextDefaultLectureId.HasValue) {
             //                if (nextDefaultLectureId.Value != currentLessonId) {
-            //                    Debug.LogError("Студент сошел с пути истинного...");
-            //                    YandexSpeechKit.TextToSpeech("На данном этапе я советовал к прохождению немного другую лекцию. Но да ладно.", YSKVoice.ERMIL, YSKEmotion.GOOD);
-            //                    // Необходимо дождаться пока действия будут проинициализированы в моральной схемы
+            //                    Debug.LogError("РЎС‚СѓРґРµРЅС‚ СЃРѕС€РµР» СЃ РїСѓС‚Рё РёСЃС‚РёРЅРЅРѕРіРѕ...");
+            //                    YandexSpeechKit.TextToSpeech("РќР° РґР°РЅРЅРѕРј СЌС‚Р°РїРµ СЏ СЃРѕРІРµС‚РѕРІР°Р» Рє РїСЂРѕС…РѕР¶РґРµРЅРёСЋ РЅРµРјРЅРѕРіРѕ РґСЂСѓРіСѓСЋ Р»РµРєС†РёСЋ. РќРѕ РґР° Р»Р°РґРЅРѕ.", YSKVoice.ERMIL, YSKEmotion.GOOD);
+            //                    // РќРµРѕР±С…РѕРґРёРјРѕ РґРѕР¶РґР°С‚СЊСЃСЏ РїРѕРєР° РґРµР№СЃС‚РІРёСЏ Р±СѓРґСѓС‚ РїСЂРѕРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅС‹ РІ РјРѕСЂР°Р»СЊРЅРѕР№ СЃС…РµРјС‹
             //                    StartCoroutine(delayedMoralSchemaActionExecution("student_takes_the_lecture_in_his_order"));
             //                }
             //            }
@@ -256,9 +256,9 @@ public class GameController : MonoBehaviour {
                 var nextDefaultLectureId = UserProgressUtils.getNextDefaultLectureId(currentStateId.Value);
                 if (nextDefaultLectureId.HasValue) {
                     if (nextDefaultLectureId.Value != currentLessonId) {
-                        Debug.LogError("Студент сошел с пути истинного...");
-                        YandexSpeechKit.TextToSpeech("На данном этапе я советовал к прохождению немного другую лекцию. Но да ладно.", YSKVoice.ERMIL, YSKEmotion.GOOD);
-                        // Необходимо дождаться пока действия будут проинициализированы в моральной схемы
+                        Debug.LogError("РЎС‚СѓРґРµРЅС‚ СЃРѕС€РµР» СЃ РїСѓС‚Рё РёСЃС‚РёРЅРЅРѕРіРѕ...");
+                        YandexSpeechKit.TextToSpeech("РќР° РґР°РЅРЅРѕРј СЌС‚Р°РїРµ СЏ СЃРѕРІРµС‚РѕРІР°Р» Рє РїСЂРѕС…РѕР¶РґРµРЅРёСЋ РЅРµРјРЅРѕРіРѕ РґСЂСѓРіСѓСЋ Р»РµРєС†РёСЋ. РќРѕ РґР° Р»Р°РґРЅРѕ.", YSKVoice.ERMIL, YSKEmotion.GOOD);
+                        // РќРµРѕР±С…РѕРґРёРјРѕ РґРѕР¶РґР°С‚СЊСЃСЏ РїРѕРєР° РґРµР№СЃС‚РІРёСЏ Р±СѓРґСѓС‚ РїСЂРѕРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅС‹ РІ РјРѕСЂР°Р»СЊРЅРѕР№ СЃС…РµРјС‹
                         StartCoroutine(delayedMoralSchemaActionExecution("student_takes_the_lecture_in_his_order"));
                     }
                 }
@@ -282,30 +282,30 @@ public class GameController : MonoBehaviour {
             List<string> additionMessages = new List<string>();
 
             if (valence > 0.2) {
-                //systemMessage = "(Веди себя как добрый преподаватель. Отвечай коротко)";
-                additionMessages.Add("Веди себя как добрый преподаватель. Отвечай коротко и неформально");
+                //systemMessage = "(Р’РµРґРё СЃРµР±СЏ РєР°Рє РґРѕР±СЂС‹Р№ РїСЂРµРїРѕРґР°РІР°С‚РµР»СЊ. РћС‚РІРµС‡Р°Р№ РєРѕСЂРѕС‚РєРѕ)";
+                additionMessages.Add("Р’РµРґРё СЃРµР±СЏ РєР°Рє РґРѕР±СЂС‹Р№ РїСЂРµРїРѕРґР°РІР°С‚РµР»СЊ. РћС‚РІРµС‡Р°Р№ РєРѕСЂРѕС‚РєРѕ Рё РЅРµС„РѕСЂРјР°Р»СЊРЅРѕ");
             }
             else if (valence < -0.2) {
-                //systemMessage = "Веди себя как злой и недовольный преподаватель.";
-                additionMessages.Add("Веди себя как злой и недовольный преподаватель.");
+                //systemMessage = "Р’РµРґРё СЃРµР±СЏ РєР°Рє Р·Р»РѕР№ Рё РЅРµРґРѕРІРѕР»СЊРЅС‹Р№ РїСЂРµРїРѕРґР°РІР°С‚РµР»СЊ.";
+                additionMessages.Add("Р’РµРґРё СЃРµР±СЏ РєР°Рє Р·Р»РѕР№ Рё РЅРµРґРѕРІРѕР»СЊРЅС‹Р№ РїСЂРµРїРѕРґР°РІР°С‚РµР»СЊ.");
             }
 
             if (initiative > 0.2) {
-                //systemMessage += "Отвечай развернуто, неформально. ";
-                additionMessages.Add(" Отвечай немного подавлено.");
+                //systemMessage += "РћС‚РІРµС‡Р°Р№ СЂР°Р·РІРµСЂРЅСѓС‚Рѕ, РЅРµС„РѕСЂРјР°Р»СЊРЅРѕ. ";
+                additionMessages.Add(" РћС‚РІРµС‡Р°Р№ РЅРµРјРЅРѕРіРѕ РїРѕРґР°РІР»РµРЅРѕ.");
             }
             else if (initiative < -0.2) {
-                //systemMessage += "Отвечай очень формально. ";
-                additionMessages.Add(" Отвечай уверенно.");
+                //systemMessage += "РћС‚РІРµС‡Р°Р№ РѕС‡РµРЅСЊ С„РѕСЂРјР°Р»СЊРЅРѕ. ";
+                additionMessages.Add(" РћС‚РІРµС‡Р°Р№ СѓРІРµСЂРµРЅРЅРѕ.");
             }
 
             if (learnability > 0.2) {
-                //systemMessage += "Обьясняй как будто я очень умный профессор. ";
-                additionMessages.Add(" Обьясняй как будто я очень умный профессор. ");
+                //systemMessage += "РћР±СЊСЏСЃРЅСЏР№ РєР°Рє Р±СѓРґС‚Рѕ СЏ РѕС‡РµРЅСЊ СѓРјРЅС‹Р№ РїСЂРѕС„РµСЃСЃРѕСЂ. ";
+                additionMessages.Add(" РћР±СЊСЏСЃРЅСЏР№ РєР°Рє Р±СѓРґС‚Рѕ СЏ РѕС‡РµРЅСЊ СѓРјРЅС‹Р№ РїСЂРѕС„РµСЃСЃРѕСЂ. ");
             }
             else if (learnability < -0.2) {
-                //systemMessage += "Обьясняй как будто мне пять лет. ";
-                additionMessages.Add(" Обьясняй как будто мне пять лет. ");
+                //systemMessage += "РћР±СЊСЏСЃРЅСЏР№ РєР°Рє Р±СѓРґС‚Рѕ РјРЅРµ РїСЏС‚СЊ Р»РµС‚. ";
+                additionMessages.Add(" РћР±СЊСЏСЃРЅСЏР№ РєР°Рє Р±СѓРґС‚Рѕ РјРЅРµ РїСЏС‚СЊ Р»РµС‚. ");
             }
 
             if (additionMessages.Count > 0) {
@@ -405,7 +405,7 @@ public class GameController : MonoBehaviour {
 
     private float getNeighbourBreakpointOnSlide() {
         try {
-            // Breakpoint'ы перекочевали в БД
+            // Breakpoint'С‹ РїРµСЂРµРєРѕС‡РµРІР°Р»Рё РІ Р‘Р”
             /*var breakpoints = File.ReadAllText(Application.dataPath + $"/Resources/CSV/Lessons/" +
                             $"{currentLessonNumber}/Slides/{currentSlideNumber}/breakpoints.csv").Split(',')
                                                                                      .Select(s => float.TryParse(s, out float n) ? n : (float?)null)
@@ -496,7 +496,7 @@ public class GameController : MonoBehaviour {
         isLectureInProgress = true;
         isTeacherGivingLectureRightNow = true;
 
-        // Сколько слайдов - столько и аудизаписей в конкретной лекции.
+        // РЎРєРѕР»СЊРєРѕ СЃР»Р°Р№РґРѕРІ - СЃС‚РѕР»СЊРєРѕ Рё Р°СѓРґРёР·Р°РїРёСЃРµР№ РІ РєРѕРЅРєСЂРµС‚РЅРѕР№ Р»РµРєС†РёРё.
         var slidesCount = DirInfo.getCountOfFilesInFolder($"/Resources/Materials/Lessons/{CurrentLessonNumber}/Slides", ".mat");
 
         setSlideToBoard(GameController.CurrentSlideNumber);
@@ -550,7 +550,7 @@ public class GameController : MonoBehaviour {
 
     private IEnumerator WaitingForQuestionsAfterLecture() {
         yield return new WaitForSeconds(14.0f);
-        YandexSpeechKit.TextToSpeech("Давайте перейдем к тестированию.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+        YandexSpeechKit.TextToSpeech("Р”Р°РІР°Р№С‚Рµ РїРµСЂРµР№РґРµРј Рє С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЋ.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
         yield return new WaitForSeconds(4.0f);
         uiController.HideQuestionButton();
         uiController.ShowTestingScrollViewAdapter();
@@ -573,7 +573,7 @@ public class GameController : MonoBehaviour {
 
         audioController.stopSound();
 
-        YandexSpeechKit.TextToSpeech("Давайте перейдем к тестированию, раз вы уже готовы", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+        YandexSpeechKit.TextToSpeech("Р”Р°РІР°Р№С‚Рµ РїРµСЂРµР№РґРµРј Рє С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЋ, СЂР°Р· РІС‹ СѓР¶Рµ РіРѕС‚РѕРІС‹", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
 
         isLectureInProgress = false;
         isTeacherGivingLectureRightNow = false;
@@ -600,11 +600,11 @@ public class GameController : MonoBehaviour {
                 }
             }
 
-            string defaultCongratsText = $@"Вы набрали {moduleScoreInPercent} процента от максимального балла.";
+            string defaultCongratsText = $@"Р’С‹ РЅР°Р±СЂР°Р»Рё {moduleScoreInPercent} РїСЂРѕС†РµРЅС‚Р° РѕС‚ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ Р±Р°Р»Р»Р°.";
             if (moduleScoreInPercent == 100) {
-                defaultCongratsText = $@"Вы набрали максимальный балл. Нельзя не отметить, что вы прекрасно постарались. ";
+                defaultCongratsText = $@"Р’С‹ РЅР°Р±СЂР°Р»Рё РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ Р±Р°Р»Р». РќРµР»СЊР·СЏ РЅРµ РѕС‚РјРµС‚РёС‚СЊ, С‡С‚Рѕ РІС‹ РїСЂРµРєСЂР°СЃРЅРѕ РїРѕСЃС‚Р°СЂР°Р»РёСЃСЊ. ";
             } else if (moduleScoreInPercent >= 80) {
-                defaultCongratsText += " Вы хорошо постарались. ";
+                defaultCongratsText += " Р’С‹ С…РѕСЂРѕС€Рѕ РїРѕСЃС‚Р°СЂР°Р»РёСЃСЊ. ";
             }
 
             var currentActualUserStateId = UserProgressUtils.getUserStateId(MainMenuController.Username);
@@ -612,20 +612,20 @@ public class GameController : MonoBehaviour {
             if (currentActualUserStateId.HasValue) {
                 String nextDefaultLectureSummary = UserProgressUtils.getNextDefaultLectureSummary(currentActualUserStateId.Value);
                 if (nextDefaultLectureSummary != null) {
-                    defaultCongratsText += " Предлагаю перейти к изучению лекции под названием " + nextDefaultLectureSummary;
+                    defaultCongratsText += " РџСЂРµРґР»Р°РіР°СЋ РїРµСЂРµР№С‚Рё Рє РёР·СѓС‡РµРЅРёСЋ Р»РµРєС†РёРё РїРѕРґ РЅР°Р·РІР°РЅРёРµРј " + nextDefaultLectureSummary;
                 }
                 else {
-                    defaultCongratsText += " Можете переходить к изучению следующих лекций.";
+                    defaultCongratsText += " РњРѕР¶РµС‚Рµ РїРµСЂРµС…РѕРґРёС‚СЊ Рє РёР·СѓС‡РµРЅРёСЋ СЃР»РµРґСѓСЋС‰РёС… Р»РµРєС†РёР№.";
                 }
             } else {
-                defaultCongratsText += " Можете переходить к изучению следующих лекций.";
+                defaultCongratsText += " РњРѕР¶РµС‚Рµ РїРµСЂРµС…РѕРґРёС‚СЊ Рє РёР·СѓС‡РµРЅРёСЋ СЃР»РµРґСѓСЋС‰РёС… Р»РµРєС†РёР№.";
             }
 
             YandexSpeechKit.TextToSpeech(defaultCongratsText, YSKVoice.ERMIL, YSKEmotion.GOOD);
         }
         else {
-            YandexSpeechKit.TextToSpeech("К сожалению вы не набрали достаточное количество баллов для прохождения данной лекции."
-                + " Не расстраивайтесь и попробуйте еще раз.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
+            YandexSpeechKit.TextToSpeech("Рљ СЃРѕР¶Р°Р»РµРЅРёСЋ РІС‹ РЅРµ РЅР°Р±СЂР°Р»Рё РґРѕСЃС‚Р°С‚РѕС‡РЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р»Р»РѕРІ РґР»СЏ РїСЂРѕС…РѕР¶РґРµРЅРёСЏ РґР°РЅРЅРѕР№ Р»РµРєС†РёРё."
+                + " РќРµ СЂР°СЃСЃС‚СЂР°РёРІР°Р№С‚РµСЃСЊ Рё РїРѕРїСЂРѕР±СѓР№С‚Рµ РµС‰Рµ СЂР°Р·.", YSKVoice.ERMIL, YSKEmotion.NEUTRAL);
         }
 
         Debug.LogError("moduleScoreInPercent = " + moduleScoreInPercent);
@@ -656,14 +656,14 @@ public class GameController : MonoBehaviour {
 
     private IEnumerator FinishCurrentLecture() {
         
-        // Почему-то getCurrentClipLength сразу не возвращает необходимую длину 
+        // РџРѕС‡РµРјСѓ-С‚Рѕ getCurrentClipLength СЃСЂР°Р·Сѓ РЅРµ РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРµРѕР±С…РѕРґРёРјСѓСЋ РґР»РёРЅСѓ 
         yield return new WaitForSeconds(2.0f);
 
         yield return new WaitForSeconds(audioController.getCurrentClipLength() + 1.0f);
-        // Сбрасываем состояние студента перед выходом со сцены
+        // РЎР±СЂР°СЃС‹РІР°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ СЃС‚СѓРґРµРЅС‚Р° РїРµСЂРµРґ РІС‹С…РѕРґРѕРј СЃРѕ СЃС†РµРЅС‹
         PlayerState.setPlayerState(PlayerStateEnum.WALK);
 
-        // Сброс переменных
+        // РЎР±СЂРѕСЃ РїРµСЂРµРјРµРЅРЅС‹С…
         lectureInterruptTime = 0.0f;
         CurrentSlideNumber = 1;
 
@@ -671,7 +671,7 @@ public class GameController : MonoBehaviour {
 
     }
 
-    // Question number - уникален в рамках лекции
+    // Question number - СѓРЅРёРєР°Р»РµРЅ РІ СЂР°РјРєР°С… Р»РµРєС†РёРё
     private void OnStudentAskQuestion(int questionNumber) {
         //Debug.LogError($"Student ask {questionNumber} question.");
 
@@ -686,7 +686,7 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    // Question number - уникален в рамках лекции
+    // Question number - СѓРЅРёРєР°Р»РµРЅ РІ СЂР°РјРєР°С… Р»РµРєС†РёРё
     private IEnumerator OnStudentAskQuestionDuringLectureCoroutine(int questionNumber) {
         //uiController.OffQuestionButton();
         yield return new WaitForSeconds(0.5f);
