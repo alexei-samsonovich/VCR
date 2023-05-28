@@ -8,6 +8,9 @@ using System.IO;
 
 public class MoralSchema : MonoBehaviour
 {
+
+    [SerializeField] LoggingController loggingController;
+
     const double r = 2e-3;
     private const double r1 = 0.8;
     const double criticalValueForDiffNorms = 0.65;
@@ -18,7 +21,7 @@ public class MoralSchema : MonoBehaviour
     private string JSON_PATH_INDEPENDENT_ACTIONS = Application.streamingAssetsPath + "\\IndependentActions.json";
     private string JSON_PATH_INDEPENDENT_FEELINGS_STATES = Application.streamingAssetsPath + "\\FeelingsStates.json";
 
-    private static int ESTIMATE_SPACE_DIMENSION = 3;
+    public static int ESTIMATE_SPACE_DIMENSION = 3;
 
     static bool processRecoveryOfFeelings = false;
     public static string studentCharacteristic = "NAN";
@@ -76,74 +79,6 @@ public class MoralSchema : MonoBehaviour
             return feelingState;
         }
     }
-    public class Act
-    {
-        private int id; 
-        public double[] moralFactorForTarget;
-        public double[] moralFactorForAuthor;
-        public string name;
-        public string nameInRussian;
-        public string responseActionOn;
-        public string actionAuthor;
-
-        public Act()
-        {
-            moralFactorForTarget = new double[ESTIMATE_SPACE_DIMENSION];
-            moralFactorForAuthor = new double[ESTIMATE_SPACE_DIMENSION];
-        }
-
-        public void setMoralFactorForTarget(double[] values)
-        {
-            values.CopyTo(moralFactorForTarget, 0);
-        }
-        public void setMoralFactorForAuthor(double[] values)
-        {
-            values.CopyTo(moralFactorForAuthor, 0);
-        }
-
-        public void setName(string name)
-        {
-            this.name = name;
-        }
-        public void setResponseActionOn(string responseActionOn)
-        {
-            this.responseActionOn = responseActionOn;
-        }
-
-        public void setActionAuthor(string actionAuthor)
-        {
-            this.actionAuthor = actionAuthor;
-        }
-        public double[] getMoralFactorForTarget()
-        {
-            return moralFactorForTarget;
-        }
-
-        public double[] getMoralFactorForAuthor()
-        {
-            return moralFactorForAuthor;
-        }
-
-        public string getName()
-        {
-            return name;
-        }
-
-        public string getResponseActionOn()
-        {
-            return responseActionOn;
-        }
-
-        public string getActionAuthor()
-        {
-            return actionAuthor;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-    };
 
     public double[] getTeacherAppraisals()
     {
@@ -172,6 +107,10 @@ public class MoralSchema : MonoBehaviour
         feelingsStates = JsonConvert.DeserializeObject<Dictionary<string, FeelingState>>(File.ReadAllText(JSON_PATH_INDEPENDENT_FEELINGS_STATES));
         allActs = JsonConvert.DeserializeObject<Dictionary<string, Act>>(File.ReadAllText(JSON_PATH_ALL_ACTIONS));
         allIndependentActions = JsonConvert.DeserializeObject<Dictionary<string, Act>>(File.ReadAllText(JSON_PATH_INDEPENDENT_ACTIONS));
+
+        //foreach (var item in allIndependentActions.Values.ToArray()) {
+        //    Debug.LogError(item.ToString());
+        //}
     }
 
     public double[] recalculateAppraisals(double[] appraisals, double[] action)
@@ -193,6 +132,7 @@ public class MoralSchema : MonoBehaviour
             Debug.LogError(" makeIndependentAction student initiative " + action);
         }
         rebuildAppraisalsAndFeelingsAfterStudentAction(action, true);
+        loggingController.UpdateLogs("student", allIndependentActions[action]);
         //teacherAppraisals = recalculateAppraisals(teacherAppraisals, allIndependentActions[action].getMoralFactorForTarget());
         //studentAppraisals = recalculateAppraisals(studentAppraisals, allIndependentActions[action].getMoralFactorForAuthor());
     }
@@ -257,7 +197,7 @@ public class MoralSchema : MonoBehaviour
             dif += Math.Pow(feelingsStates[studentCharacteristic].feelingState[i] - feelings[i], 2);
         }
         dif = Math.Sqrt(dif);
-        if (dif < 0.4) {
+        if (dif < 0.3) {
             unstableRelations = false;
         }
     }
@@ -494,6 +434,88 @@ public class MoralSchema : MonoBehaviour
         //string answer = getResponseActionByLikelihood();
         rebuildAppraisalsAndFeelingsAfterTeacherAction(answer);
         return answer;
+    }
+
+}
+
+public class Act {
+    [JsonRequired]
+    private int id;
+
+    [JsonRequired]
+    public double[] moralFactorForTarget;
+
+    [JsonRequired]
+    public double[] moralFactorForAuthor;
+
+    [JsonRequired]
+    public string name;
+
+    [JsonRequired]
+    public string nameInRussian;
+
+    [JsonRequired]
+    public string responseActionOn;
+
+    [JsonRequired]
+    public string actionAuthor;
+
+    public Act() {
+        moralFactorForTarget = new double[MoralSchema.ESTIMATE_SPACE_DIMENSION];
+        moralFactorForAuthor = new double[MoralSchema.ESTIMATE_SPACE_DIMENSION];
+    }
+
+    public void setMoralFactorForTarget(double[] values) {
+        values.CopyTo(moralFactorForTarget, 0);
+    }
+    public void setMoralFactorForAuthor(double[] values) {
+        values.CopyTo(moralFactorForAuthor, 0);
+    }
+
+    public void setName(string name) {
+        this.name = name;
+    }
+    public void setResponseActionOn(string responseActionOn) {
+        this.responseActionOn = responseActionOn;
+    }
+
+    public void setActionAuthor(string actionAuthor) {
+        this.actionAuthor = actionAuthor;
+    }
+    public double[] getMoralFactorForTarget() {
+        return moralFactorForTarget;
+    }
+
+    public double[] getMoralFactorForAuthor() {
+        return moralFactorForAuthor;
+    }
+
+    public string getName() {
+        return name;
+    }
+
+    public string getResponseActionOn() {
+        return responseActionOn;
+    }
+
+    public string getActionAuthor() {
+        return actionAuthor;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public string getNameInRussian() {
+        return nameInRussian;
+    }
+
+    public override string ToString() {
+        return "{" +
+            "id=" + id + ", " +
+            "nameInRussian=" + nameInRussian + ", " +
+            "moralFactorForTarget=" + "[" + String.Join(", ", moralFactorForTarget) + "]" +
+            "moralFactorForAuthor=" + "[" + String.Join(", ", moralFactorForAuthor) + "]" + "}";
     }
 
 }

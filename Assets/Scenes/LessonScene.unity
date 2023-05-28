@@ -5367,6 +5367,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a29f6458d4c1f74469e1379d8c60e28f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enableLogging: 1
+  moralSchema: {fileID: 2097138464}
+  playerObjects:
+  - {fileID: 963194227}
+  - {fileID: 162208788}
+  teacher: {fileID: 1046275552}
 --- !u!1 &660605431 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6174088898809296148, guid: 79774cb1145d7114eaac7dab4d5498e0, type: 3}
@@ -16314,6 +16320,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 721ff2df2c15d1c4a869329c8a8e7524, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  loggingController: {fileID: 649346898}
 --- !u!4 &2097138465
 Transform:
   m_ObjectHideFlags: 0

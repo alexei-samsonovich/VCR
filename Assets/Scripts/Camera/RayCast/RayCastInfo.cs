@@ -8,7 +8,7 @@ public class RayCastInfo : MonoBehaviour
 
     private bool isSitting = false;
     private float timer = 0.0f;
-    private float timerBound = 0.3f;
+    private float timerBound = 1.0f;
 
     [SerializeField] Camera mainCamera;
     [SerializeField] Camera sittingCamera;

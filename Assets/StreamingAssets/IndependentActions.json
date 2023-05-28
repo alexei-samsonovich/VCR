@@ -2,18 +2,18 @@
   "lookAtTeacher": {
     "id" : "1",
     "moralFactorForTarget": [ "0.0", "0.0", "0" ],
-    "moralFactorForAuthor": [ "0.045", "0.015", "0.015" ],
+    "moralFactorForAuthor": [ "0.135", "0.015", "0.045" ],
     "name": "lookAtTeacher",
-    "nameInRussian": "Студент смотрит на учителя",
+    "nameInRussian": "Студент смотрит на преподавателя или доску",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
   "doesntLookAtTeacher": {
     "id" : "2",
     "moralFactorForTarget": [ "0.0", "0.0", "0" ],
-    "moralFactorForAuthor": [ "-0.045", "-0.015", "-0.015" ],
+    "moralFactorForAuthor": [ "-0.135", "-0.015", "-0.045" ],
     "name": "DoesntLookAtTeacher",
-    "nameInRussian": "Студент смотрит не на преподавателя",
+    "nameInRussian": "Студент смотрит не на преподавателя и не на доску",
     "responseActionOn": "",
     "actionAuthor": "Student"
   },
@@ -203,6 +203,15 @@
     "moralFactorForTarget": [ "0", "0", "0"],
     "moralFactorForAuthor": [ "-20", "300", "0"],
     "name": "student_takes_the_lecture_in_his_order",
+    "nameInRussian": "Студент не послушал совет преподавателя по выбору лекции",
+    "responseActionOn": "",
+    "actionAuthor": "Student"
+  },
+  "blabla": {
+    "id" : "26",
+    "moralFactorForTarget": [ "0", "0", "0"],
+    "moralFactorForAuthor": [ "-20", "300", "0"],
+    "name": "blabla",
     "nameInRussian": "Студент не послушал совет преподавателя по выбору лекции",
     "responseActionOn": "",
     "actionAuthor": "Student"
