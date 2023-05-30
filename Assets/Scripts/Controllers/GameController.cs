@@ -317,7 +317,7 @@ public class GameController : MonoBehaviour {
 
 
         //pipeServer.SendMessage(sendQuestionTextInputFIeld.text, systemMessage);
-        pipeServer.SendMessage(userMessage);
+        pipeServer.SendMessage(userMessage + ". Отвечай коротко.");
         sendQuestionTextInputFIeld.text = "";
 
         return;
