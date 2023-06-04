@@ -181,8 +181,7 @@ public class GameController : MonoBehaviour {
                                     usinfo.appraisal_learnability,
                                     usinfo.feeling_valence,
                                     usinfo.feeling_initiative,
-                                    usinfo.feeling_learnability,
-                                    usinfo.сharacteristic
+                                    usinfo.feeling_learnability
                                 FROM
 	                                ebica_user_info as usinfo
                                 WHERE 
@@ -207,11 +206,11 @@ public class GameController : MonoBehaviour {
                                         Convert.ToDouble(reader["feeling_learnability"])
                                     };
 
-                                    string studentCharacteristic = reader["сharacteristic"] as string;
+                                    //string studentCharacteristic = reader["сharacteristic"] as string;
 
                                     MoralSchema.studentAppraisals = studentAppraisals;
                                     MoralSchema.studentFeelings = studentFeelings;
-                                    MoralSchema.studentCharacteristic = studentCharacteristic;
+                                    //MoralSchema.studentCharacteristic = studentCharacteristic;
                                 }
                             }
                             isEbicaEstimatesAlreadyLoaded = true;

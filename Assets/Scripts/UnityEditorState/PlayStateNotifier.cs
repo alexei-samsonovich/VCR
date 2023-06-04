@@ -23,7 +23,7 @@ public static class PlayStateNotifier
 
                     double[] studentFeelings = MoralSchema.studentFeelings;
 
-                    string studentCharacteristic = MoralSchema.studentCharacteristic;
+                    //string studentCharacteristic = MoralSchema.studentCharacteristic;
 
                     using (var connection = new SqliteConnection(DBInfo.DataBaseName)) {
                         try {
@@ -31,7 +31,7 @@ public static class PlayStateNotifier
 
                             using (var command = connection.CreateCommand()) {
                                 var query = $@"
-                                    insert or replace into ebica_user_info(user, appraisal_valence, appraisal_initiative, appraisal_learnability, feeling_valence, feeling_initiative, feeling_learnability, ñharacteristic) 
+                                    insert or replace into ebica_user_info(user, appraisal_valence, appraisal_initiative, appraisal_learnability, feeling_valence, feeling_initiative, feeling_learnability) 
                                     VALUES(
                                             {userId.Value},
                                             {((decimal)studentAppraisals[0]).ToString().Replace(",", ".")}, 
@@ -39,8 +39,7 @@ public static class PlayStateNotifier
                                             {((decimal)studentAppraisals[2]).ToString().Replace(",", ".")}, 
                                             {((decimal)studentFeelings[0]).ToString().Replace(",", ".")}, 
                                             {((decimal)studentFeelings[1]).ToString().Replace(",", ".")}, 
-                                            {((decimal)studentFeelings[2]).ToString().Replace(",", ".")}, 
-                                            '{studentCharacteristic}');
+                                            {((decimal)studentFeelings[2]).ToString().Replace(",", ".")}
                                 ";
                                 command.CommandText = query;
                                 command.ExecuteNonQuery();

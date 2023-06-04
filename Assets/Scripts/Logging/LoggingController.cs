@@ -63,7 +63,7 @@ public class LoggingController : MonoBehaviour {
                 "Student feelings valence," +
                 "Student feelings initiative," +
                 "Student feelings learnability," +
-                "Student characteristic," +
+                //"Student characteristic," +
                 "Coordinate X student," +
                 "Coordinate Y student," +
                 "Coordinate Z student," +
@@ -120,7 +120,7 @@ public class LoggingController : MonoBehaviour {
         string[] studentFeelings = moralSchema.getStudentFeelings()
                                                 .Select(d => Math.Round(d, 4).ToString().Replace(',', '.'))
                                                 .ToArray();
-        string studentCharacteristic = moralSchema.getStudentCharacteristic();
+        //string studentCharacteristic = moralSchema.getStudentCharacteristic();
         
         string studentPosition = vector3ToCSVString(
             playerObjects.FirstOrDefault(obj => obj.enabled == true)
@@ -161,7 +161,7 @@ public class LoggingController : MonoBehaviour {
                 action.getNameInRussian() + "," +
                 string.Join(",", studentAppraisals) + "," +
                 string.Join(",", studentFeelings) + "," +
-                studentCharacteristic + "," +
+                //studentCharacteristic + "," +
                 studentPosition + "," +
                 studentAzimuth + "," +
                 teacherPosition + "," +

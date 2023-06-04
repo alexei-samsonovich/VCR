@@ -13,9 +13,11 @@ public class MoralSchema : MonoBehaviour
 
     const double r = 2e-3;
     private const double r1 = 0.8;
-    const double criticalValueForDiffNorms = 0.65;
+    const double CRITICAL_VALUE_FOR_DIFF_NORMS = 0.65;
 
-    private static bool unstableRelations = true;
+    const double FEELINGS_CIRCLE_RADIUS = 0.5D;
+
+    private static bool IS_REALATIONS_UNSTABLE = true;
 
     private string JSON_PATH_ALL_ACTIONS = Application.streamingAssetsPath + "\\Actions.json";
     private string JSON_PATH_INDEPENDENT_ACTIONS = Application.streamingAssetsPath + "\\IndependentActions.json";
@@ -24,13 +26,13 @@ public class MoralSchema : MonoBehaviour
     public static int ESTIMATE_SPACE_DIMENSION = 3;
 
     static bool processRecoveryOfFeelings = false;
-    public static string studentCharacteristic = "NAN";
+    //public static string studentCharacteristic = "NAN";
 
     private static bool isMoralSchemaActive = false;
 
     private static Dictionary<string, Act> allActs = new Dictionary<string, Act>();
     private static Dictionary<string, Act> allIndependentActions = new Dictionary<string, Act>();
-    private static Dictionary<string, FeelingState> feelingsStates = new Dictionary<string, FeelingState>();
+    //private static Dictionary<string, FeelingState> feelingsStates = new Dictionary<string, FeelingState>();
 
     public List<Tuple<string, double>> biasLikelihood = new List<Tuple<string, double>>();
 
@@ -41,6 +43,9 @@ public class MoralSchema : MonoBehaviour
 
     private void Start() {
         setupActs();
+        for (int i = 0; i < studentFeelings.Length; i++) {
+            studentFeelings[i] = 0.0001D;
+        }
     }
 
     private void Update() {
@@ -97,14 +102,14 @@ public class MoralSchema : MonoBehaviour
         return studentFeelings;
     }
 
-    public string getStudentCharacteristic()
-    {
-        return studentCharacteristic;
-    }
+    //public string getStudentCharacteristic()
+    //{
+    //    return studentCharacteristic;
+    //}
 
 
     public void setupActs() {
-        feelingsStates = JsonConvert.DeserializeObject<Dictionary<string, FeelingState>>(File.ReadAllText(JSON_PATH_INDEPENDENT_FEELINGS_STATES));
+        //feelingsStates = JsonConvert.DeserializeObject<Dictionary<string, FeelingState>>(File.ReadAllText(JSON_PATH_INDEPENDENT_FEELINGS_STATES));
         allActs = JsonConvert.DeserializeObject<Dictionary<string, Act>>(File.ReadAllText(JSON_PATH_ALL_ACTIONS));
         allIndependentActions = JsonConvert.DeserializeObject<Dictionary<string, Act>>(File.ReadAllText(JSON_PATH_INDEPENDENT_ACTIONS));
 
@@ -169,37 +174,78 @@ public class MoralSchema : MonoBehaviour
     //    return choise;
     //}
 
-    string findFeelingsCharacteristic(double[] feelings) {
-        //Debug.LogError("feelings = " + String.Join(",", feelings));
-        string choise = ""; 
-        double dif = 20;
-        foreach (var feelingMassive in feelingsStates) {
-            double mid = 0.0D;
-            for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; ++i) {
-                mid += Math.Pow(feelingMassive.Value.feelingState[i] - feelings[i], 2);
-            }
-            mid = Math.Sqrt(mid);
-            if (mid < dif) {
-                dif = mid;
-                choise = feelingMassive.Key;
-            }
-            //Debug.LogError("Diff = " + mid + ", Characteristic = " + feelingMassive.Key);
+    //string findFeelingsCharacteristic(double[] feelings) {
+    //    //Debug.LogError("feelings = " + String.Join(",", feelings));
+    //    string choise = ""; 
+    //    double dif = 20;
+    //    foreach (var feelingMassive in feelingsStates) {
+    //        double mid = 0.0D;
+    //        for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; ++i) {
+    //            mid += Math.Pow(feelingMassive.Value.feelingState[i] - feelings[i], 2);
+    //        }
+    //        mid = Math.Sqrt(mid);
+    //        if (mid < dif) {
+    //            dif = mid;
+    //            choise = feelingMassive.Key;
+    //        }
+    //        //Debug.LogError("Diff = " + mid + ", Characteristic = " + feelingMassive.Key);
+    //    }
+    //    //Debug.LogError("student characteristic = " + choise);
+    //    return choise;
+    //}
+
+
+    //void isRelationsUnstable(double[] feelings)
+    //{
+    //    string studentCharacteristic = findFeelingsCharacteristic(feelings);
+    //    double dif = 0;
+    //    for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; ++i) {
+    //        dif += Math.Pow(feelingsStates[studentCharacteristic].feelingState[i] - feelings[i], 2);
+    //    }
+    //    dif = Math.Sqrt(dif);
+    //    if (dif < 0.3) {
+    //        unstableRelations = false;
+    //    }
+    //}
+
+    double[] findClosestDotOnFeelingCircle(double[] feelings) {
+
+        double[] center = new double[ESTIMATE_SPACE_DIMENSION];
+        double[] deltas = new double[ESTIMATE_SPACE_DIMENSION];
+
+        if (feelings.All(o => o == 0)) {
+            var answer = new double[ESTIMATE_SPACE_DIMENSION];
+            answer[0] = FEELINGS_CIRCLE_RADIUS;
+            return answer;
         }
-        //Debug.LogError("student characteristic = " + choise);
-        return choise;
+
+        double vectorLength = 0.0D;
+        for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; i++) {
+            var delta = feelings[i] - center[i];
+            deltas[i] = delta;
+            vectorLength += Math.Pow(delta, 2);
+        }
+        vectorLength = Math.Sqrt(vectorLength);
+
+        var K = FEELINGS_CIRCLE_RADIUS / vectorLength;
+
+        double[] closestDot = new double[ESTIMATE_SPACE_DIMENSION];
+        for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; i++) {
+            closestDot[i] = center[i] + deltas[i] * K;
+        }
+
+        return closestDot;
     }
 
-
-    void isRelationsUnstable(double[] feelings)
-    {
-        string studentCharacteristic = findFeelingsCharacteristic(feelings);
+    void isRelationsUnstable(double[] feelings) {
+        var closestFeelingsDot = findClosestDotOnFeelingCircle(feelings);
         double dif = 0;
         for (int i = 0; i < ESTIMATE_SPACE_DIMENSION; ++i) {
-            dif += Math.Pow(feelingsStates[studentCharacteristic].feelingState[i] - feelings[i], 2);
+            dif += Math.Pow(closestFeelingsDot[i] - feelings[i], 2);
         }
         dif = Math.Sqrt(dif);
         if (dif < 0.3) {
-            unstableRelations = false;
+            IS_REALATIONS_UNSTABLE = false;
         }
     }
 
@@ -208,11 +254,14 @@ public class MoralSchema : MonoBehaviour
 
         if (!isMoralSchemaActive) {
             isRelationsUnstable(feelings);
-            if (unstableRelations) {
+            if (IS_REALATIONS_UNSTABLE) {
                 feelings = firstMethodRecalculateFeelings(feelings, appraisals);
                 return feelings;
             }
+
+            feelings = findClosestDotOnFeelingCircle(feelings);
             isMoralSchemaActive = true;
+            return feelings;
         }
 
         double diffNorm = 0;
@@ -220,12 +269,12 @@ public class MoralSchema : MonoBehaviour
             diffNorm += Math.Abs(feelings[i] - appraisals[i]);
         }
 
-        processRecoveryOfFeelings = diffNorm > criticalValueForDiffNorms;
+        processRecoveryOfFeelings = diffNorm > CRITICAL_VALUE_FOR_DIFF_NORMS;
 
         if (processRecoveryOfFeelings) {
             feelings = secondMethodRecalculateFeelings(feelings, appraisals);
         } else {
-            feelings = setConstantFeelings(feelings);
+            feelings = findClosestDotOnFeelingCircle(feelings);
         }
 
         return feelings;
@@ -249,18 +298,18 @@ public class MoralSchema : MonoBehaviour
         {
             resultFeelings[i] = (1 - r1) * feelings[i] + r1 * (appraisals[i] - feelings[i]);
         }
-        studentCharacteristic = "NAN";
+        //studentCharacteristic = "NAN";
         return resultFeelings;
     }
 
-    double[] setConstantFeelings(double[] feelings)
-    {
-        //Debug.LogError("setConstantFeelings");
-        studentCharacteristic = findFeelingsCharacteristic(feelings);
-        double[] ans = new double[ESTIMATE_SPACE_DIMENSION];
-        feelingsStates[studentCharacteristic].feelingState.CopyTo(ans, 0);
-        return ans;
-    }
+    //double[] setConstantFeelings(double[] feelings)
+    //{
+    //    //Debug.LogError("setConstantFeelings");
+    //    studentCharacteristic = findFeelingsCharacteristic(feelings);
+    //    double[] ans = new double[ESTIMATE_SPACE_DIMENSION];
+    //    feelingsStates[studentCharacteristic].feelingState.CopyTo(ans, 0);
+    //    return ans;
+    //}
 
     public void biasCriterion(double[] appraisalsFactor, double[] feelingsFactor, string action)
     {
