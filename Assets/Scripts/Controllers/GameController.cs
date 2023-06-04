@@ -115,6 +115,11 @@ public class GameController : MonoBehaviour {
 
     }
 
+    public void ToggleEmotionalBehaviour(Boolean value) {
+        ActivateEmotionalBehaviour = !ActivateEmotionalBehaviour;
+        Debug.LogError(ActivateEmotionalBehaviour);
+    }
+
     void Start() {
 
         CurrentLessonNumber = MainMenuController.CurrentLessonNumber;
