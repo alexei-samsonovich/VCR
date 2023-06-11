@@ -12,7 +12,7 @@ using UnityEngine.Events;
 
 public class YandexSpeechKit {
 
-    private static readonly string IAmToken = "t1.9euelZrKipGXyJyey4rNzsbHzs-Wze3rnpWalpGJzJCUmIqUmImSkZiUlY_l8_dgFW9b-e84AG4i_t3z9yBEbFv57zgAbiL-zef1656VmpXIjImTlMyYx86TksrMyoud7_zF656VmpXIjImTlMyYx86TksrMyoud.gsmVQe9RkLkixdyQYhHgmls0KaFjA514fIYWdicLWUCNuCybN25KnFYgHWQWZEySugm5-1xLMHv-qcQMI9v7BA";
+    private static readonly string IAmToken = "t1.9euelZqem5HLnZPMz8ualJCLz8eXze3rnpWalpGJzJCUmIqUmImSkZiUlY_l8_dCDmhb-e9pOwtz_t3z9wI9ZVv572k7C3P-zef1656VmseJj5rGi47Iy43KjZWKkpWJ7_zF656VmseJj5rGi47Iy43KjZWKkpWJ.aCEu6pjfJmcQunXp1BF8WrVmaZblnF4GPJYYOIqWg82cG7oyX7UM_vLVNrGbyVWle3FdOjS9_H4wD7fDdoIBBA";
     private static readonly string FolderId = "b1gs7puvlr7hqmmsjk4d";
 
     public static Action<byte []> onSpeechSynthesized;
@@ -138,7 +138,7 @@ public class YandexSpeechKit {
                     { "voice", voice.getStringValue() },
                     { "format", YSKAudioFormat.PCM.getStringValue() },
                     { "folderId", FolderId },
-                    {"sampleRateHertz", "48000" },
+                    { "sampleRateHertz", "48000" },
             };
 
             var content = new FormUrlEncodedContent(values);
