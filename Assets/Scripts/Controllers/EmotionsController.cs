@@ -83,7 +83,7 @@ public class EmotionsController : MonoBehaviour
         return answer;
     }
 
-    public void setEmotion(string emotion, float emotionExtent = 65f)
+    public void setEmotion(string emotion, float emotionExtent = 45f)
     {
         Debug.Log($"set emotion - {emotion}");
         switch (emotion)
@@ -114,11 +114,11 @@ public class EmotionsController : MonoBehaviour
         }
     }
 
-    public void setEmotionForSomeSeconds(string emotion, int seconds, float emotionExtent = 50f) {
+    public void setEmotionForSomeSeconds(string emotion, int seconds, float emotionExtent = 40f) {
         StartCoroutine(setEmotionForSomeSecondsCoroutine(emotion, seconds, emotionExtent));
     }
 
-    private IEnumerator setEmotionForSomeSecondsCoroutine(string emotion, int seconds, float emotionExtent = 50f) {
+    private IEnumerator setEmotionForSomeSecondsCoroutine(string emotion, int seconds, float emotionExtent = 40f) {
         Debug.LogError("Set emotion");
         switch (emotion) {
             case "Anger":

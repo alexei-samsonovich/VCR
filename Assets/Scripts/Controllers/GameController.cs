@@ -287,11 +287,12 @@ public class GameController : MonoBehaviour {
 
             if (valence > 0.2) {
                 //systemMessage = "(Веди себя как добрый преподаватель. Отвечай коротко)";
-                additionMessages.Add("Веди себя как добрый преподаватель. Отвечай коротко и неформально");
+                additionMessages.Add("Веди себя как добрый преподаватель. Скажи, что изучая вместе мы справимся. Отвечай коротко и неформально");
+                emotionsController.setEmotionForSomeSeconds("Happiness", 10);
             }
             else if (valence < -0.2) {
                 //systemMessage = "Веди себя как злой и недовольный преподаватель.";
-                additionMessages.Add("Веди себя как злой и недовольный преподаватель.");
+                additionMessages.Add("Отвечай грубовато и недовольно.");
             }
 
             if (initiative > 0.2) {
@@ -321,6 +322,7 @@ public class GameController : MonoBehaviour {
 
 
         //pipeServer.SendMessage(sendQuestionTextInputFIeld.text, systemMessage);
+        //pipeServer.SendMessage(userMessage + ". Отвечай коротко.");
         pipeServer.SendMessage(userMessage + ". Отвечай коротко.");
         sendQuestionTextInputFIeld.text = "";
 
